@@ -1,0 +1,372 @@
+=========eqtlbma_normal_100_100.e14865349=========
+=========eqtlbma_normal_100_10.e14865255=========
+slurmstepd-midway107: error: Job 14865255 exceeded memory limit (9229428 > 9216000), being killed
+slurmstepd-midway107: error: *** JOB 14865255 CANCELLED AT 2015-06-15T22:20:21 *** on midway107
+=========eqtlbma_normal_100_11.e14865256=========
+slurmstepd-midway107: error: Job 14865256 exceeded memory limit (9223136 > 9216000), being killed
+slurmstepd-midway107: error: Exceeded job memory limit
+slurmstepd-midway107: error: *** JOB 14865256 CANCELLED AT 2015-06-15T22:52:53 *** on midway107
+=========eqtlbma_normal_100_12.e14865257=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 31943 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_6205_6768/eqtlbma_bf_normal_100_6205_6768 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_6205_6768.bed.gz --scoord batch_files/snps_100_6205_6768.bed.gz --seed 73428 >> eqtlbma_bf_normal_100_6205_6768.log
+=========eqtlbma_normal_100_13.e14865258=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 20467 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_6769_7332/eqtlbma_bf_normal_100_6769_7332 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_6769_7332.bed.gz --scoord batch_files/snps_100_6769_7332.bed.gz --seed 30943 >> eqtlbma_bf_normal_100_6769_7332.log
+=========eqtlbma_normal_100_14.e14865259=========
+slurmstepd-midway108: error: Job 14865259 exceeded memory limit (9219552 > 9216000), being killed
+slurmstepd-midway108: error: *** JOB 14865259 CANCELLED AT 2015-06-15T22:22:26 *** on midway108
+slurmstepd-midway108: error: Exceeded job memory limit
+=========eqtlbma_normal_100_15.e14865260=========
+slurmstepd-midway108: error: Job 14865260 exceeded memory limit (9220932 > 9216000), being killed
+slurmstepd-midway108: error: Exceeded job memory limit
+slurmstepd-midway108: error: *** JOB 14865260 CANCELLED AT 2015-06-15T22:54:26 *** on midway108
+=========eqtlbma_normal_100_16.e14865261=========
+slurmstepd-midway109: error: Job 14865261 exceeded memory limit (9221720 > 9216000), being killed
+slurmstepd-midway109: error: Exceeded job memory limit
+slurmstepd-midway109: error: *** JOB 14865261 CANCELLED AT 2015-06-15T23:05:56 *** on midway109
+=========eqtlbma_normal_100_17.e14865262=========
+slurmstepd-midway109: error: Job 14865262 exceeded memory limit (9222104 > 9216000), being killed
+slurmstepd-midway109: error: *** JOB 14865262 CANCELLED AT 2015-06-15T22:36:59 *** on midway109
+slurmstepd-midway109: error: Exceeded job memory limit
+=========eqtlbma_normal_100_18.e14865263=========
+slurmstepd-midway109: error: Job 14865263 exceeded memory limit (9232392 > 9216000), being killed
+slurmstepd-midway109: error: *** JOB 14865263 CANCELLED AT 2015-06-15T23:46:30 *** on midway109
+=========eqtlbma_normal_100_19.e14865264=========
+slurmstepd-midway110: error: Job 14865264 exceeded memory limit (9226604 > 9216000), being killed
+slurmstepd-midway110: error: *** JOB 14865264 CANCELLED AT 2015-06-15T22:15:30 *** on midway110
+slurmstepd-midway110: error: Exceeded job memory limit
+=========eqtlbma_normal_100_1.e14865246=========
+slurmstepd-midway079: error: Job 14865246 exceeded memory limit (9223172 > 9216000), being killed
+slurmstepd-midway079: error: Exceeded job memory limit
+slurmstepd-midway079: error: *** JOB 14865246 CANCELLED AT 2015-06-16T00:30:40 *** on midway079
+=========eqtlbma_normal_100_20.e14865265=========
+slurmstepd-midway110: error: Job 14865265 exceeded memory limit (9221552 > 9216000), being killed
+slurmstepd-midway110: error: *** JOB 14865265 CANCELLED AT 2015-06-15T23:02:34 *** on midway110
+=========eqtlbma_normal_100_21.e14865266=========
+slurmstepd-midway110: error: Job 14865266 exceeded memory limit (9231428 > 9216000), being killed
+slurmstepd-midway110: error: Exceeded job memory limit
+slurmstepd-midway110: error: *** JOB 14865266 CANCELLED AT 2015-06-15T22:23:02 *** on midway110
+=========eqtlbma_normal_100_22.e14865267=========
+slurmstepd-midway111: error: Job 14865267 exceeded memory limit (9217712 > 9216000), being killed
+slurmstepd-midway111: error: Exceeded job memory limit
+slurmstepd-midway111: error: *** JOB 14865267 CANCELLED AT 2015-06-15T23:28:04 *** on midway111
+=========eqtlbma_normal_100_23.e14865268=========
+slurmstepd-midway111: error: Job 14865268 exceeded memory limit (9220996 > 9216000), being killed
+slurmstepd-midway111: error: Exceeded job memory limit
+slurmstepd-midway111: error: *** JOB 14865268 CANCELLED AT 2015-06-15T22:08:05 *** on midway111
+=========eqtlbma_normal_100_24.e14865269=========
+slurmstepd-midway111: error: Job 14865269 exceeded memory limit (9224660 > 9216000), being killed
+slurmstepd-midway111: error: *** JOB 14865269 CANCELLED AT 2015-06-15T22:37:07 *** on midway111
+=========eqtlbma_normal_100_25.e14865270=========
+slurmstepd-midway207: error: Job 14865270 exceeded memory limit (9227856 > 9216000), being killed
+slurmstepd-midway207: error: Exceeded job memory limit
+slurmstepd-midway207: error: *** JOB 14865270 CANCELLED AT 2015-06-15T22:06:05 *** on midway207
+=========eqtlbma_normal_100_26.e14865271=========
+slurmstepd-midway207: error: Job 14865271 exceeded memory limit (9232932 > 9216000), being killed
+slurmstepd-midway207: error: Exceeded job memory limit
+slurmstepd-midway207: error: *** JOB 14865271 CANCELLED AT 2015-06-15T22:14:38 *** on midway207
+=========eqtlbma_normal_100_27.e14865272=========
+slurmstepd-midway207: error: Job 14865272 exceeded memory limit (9233840 > 9216000), being killed
+slurmstepd-midway207: error: *** JOB 14865272 CANCELLED AT 2015-06-15T22:08:08 *** on midway207
+slurmstepd-midway207: error: Exceeded job memory limit
+=========eqtlbma_normal_100_28.e14865273=========
+slurmstepd-midway208: error: Job 14865273 exceeded memory limit (9234620 > 9216000), being killed
+slurmstepd-midway208: error: Exceeded job memory limit
+slurmstepd-midway208: error: *** JOB 14865273 CANCELLED AT 2015-06-15T22:41:38 *** on midway208
+=========eqtlbma_normal_100_29.e14865274=========
+slurmstepd-midway208: error: Job 14865274 exceeded memory limit (9216944 > 9216000), being killed
+slurmstepd-midway208: error: *** JOB 14865274 CANCELLED AT 2015-06-15T22:30:15 *** on midway208
+=========eqtlbma_normal_100_2.e14865247=========
+slurmstepd-midway338: error: Job 14865247 exceeded memory limit (9218940 > 9216000), being killed
+slurmstepd-midway338: error: *** JOB 14865247 CANCELLED AT 2015-06-15T23:59:42 *** on midway338
+=========eqtlbma_normal_100_30.e14865275=========
+slurmstepd-midway208: error: Job 14865275 exceeded memory limit (9221572 > 9216000), being killed
+slurmstepd-midway208: error: Exceeded job memory limit
+slurmstepd-midway208: error: *** JOB 14865275 CANCELLED AT 2015-06-15T23:05:11 *** on midway208
+=========eqtlbma_normal_100_31.e14865276=========
+slurmstepd-midway209: error: Job 14865276 exceeded memory limit (9230576 > 9216000), being killed
+slurmstepd-midway209: error: *** JOB 14865276 CANCELLED AT 2015-06-15T23:00:41 *** on midway209
+slurmstepd-midway209: error: Exceeded job memory limit
+=========eqtlbma_normal_100_32.e14865277=========
+slurmstepd-midway209: error: Job 14865277 exceeded memory limit (9229456 > 9216000), being killed
+slurmstepd-midway209: error: *** JOB 14865277 CANCELLED AT 2015-06-15T22:53:46 *** on midway209
+=========eqtlbma_normal_100_33.e14865278=========
+slurmstepd-midway209: error: Job 14865278 exceeded memory limit (9261656 > 9216000), being killed
+slurmstepd-midway209: error: Exceeded job memory limit
+slurmstepd-midway209: error: *** JOB 14865278 CANCELLED AT 2015-06-15T23:32:17 *** on midway209
+=========eqtlbma_normal_100_34.e14865279=========
+slurmstepd-midway210: error: Job 14865279 exceeded memory limit (9241852 > 9216000), being killed
+slurmstepd-midway210: error: Exceeded job memory limit
+slurmstepd-midway210: error: *** JOB 14865279 CANCELLED AT 2015-06-15T22:42:47 *** on midway210
+=========eqtlbma_normal_100_35.e14865280=========
+slurmstepd-midway210: error: Job 14865280 exceeded memory limit (9234392 > 9216000), being killed
+slurmstepd-midway210: error: Exceeded job memory limit
+slurmstepd-midway210: error: *** JOB 14865280 CANCELLED AT 2015-06-15T22:37:50 *** on midway210
+=========eqtlbma_normal_100_36.e14865281=========
+slurmstepd-midway210: error: Job 14865281 exceeded memory limit (9235376 > 9216000), being killed
+slurmstepd-midway210: error: Exceeded job memory limit
+slurmstepd-midway210: error: *** JOB 14865281 CANCELLED AT 2015-06-15T22:35:21 *** on midway210
+=========eqtlbma_normal_100_37.e14865282=========
+slurmstepd-midway211: error: Job 14865282 exceeded memory limit (9222168 > 9216000), being killed
+slurmstepd-midway211: error: Exceeded job memory limit
+slurmstepd-midway211: error: *** JOB 14865282 CANCELLED AT 2015-06-15T22:06:51 *** on midway211
+=========eqtlbma_normal_100_38.e14865283=========
+slurmstepd-midway211: error: Job 14865283 exceeded memory limit (9227972 > 9216000), being killed
+slurmstepd-midway211: error: Exceeded job memory limit
+slurmstepd-midway211: error: *** JOB 14865283 CANCELLED AT 2015-06-15T22:26:53 *** on midway211
+=========eqtlbma_normal_100_39.e14865284=========
+slurmstepd-midway211: error: Job 14865284 exceeded memory limit (9227968 > 9216000), being killed
+slurmstepd-midway211: error: Exceeded job memory limit
+slurmstepd-midway211: error: *** JOB 14865284 CANCELLED AT 2015-06-15T23:12:23 *** on midway211
+=========eqtlbma_normal_100_3.e14865248=========
+slurmstepd-midway508: error: Job 14865248 exceeded memory limit (9232464 > 9216000), being killed
+slurmstepd-midway508: error: *** JOB 14865248 CANCELLED AT 2015-06-15T23:51:18 *** on midway508
+slurmstepd-midway508: error: Exceeded job memory limit
+=========eqtlbma_normal_100_40.e14865285=========
+slurmstepd-midway212: error: Job 14865285 exceeded memory limit (9221796 > 9216000), being killed
+slurmstepd-midway212: error: Exceeded job memory limit
+slurmstepd-midway212: error: *** JOB 14865285 CANCELLED AT 2015-06-15T23:12:53 *** on midway212
+=========eqtlbma_normal_100_41.e14865286=========
+slurmstepd-midway212: error: Job 14865286 exceeded memory limit (9221652 > 9216000), being killed
+slurmstepd-midway212: error: Exceeded job memory limit
+slurmstepd-midway212: error: *** JOB 14865286 CANCELLED AT 2015-06-15T23:18:56 *** on midway212
+=========eqtlbma_normal_100_42.e14865287=========
+slurmstepd-midway212: error: Job 14865287 exceeded memory limit (9253948 > 9216000), being killed
+slurmstepd-midway212: error: *** JOB 14865287 CANCELLED AT 2015-06-15T22:15:27 *** on midway212
+slurmstepd-midway212: error: Exceeded job memory limit
+=========eqtlbma_normal_100_43.e14865288=========
+slurmstepd-midway213: error: Job 14865288 exceeded memory limit (9220656 > 9216000), being killed
+slurmstepd-midway213: error: Exceeded job memory limit
+slurmstepd-midway213: error: *** JOB 14865288 CANCELLED AT 2015-06-15T22:32:56 *** on midway213
+=========eqtlbma_normal_100_44.e14865289=========
+slurmstepd-midway213: error: Job 14865289 exceeded memory limit (9235164 > 9216000), being killed
+slurmstepd-midway213: error: Exceeded job memory limit
+slurmstepd-midway213: error: *** JOB 14865289 CANCELLED AT 2015-06-15T22:15:59 *** on midway213
+=========eqtlbma_normal_100_45.e14865290=========
+slurmstepd-midway213: error: Job 14865290 exceeded memory limit (9224364 > 9216000), being killed
+slurmstepd-midway213: error: Exceeded job memory limit
+slurmstepd-midway213: error: *** JOB 14865290 CANCELLED AT 2015-06-15T22:24:59 *** on midway213
+=========eqtlbma_normal_100_46.e14865291=========
+slurmstepd-midway214: error: Job 14865291 exceeded memory limit (9229392 > 9216000), being killed
+slurmstepd-midway214: error: Exceeded job memory limit
+slurmstepd-midway214: error: *** JOB 14865291 CANCELLED AT 2015-06-15T22:53:59 *** on midway214
+=========eqtlbma_normal_100_47.e14865292=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1:  5255 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_25945_26508/eqtlbma_bf_normal_100_25945_26508 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_25945_26508.bed.gz --scoord batch_files/snps_100_25945_26508.bed.gz --seed 92387 >> eqtlbma_bf_normal_100_25945_26508.log
+=========eqtlbma_normal_100_48.e14865293=========
+slurmstepd-midway214: error: Job 14865293 exceeded memory limit (9235692 > 9216000), being killed
+slurmstepd-midway214: error: Exceeded job memory limit
+slurmstepd-midway214: error: *** JOB 14865293 CANCELLED AT 2015-06-15T22:38:22 *** on midway214
+=========eqtlbma_normal_100_49.e14865294=========
+slurmstepd-midway214: error: Job 14865294 exceeded memory limit (9227220 > 9216000), being killed
+slurmstepd-midway214: error: *** JOB 14865294 CANCELLED AT 2015-06-16T03:30:35 *** on midway214
+slurmstepd-midway214: error: Exceeded job memory limit
+=========eqtlbma_normal_100_4.e14865249=========
+slurmstepd-midway105: error: Job 14865249 exceeded memory limit (9222260 > 9216000), being killed
+slurmstepd-midway105: error: *** JOB 14865249 CANCELLED AT 2015-06-15T22:37:44 *** on midway105
+slurmstepd-midway105: error: Exceeded job memory limit
+=========eqtlbma_normal_100_50.e14865296=========
+ERROR: SNP 10_12000000_A_T_b37 is duplicated in file /project/mstephens/gtex/analysis/april2015/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices/Adipose_Subcutaneous_Analysis.snps.txt.gz
+=========eqtlbma_normal_100_51.e14865298=========
+slurmstepd-midway211: error: Job 14865298 exceeded memory limit (9286336 > 9216000), being killed
+slurmstepd-midway211: error: Exceeded job memory limit
+slurmstepd-midway211: error: *** JOB 14865298 CANCELLED AT 2015-06-16T02:58:22 *** on midway211
+=========eqtlbma_normal_100_52.e14865299=========
+slurmstepd-midway111: error: Job 14865299 exceeded memory limit (9227284 > 9216000), being killed
+slurmstepd-midway111: error: Exceeded job memory limit
+slurmstepd-midway111: error: *** JOB 14865299 CANCELLED AT 2015-06-16T03:23:06 *** on midway111
+=========eqtlbma_normal_100_53.e14865301=========
+slurmstepd-midway508: error: Job 14865301 exceeded memory limit (9231724 > 9216000), being killed
+slurmstepd-midway508: error: *** JOB 14865301 CANCELLED AT 2015-06-16T03:34:40 *** on midway508
+slurmstepd-midway508: error: Exceeded job memory limit
+=========eqtlbma_normal_100_54.e14865303=========
+slurmstepd-midway346: error: Job 14865303 exceeded memory limit (9230832 > 9216000), being killed
+slurmstepd-midway346: error: *** JOB 14865303 CANCELLED AT 2015-06-16T03:44:08 *** on midway346
+slurmstepd-midway346: error: Exceeded job memory limit
+=========eqtlbma_normal_100_55.e14865304=========
+slurmstepd-midway508: error: Job 14865304 exceeded memory limit (9228824 > 9216000), being killed
+slurmstepd-midway508: error: Exceeded job memory limit
+slurmstepd-midway508: error: *** JOB 14865304 CANCELLED AT 2015-06-16T03:05:39 *** on midway508
+=========eqtlbma_normal_100_56.e14865305=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 21947 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_31021_31584/eqtlbma_bf_normal_100_31021_31584 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_31021_31584.bed.gz --scoord batch_files/snps_100_31021_31584.bed.gz --seed 93161 >> eqtlbma_bf_normal_100_31021_31584.log
+=========eqtlbma_normal_100_57.e14865306=========
+slurmstepd-midway110: error: Job 14865306 exceeded memory limit (9228400 > 9216000), being killed
+slurmstepd-midway110: error: Exceeded job memory limit
+slurmstepd-midway110: error: *** JOB 14865306 CANCELLED AT 2015-06-16T04:48:34 *** on midway110
+=========eqtlbma_normal_100_58.e14865307=========
+slurmstepd-midway213: error: Job 14865307 exceeded memory limit (9220060 > 9216000), being killed
+slurmstepd-midway213: error: Exceeded job memory limit
+slurmstepd-midway213: error: *** JOB 14865307 CANCELLED AT 2015-06-16T03:08:30 *** on midway213
+=========eqtlbma_normal_100_59.e14865308=========
+slurmstepd-midway206: error: Job 14865308 exceeded memory limit (9243576 > 9216000), being killed
+slurmstepd-midway206: error: *** JOB 14865308 CANCELLED AT 2015-06-16T04:02:52 *** on midway206
+slurmstepd-midway206: error: Exceeded job memory limit
+=========eqtlbma_normal_100_5.e14865250=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1:  9810 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_2257_2820/eqtlbma_bf_normal_100_2257_2820 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_2257_2820.bed.gz --scoord batch_files/snps_100_2257_2820.bed.gz --seed 92690 >> eqtlbma_bf_normal_100_2257_2820.log
+=========eqtlbma_normal_100_60.e14865309=========
+slurmstepd-midway107: error: Job 14865309 exceeded memory limit (9226080 > 9216000), being killed
+slurmstepd-midway107: error: Exceeded job memory limit
+slurmstepd-midway107: error: *** JOB 14865309 CANCELLED AT 2015-06-16T03:49:57 *** on midway107
+=========eqtlbma_normal_100_61.e14865310=========
+ERROR: SNP 12_48000000_T_C_b37 is duplicated in file /project/mstephens/gtex/analysis/april2015/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices/Adipose_Subcutaneous_Analysis.snps.txt.gz
+=========eqtlbma_normal_100_62.e14865311=========
+slurmstepd-midway110: error: Job 14865311 exceeded memory limit (9227664 > 9216000), being killed
+slurmstepd-midway110: error: Exceeded job memory limit
+slurmstepd-midway110: error: *** JOB 14865311 CANCELLED AT 2015-06-16T03:37:01 *** on midway110
+=========eqtlbma_normal_100_63.e14865312=========
+slurmstepd-midway211: error: Job 14865312 exceeded memory limit (9217240 > 9216000), being killed
+slurmstepd-midway211: error: Exceeded job memory limit
+slurmstepd-midway211: error: *** JOB 14865312 CANCELLED AT 2015-06-16T03:40:55 *** on midway211
+=========eqtlbma_normal_100_64.e14865313=========
+slurmstepd-midway108: error: Job 14865313 exceeded memory limit (9229840 > 9216000), being killed
+slurmstepd-midway108: error: Exceeded job memory limit
+slurmstepd-midway108: error: *** JOB 14865313 CANCELLED AT 2015-06-16T03:40:38 *** on midway108
+=========eqtlbma_normal_100_65.e14865314=========
+slurmstepd-midway213: error: Job 14865314 exceeded memory limit (9219608 > 9216000), being killed
+slurmstepd-midway213: error: Exceeded job memory limit
+slurmstepd-midway213: error: *** JOB 14865314 CANCELLED AT 2015-06-16T03:00:45 *** on midway213
+=========eqtlbma_normal_100_66.e14865315=========
+slurmstepd-midway208: error: Job 14865315 exceeded memory limit (9223376 > 9216000), being killed
+slurmstepd-midway208: error: Exceeded job memory limit
+slurmstepd-midway208: error: *** JOB 14865315 CANCELLED AT 2015-06-16T03:00:57 *** on midway208
+=========eqtlbma_normal_100_67.e14865316=========
+slurmstepd-midway213: error: Job 14865316 exceeded memory limit (9228136 > 9216000), being killed
+slurmstepd-midway213: error: Exceeded job memory limit
+slurmstepd-midway213: error: *** JOB 14865316 CANCELLED AT 2015-06-16T04:00:22 *** on midway213
+=========eqtlbma_normal_100_68.e14865317=========
+slurmstepd-midway109: error: Job 14865317 exceeded memory limit (9224852 > 9216000), being killed
+slurmstepd-midway109: error: Exceeded job memory limit
+slurmstepd-midway109: error: *** JOB 14865317 CANCELLED AT 2015-06-16T04:15:00 *** on midway109
+=========eqtlbma_normal_100_69.e14865318=========
+slurmstepd-midway111: error: Job 14865318 exceeded memory limit (9222576 > 9216000), being killed
+slurmstepd-midway111: error: *** JOB 14865318 CANCELLED AT 2015-06-16T03:51:12 *** on midway111
+slurmstepd-midway111: error: Exceeded job memory limit
+=========eqtlbma_normal_100_6.e14865251=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1:  9805 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_2821_3384/eqtlbma_bf_normal_100_2821_3384 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_2821_3384.bed.gz --scoord batch_files/snps_100_2821_3384.bed.gz --seed 39292 >> eqtlbma_bf_normal_100_2821_3384.log
+=========eqtlbma_normal_100_70.e14865319=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 19841 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_38917_39480/eqtlbma_bf_normal_100_38917_39480 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_38917_39480.bed.gz --scoord batch_files/snps_100_38917_39480.bed.gz --seed 70366 >> eqtlbma_bf_normal_100_38917_39480.log
+=========eqtlbma_normal_100_71.e14865320=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 32125 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_39481_40044/eqtlbma_bf_normal_100_39481_40044 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_39481_40044.bed.gz --scoord batch_files/snps_100_39481_40044.bed.gz --seed 26515 >> eqtlbma_bf_normal_100_39481_40044.log
+=========eqtlbma_normal_100_72.e14865321=========
+slurmstepd-midway206: error: Job 14865321 exceeded memory limit (9217276 > 9216000), being killed
+slurmstepd-midway206: error: Exceeded job memory limit
+slurmstepd-midway206: error: *** JOB 14865321 CANCELLED AT 2015-06-16T04:16:55 *** on midway206
+=========eqtlbma_normal_100_73.e14865322=========
+slurmstepd-midway451: error: Job 14865322 exceeded memory limit (9223456 > 9216000), being killed
+slurmstepd-midway451: error: *** JOB 14865322 CANCELLED AT 2015-06-16T04:02:52 *** on midway451
+=========eqtlbma_normal_100_74.e14865323=========
+slurmstepd-midway208: error: Job 14865323 exceeded memory limit (9223924 > 9216000), being killed
+slurmstepd-midway208: error: Exceeded job memory limit
+slurmstepd-midway208: error: *** JOB 14865323 CANCELLED AT 2015-06-16T05:04:40 *** on midway208
+=========eqtlbma_normal_100_75.e14865324=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 15101 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_41737_42300/eqtlbma_bf_normal_100_41737_42300 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_41737_42300.bed.gz --scoord batch_files/snps_100_41737_42300.bed.gz --seed 92646 >> eqtlbma_bf_normal_100_41737_42300.log
+=========eqtlbma_normal_100_76.e14865325=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 12000 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_42301_42864/eqtlbma_bf_normal_100_42301_42864 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_42301_42864.bed.gz --scoord batch_files/snps_100_42301_42864.bed.gz --seed 96440 >> eqtlbma_bf_normal_100_42301_42864.log
+=========eqtlbma_normal_100_77.e14865326=========
+slurmstepd-midway106: error: Job 14865326 exceeded memory limit (9227216 > 9216000), being killed
+slurmstepd-midway106: error: Exceeded job memory limit
+slurmstepd-midway106: error: *** JOB 14865326 CANCELLED AT 2015-06-16T04:19:22 *** on midway106
+=========eqtlbma_normal_100_78.e14865327=========
+slurmstepd-midway108: error: Job 14865327 exceeded memory limit (9216832 > 9216000), being killed
+slurmstepd-midway108: error: Exceeded job memory limit
+slurmstepd-midway108: error: *** JOB 14865327 CANCELLED AT 2015-06-16T05:09:24 *** on midway108
+=========eqtlbma_normal_100_79.e14865328=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 26443 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_43993_44556/eqtlbma_bf_normal_100_43993_44556 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_43993_44556.bed.gz --scoord batch_files/snps_100_43993_44556.bed.gz --seed 28312 >> eqtlbma_bf_normal_100_43993_44556.log
+=========eqtlbma_normal_100_7.e14865252=========
+slurmstepd-midway106: error: Job 14865252 exceeded memory limit (9217860 > 9216000), being killed
+slurmstepd-midway106: error: Exceeded job memory limit
+slurmstepd-midway106: error: *** JOB 14865252 CANCELLED AT 2015-06-15T23:24:48 *** on midway106
+=========eqtlbma_normal_100_80.e14865329=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 26795 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_44557_45120/eqtlbma_bf_normal_100_44557_45120 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_44557_45120.bed.gz --scoord batch_files/snps_100_44557_45120.bed.gz --seed 92261 >> eqtlbma_bf_normal_100_44557_45120.log
+=========eqtlbma_normal_100_81.e14865330=========
+gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented
+Default GSL error handler invoked.
+sh: line 1: 26927 Aborted                 /home/gaow/software/bin/eqtlbma_bf --geno $InputDir/list_geno.txt --exp $InputDir/list_expr.txt --covar $InputDir/list_covar.txt --anchor TSS --cis 100000 --out eqtlbma_bf_normal_100_45121_45684/eqtlbma_bf_normal_100_45121_45684 --analys join --outss --bfs sin --gridL $InputDir/grid_phi2_oma2_general.txt.gz --gridS $InputDir/grid_phi2_oma2_with-configs.txt.gz --error uvlr --nperm 10000 --trick 2 --pbf gen -v 1 --gcoord batch_files/genes_100_45121_45684.bed.gz --scoord batch_files/snps_100_45121_45684.bed.gz --seed 74220 >> eqtlbma_bf_normal_100_45121_45684.log
+=========eqtlbma_normal_100_82.e14865331=========
+slurmstepd-midway214: error: Job 14865331 exceeded memory limit (9221060 > 9216000), being killed
+slurmstepd-midway214: error: Exceeded job memory limit
+slurmstepd-midway214: error: *** JOB 14865331 CANCELLED AT 2015-06-16T05:09:42 *** on midway214
+=========eqtlbma_normal_100_83.e14865332=========
+slurmstepd-midway208: error: Job 14865332 exceeded memory limit (9221852 > 9216000), being killed
+slurmstepd-midway208: error: Exceeded job memory limit
+slurmstepd-midway208: error: *** JOB 14865332 CANCELLED AT 2015-06-16T04:19:51 *** on midway208
+=========eqtlbma_normal_100_84.e14865333=========
+slurmstepd-midway109: error: Job 14865333 exceeded memory limit (9217024 > 9216000), being killed
+slurmstepd-midway109: error: Exceeded job memory limit
+slurmstepd-midway109: error: *** JOB 14865333 CANCELLED AT 2015-06-16T03:37:34 *** on midway109
+=========eqtlbma_normal_100_85.e14865334=========
+slurmstepd-midway211: error: Job 14865334 exceeded memory limit (9222636 > 9216000), being killed
+slurmstepd-midway211: error: Exceeded job memory limit
+slurmstepd-midway211: error: *** JOB 14865334 CANCELLED AT 2015-06-16T05:49:54 *** on midway211
+=========eqtlbma_normal_100_86.e14865335=========
+slurmstepd-midway212: error: Job 14865335 exceeded memory limit (9218820 > 9216000), being killed
+slurmstepd-midway212: error: Exceeded job memory limit
+slurmstepd-midway212: error: *** JOB 14865335 CANCELLED AT 2015-06-16T06:01:54 *** on midway212
+=========eqtlbma_normal_100_87.e14865336=========
+slurmstepd-midway212: error: Job 14865336 exceeded memory limit (9217036 > 9216000), being killed
+slurmstepd-midway212: error: *** JOB 14865336 CANCELLED AT 2015-06-16T05:26:28 *** on midway212
+slurmstepd-midway212: error: Exceeded job memory limit
+=========eqtlbma_normal_100_88.e14865337=========
+slurmstepd-midway106: error: Job 14865337 exceeded memory limit (9229432 > 9216000), being killed
+slurmstepd-midway106: error: *** JOB 14865337 CANCELLED AT 2015-06-16T06:07:56 *** on midway106
+slurmstepd-midway106: error: Exceeded job memory limit
+=========eqtlbma_normal_100_89.e14865338=========
+slurmstepd-midway107: error: Job 14865338 exceeded memory limit (9240056 > 9216000), being killed
+slurmstepd-midway107: error: Exceeded job memory limit
+slurmstepd-midway107: error: *** JOB 14865338 CANCELLED AT 2015-06-16T06:15:46 *** on midway107
+=========eqtlbma_normal_100_8.e14865253=========
+slurmstepd-midway106: error: Job 14865253 exceeded memory limit (9250184 > 9216000), being killed
+slurmstepd-midway106: error: *** JOB 14865253 CANCELLED AT 2015-06-15T23:19:50 *** on midway106
+=========eqtlbma_normal_100_90.e14865339=========
+slurmstepd-midway193: error: Job 14865339 exceeded memory limit (9231420 > 9216000), being killed
+slurmstepd-midway193: error: *** JOB 14865339 CANCELLED AT 2015-06-16T05:33:34 *** on midway193
+slurmstepd-midway193: error: Exceeded job memory limit
+=========eqtlbma_normal_100_91.e14865340=========
+slurmstepd-midway105: error: Job 14865340 exceeded memory limit (9276560 > 9216000), being killed
+slurmstepd-midway105: error: *** JOB 14865340 CANCELLED AT 2015-06-16T05:23:52 *** on midway105
+slurmstepd-midway105: error: Exceeded job memory limit
+=========eqtlbma_normal_100_92.e14865341=========
+slurmstepd-midway106: error: Job 14865341 exceeded memory limit (9260268 > 9216000), being killed
+slurmstepd-midway106: error: Exceeded job memory limit
+slurmstepd-midway106: error: *** JOB 14865341 CANCELLED AT 2015-06-16T04:20:49 *** on midway106
+=========eqtlbma_normal_100_93.e14865342=========
+slurmstepd-midway111: error: Job 14865342 exceeded memory limit (9229116 > 9216000), being killed
+slurmstepd-midway111: error: Exceeded job memory limit
+slurmstepd-midway111: error: *** JOB 14865342 CANCELLED AT 2015-06-16T05:25:33 *** on midway111
+=========eqtlbma_normal_100_94.e14865343=========
+slurmstepd-midway209: error: Job 14865343 exceeded memory limit (9221048 > 9216000), being killed
+slurmstepd-midway209: error: Exceeded job memory limit
+slurmstepd-midway209: error: *** JOB 14865343 CANCELLED AT 2015-06-16T05:22:19 *** on midway209
+=========eqtlbma_normal_100_95.e14865344=========
+slurmstepd-midway331: error: Job 14865344 exceeded memory limit (9239400 > 9216000), being killed
+slurmstepd-midway331: error: *** JOB 14865344 CANCELLED AT 2015-06-16T06:04:30 *** on midway331
+slurmstepd-midway331: error: Exceeded job memory limit
+=========eqtlbma_normal_100_96.e14865345=========
+=========eqtlbma_normal_100_97.e14865346=========
+=========eqtlbma_normal_100_98.e14865347=========
+=========eqtlbma_normal_100_99.e14865348=========
+=========eqtlbma_normal_100_9.e14865254=========
+slurmstepd-midway106: error: Job 14865254 exceeded memory limit (9250836 > 9216000), being killed
+slurmstepd-midway106: error: *** JOB 14865254 CANCELLED AT 2015-06-15T22:54:20 *** on midway106
+slurmstepd-midway106: error: Exceeded job memory limit
