@@ -5,7 +5,7 @@
 Administrative program for data (GTEx) analysis
 """
 import os, sys, argparse, random, gzip, re, warnings, copy, math
-from utils import env, get_tb_grps, get_best_pair
+from utils import env, get_tb_grps, get_gs_pairs
 from utils import TBData as SSData
 import tables as tb
 import numpy as np
@@ -269,14 +269,19 @@ def ss_to_h5(args):
         names = get_tb_grps(args.input)
         for item in names:
             print(item)
-    if args.action == 'max':
+    if args.action in ['max', 'null']:
         assert len(args.input) == 1
-        names = get_tb_grps(args.input)
+        if args.gene_list:
+            names = sorted(set([line.strip('\n') for line in open(args.gene_list).readlines()]))
+        else:
+            names = get_tb_grps(args.input)
         data = {'colnames': None, 'rownames': [], 'beta': None, 't-stat': None, 'p-value': None}
         failure_ct = 0
         for idx, name in enumerate(names):
             env.log("Calculating #%s ..." % (idx + 1), flush = True)
-            best = get_best_pair(SSData(args.input[0], name), name)
+            # extract the best gene-snp pair or some null gene-snp pairs
+            best = get_gs_pairs(SSData(args.input[0], name), name,
+                                0 if args.action == 'max' else env.nb_null_pairs)
             #
             if best is None:
                 failure_ct += 1
@@ -288,14 +293,15 @@ def ss_to_h5(args):
                 if k == 'colnames':
                     continue
                 elif k == 'rownames':
-                    data[k].append(best[k])
+                    data[k].extend(best[k])
                 else:
                     data[k] = np.vstack((data[k], best[k]))
         #
         if failure_ct < len(names):
             with warnings.catch_warnings():
                 warnings.filterwarnings("ignore", category = tb.NaturalNameWarning)
-                SSData(dict(data), 'max', msg = "Best gene-snp pair, GTEx v6").sink(args.output)
+                SSData(dict(data), args.action, msg = "%s gene-snp pair, GTEx v6" % args.action).\
+                  sink(args.output)
         env.log("%s groups processed!\n" % (idx + 1 - failure_ct), flush = True)
 
 def sumstat_query(args):
@@ -355,13 +361,14 @@ if __name__ == '__main__':
                               formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument('input', nargs = '+', type = pathstr, help = 'Input data files.')
     p.add_argument('--action', required = True,
-                   choices = ['convert', 'merge', 'cat', 'summary', 'max'],
+                   choices = ['convert', 'merge', 'cat', 'summary', 'max', 'null'],
                    help = '''Convert: deals with converting summary statistic text files to HDF5 file;
                    Merge: merging multiple HDF5 files to one
                    (both for all data as well as for most significant SNP per gene data);
                    Cat: concatenate multiple HDF5 files;
                    Summary: output unique groups in an HDF5 file;
-                   max: output the "best" gene-snp pair''')
+                   max: output the "best" gene-snp pair;
+                   null: output %s null gene-snp pairs''' % env.nb_null_pairs)
     p.add_argument('--maxsize', type = uint, help = 'Maximum number of groups per HDF5 file.')
     p.add_argument('--output', required = True, type = pathstr, help = 'Output data dir / base name.')
     p.add_argument('--gene-list', dest = 'gene_list', type = pathstr, help = 'Path to gene list file. If specified, genes for the merger will be read from this list rather than from input data (which will be much slower).')

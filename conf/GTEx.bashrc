@@ -6,8 +6,8 @@ export DataDir=/project/mstephens/gtex/analysis/april2015/eqtl_data
 export DataPrefix=$DataDir/GTEx_Analysis_2015-01-12_
 export InputDir=/project/mstephens/gtex/analysis/april2015/A.Input
 export TmpDir=$HOME/gtex/tmp
-export ConfDir=$HOME/GIT/type-model/conf
-export SrcDir=$HOME/GIT/type-model/src
+export ConfDir=$HOME/GIT/gtex-eqtls/conf
+export SrcDir=$HOME/GIT/gtex-eqtls/src
 export LogDir=$HOME/gtex/log
 export DBDir=/project/mstephens/database
 function GetTSSCoords() {

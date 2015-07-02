@@ -151,6 +151,7 @@ class Environment:
         self.common_suffix = '_Analysis.h5'
         self.duplicate_tag = '_duplicated_'
         self.batch_file_dir = 'batch_files'
+        self.nb_null_pairs = 3
         
     def error(self, msg = None, show_help = False, exit = False, to_file = None):
         if to_file:
@@ -206,7 +207,10 @@ def get_tb_grps(filenames):
     env.log('%s unique groups identified from %s files\n' % (len(names), len(filenames)), flush = True)
     return sorted(names)
 
-def get_best_pair(data, name):
+def get_gs_pairs(data, name, option = 0):
+    '''choose gene-snp pairs from data, controlled by option = N
+    N = 0: will chose the best gene-snp pair
+    N > 1: will chose N random gene-snp pairs other than the best'''
     output = {'colnames' : data['colnames']}
     # Find max SNP-gene pair
     t = data.dump('t-stat')
@@ -214,8 +218,15 @@ def get_best_pair(data, name):
     #
     if t.empty:
         return None
-    rowidx = np.where(data['rownames'] == t.abs().max(axis=1).idxmax())[0]
-    output['rownames'] = '%s_%s' % (name, data['rownames'][rowidx][0])
-    for k in ['beta', 'p-value', 't-stat']:
-        output[k] = data[k][rowidx, :][0]
+    rowidx = np.where(data['rownames'] == t.abs().max(axis=1).idxmax())[0][0]
+    if option == 0:
+        output['rownames'] = ['%s_%s' % (name, data['rownames'][rowidx])]
+        for k in ['beta', 'p-value', 't-stat']:
+            output[k] = data[k][rowidx, :]
+    else:
+        all_nullidxes = [y for y, x in enumerate(data['rownames']) if x in t.index and y != rowidx]
+        sample_nullidxes = np.random.choice(all_nullidxes, min(len(all_nullidxes), option))
+        output['rownames'] = ['%s_%s' % (name, data['rownames'][x]) for x in sample_nullidxes]
+        for k in ['beta', 'p-value', 't-stat']:
+            output[k] = data[k][sample_nullidxes, :]
     return output

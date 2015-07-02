@@ -1,6 +1,7 @@
 require(rhdf5)
 require(RSQLite)
-ShowSNP <- function(rsID, db) {
+options(width=120)
+.ShowSNPGivenRSID <- function(rsID, db) {
   if (!file.exists(db)) {
     stop(paste("File", db, "does not exist!"))
   }
@@ -38,6 +39,32 @@ ShowSNP <- function(rsID, db) {
   invisible(db)
 }
 
+.ShowSNPGivenCoord <- function(coord, db) {
+  if (!file.exists(db)) {
+    stop(paste("File", db, "does not exist!"))
+  }
+  conn <- dbConnect(dbDriver("SQLite"), db)
+  results <- dbSendQuery(conn, paste("select rsid, cisgenes from dbsnp144 where coord='", coord, "'", sep = ''))
+  output <- fetch(results)
+  dbClearResult(results)
+  if (nrow(output) == 0) {
+    dbDisconnect(conn)
+    stop(paste("Cannot find SNP ", coord, "by genomic coordinate in", db))
+  }
+  cat(paste("\033[1mrsID(s):\033[0m", output[1,1], '\n'))
+  cat(paste("\033[1mcisGenes:\033[0m", output[1,2], '\n'))
+  dbDisconnect(conn)
+  invisible(db)
+}
+
+ShowSNP <- function(key, db) {
+    if (grepl('^rs', key, perl = T, ignore.case = T)) {
+        .ShowSNPGivenRSID(key, db)
+    } else {
+        .ShowSNPGivenCoord(key, db)
+    }
+}
+
 ConvertP2Z <- function(pval, beta) {
   z <- abs(qnorm(pval / 2))
   z[which(beta < 0)] <- -1 * z[which(beta < 0)]
@@ -62,4 +89,11 @@ GetFlatSS <- function(gene, db) {
   rownames(dat$data) <- dat$colnames
   dat <- t(dat$data)
   return(dat)
+}
+
+matxMax <- function(mtx)
+{
+    colmn <- which(mtx == max(mtx, na.rm=T)) %/% nrow(mtx) + 1
+    row <- which(mtx == max(mtx, na.rm=T)) %% nrow(mtx)
+    return( matrix(c(row, colmn), 1))
 }

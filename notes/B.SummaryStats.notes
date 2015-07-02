@@ -60,7 +60,10 @@ done
 # Now merging the batches into one large HDF5 file
 python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats/*.h5 --action cat --output $DataDir/MatrixEQTLSumStats.h5
 #! Select the ``best'' gene-snp pair
-python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --action max --output $DataDir/MatrixEQTLSumStats.Max.h5
+python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --action max --output $DataDir/MatrixEQTLSumStats.Portable.h5
+#! Select some ``null'' gene-snp pairs
+# For each gene I select up to 3 null gene-snp pairs, for use of calibrating Sarah's model
+python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --action null --output $DataDir/MatrixEQTLSumStats.Portable.h5 --gene-list <(zcat $DBDir/snp-gene-pairs/GTExV6Genes.gz)
 ###
 # Creating R interface for the new format
 ###
@@ -86,6 +89,7 @@ zcat $DBDir/snp-gene-pairs.*.gz | gzip --best > $DBDir/snp-gene-pairs.gz
 cd $DBDir; mkdir snp-gene-pairs; mv snp-gene-pairs.* snp-gene-pairs; cd snp-gene-pairs
 wsqlite snp-gene.sqlite3 -i snp-gene-pairs.gz --as dbsnp144 -d '\t' --header coord rsid cisgenes
 wsqlite snp-gene.sqlite3 "create index rsid_index on dbsnp144 (rsid)"
+wsqlite snp-gene.sqlite3 "create index coord_index on dbsnp144 (coord)"
 #! Run queries
 # Now we have the data @@*.h5@@ and meta-data @@*.sqlite@@ in place. I have made a separate note on how to use this data-set. See @@SumstatsDB.pdf@@ in this repo.
 ###
@@ -270,7 +274,7 @@ done
 # @@analysis_admin eqtlbma_batch@@ generates batches on the fly and perform @@eqtlbma_bf@@ analysis in (embarrassing) parallel fashion on batches of genes. To use it,
 python analysis_admin.py eqtlbma_batch -h
 #{out eqtlbma_batch
-output:///python ../../src/analysis_admin.py eqtlbma_batch -h
+output:///python ../src/analysis_admin.py eqtlbma_batch -h
 #}
 # Here is the command which breaks the data into 100 batches and perform analysis
 #{bash 100 batches analysis 
