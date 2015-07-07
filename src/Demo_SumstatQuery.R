@@ -63,3 +63,15 @@ ShowSNP("rs6600419", "/project/mstephens/gtex/analysis/april2015/query/snp-gene.
 ShowSNP("1_43124701_A_G_b37", "/project/mstephens/gtex/analysis/april2015/query/snp-gene.db")
 ## rsID(s): rs6600419 
 ## cisGenes: ENSG00000065978.13,ENSG00000164007.6,ENSG00000171960.6,ENSG00000200254.1,ENSG00000234917.1,ENSG00000236180.2 
+##
+# Create matched training/testing sets
+##
+N1 <- 8000
+N2 <- 16069
+strong.train <- SubsetMatLists(mdat, seq(1, N1))
+strong.test <- SubsetMatLists(mdat, seq(N1 + 1, N2))
+strong.train.genes <- as.character(lapply(strsplit(rownames(strong.train$beta), "_"), function(x) x[1]))
+strong.test.genes <- as.character(lapply(strsplit(rownames(strong.test$beta), "_"), function(x) x[1]))
+null.genes <- as.character(lapply(strsplit(rownames(ndat$beta), "_"), function(x) x[1]))
+null.train <- SubsetMatLists(ndat, which(null.genes %in% strong.train.genes))
+null.test <- SubsetMatLists(ndat, which(null.genes %in% strong.test.genes))

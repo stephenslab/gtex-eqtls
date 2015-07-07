@@ -12,7 +12,7 @@
 /ENSG00000008735.10/colnames (44,)
 ...
 #}
-# There are two special tables in @@MatrixEQTLSumStats.h5@@. One called @@max@@, which is the data for the ``best'' gene-snp pair identified per gene as the snp pair having maximum abs(t-stat) across all snps and all tissues and there is no missing data for any tissue. It contains 16,069 gene-snp pairs. The other called @@null@@, which organize gene-snp pair data in the same format as @@max@@ only that the gene-snp pairs in this table are NOT the best gene-snp pair, but just random samples from all non-best gene-snp pairs. For portability these two tables are also stored separately in @@MatrixEQTLSumStats.Portable.h5@@ (15MB, in HDF5 format).
+# There are two special tables in @@MatrixEQTLSumStats.h5@@. One called @@max@@, which is the data for the ``best'' gene-snp pair identified per gene as the snp pair having maximum abs(t-stat) across all snps and all tissues and there is no missing data for any tissue. It contains 16,069 gene-snp pairs. The other called @@null@@, which organize gene-snp pair data in the same format as @@max@@ only that the gene-snp pairs in this table are NOT the best gene-snp pair, but just random samples from all non-best gene-snp pairs. For portability these two tables are also stored separately in @@MatrixEQTLSumStats.Portable.h5@@ (58MB, in HDF5 format).
 #{text MatrixEQTLSumStats.Portable.h5
 /max (Group) 'max'
 /max/beta (16069, 44)

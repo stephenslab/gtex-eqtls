@@ -91,9 +91,16 @@ GetFlatSS <- function(gene, db) {
   return(dat)
 }
 
-matxMax <- function(mtx)
-{
-    colmn <- which(mtx == max(mtx, na.rm=T)) %/% nrow(mtx) + 1
-    row <- which(mtx == max(mtx, na.rm=T)) %% nrow(mtx)
+matxMax <- function(mtx) {
+    colmn <- which.max(mtx) %/% nrow(mtx) + 1
+    row <- which.max(mtx) %% nrow(mtx)
     return( matrix(c(row, colmn), 1))
+}
+
+SubsetMatLists <- function(list.obj, rowidx) {
+    list.new <- list()
+    for (name in names(list.obj)) {
+        list.new[[name]] <- list.obj[[name]][rowidx,]
+    }
+    return(list.new)
 }
