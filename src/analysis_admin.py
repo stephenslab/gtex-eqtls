@@ -39,7 +39,7 @@ class CoordChopper:
 
     def ChopSNPCoords(self, window):
         env.log('Creating SNP coords file ...')
-        os.system('bedtools window -w {} -a {} -b {} | cut -f7,8,9,10 | sort -k1,1g -k2,2g | bgzip > {}'.\
+        os.system('bedtools window -w {} -a {} -b {} | cut -f7,8,9,10 | sort -k1,1g -k2,2g | uniq | bgzip > {}'.\
                   format(window, self.gf, self.snp_coords, self.sf))
         os.system('tabix -p bed {}'.format(self.sf))
 
