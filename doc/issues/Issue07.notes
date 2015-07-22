@@ -17,4 +17,4 @@ Default GSL error handler invoked.
 ###
 # Resolution
 ###
-# A toy data was created @@data/Issue07B.tar.gz@@ that reproduces the problem. The solution was to turn off the default GSL error handler and wrote a piece of customized behavior on such errors -- it was easy. 
+# A toy data was created @@data/Issue07B.tar.gz@@ that reproduces the problem. The solution was to check if the input is proper before feeding it to GSL, see @https://github.com/gaow/eqtlbma/commit/f17b2a5d34b80cc0be8fb53190c5818bde712388@. 

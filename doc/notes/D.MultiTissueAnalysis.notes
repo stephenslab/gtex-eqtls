@@ -1,0 +1,119 @@
+###
+#! Analyzing GTEx using @@eqtlbma@@
+###
+###
+# Pre-processing
+###
+#! Extract input data from archive
+#{bash
+for i in GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatricesSupplement.tar.gz; do
+for j in `tar -tf $i`; do
+echo $i $j
+mkdir -p $(basename $i .tar.gz)
+echo -e '#!/bin/bash\ntar -zxvf '"$i"' '"$j"' -O | gzip --best > '"$(basename $i .tar.gz)"'/'"$j"'.gz\necho complete!' | sbatch -J Extract."$i"."$j" -o $LogDir/Extract."$i"."$j".o%j
+done
+done
+#}
+#! Gene TSS coordinates file
+GetTSSCoords "$DataPrefix"eQTLInputFiles_genePositions.txt.gz $InputDir/tss_coords.bed.gz
+#! SNP coordinates file
+# Unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format:
+GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 1
+GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 2
+#{note
+# In Sarah's analysis based on an earlier version of data, there are 55,993 genes and 6,856,776 SNPs provided in gene/snp lists. In the v6 release there are 56,318 genes and 10,297,646 SNPs listed; although the sumstats of v6 only has ~39,000 genes.
+#}
+#! Input file lists
+#{bash
+rm -rf $InputDir/list_geno.txt
+DFolder="$DataPrefix"eQTLInputFiles_snpMatrices
+for i in `ls $DFolder`; do
+    j=`basename $i _Analysis.snps.txt.gz`
+    echo -e "$j\t$DFolder/$i" >> $InputDir/list_geno.txt
+done
+#
+rm -rf $InputDir/list_expr.txt 
+DFolder="$DataPrefix"eQTLInputFiles_geneLevelNormalizedExpressionMatrices
+for i in `ls $DFolder`; do
+    j=`basename $i _Analysis.expr.txt.gz`
+    echo -e "$j\t$DFolder/$i" >> $InputDir/list_expr.txt
+done
+#
+rm -rf $InputDir/list_covar.txt 
+DFolder="$DataPrefix"eQTLInputFiles_covariates
+for i in `ls $DFolder`; do
+    j=`basename $i _Analysis.covariates.txt.gz`
+    echo -e "$j\t$DFolder/$i" >> $InputDir/list_covar.txt
+done
+#}
+###
+# The configuration model
+###
+#! Run @@eqtlbma_bf@@ analysis in batches
+# @@analysis_admin eqtlbma_batch@@ generates batches on the fly and perform @@eqtlbma_bf@@ analysis in (embarrassing) parallel fashion on batches of genes. To use it,
+python analysis_admin.py eqtlbma_batch -h
+#{out eqtlbma_batch
+output:///python ../../src/analysis_admin.py eqtlbma_batch -h
+#}
+# Here is the command which breaks the data into 100 batches and perform analysis
+#{bash 100 batches analysis 
+nBatches=100
+Model=normal
+for i in `seq $nBatches`; do
+echo '#!/bin/bash
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+     python $SrcDir/analysis_admin.py eqtlbma_batch \
+     -g $InputDir/tss_coords.bed.gz \
+     -s $InputDir/snp_coords.bed.gz \
+     -n '"$nBatches"' -b '"$i"' -w 100000 \
+     --seed 10086 -e ~/software/bin/eqtlbma_bf \
+     -a $ConfDir/eqtlbma.'"$Model"'.txt' |\
+sbatch -J eqtlbma_"$Model"_"$nBatches"_"$i" -e $LogDir/eqtlbma_"$Model"_"$nBatches"_"$i".e%j \
+       -o $LogDir/eqtlbma_"$Model"_"$nBatches"_"$i".o%j --mem-per-cpu=10000 --time=36:00:00
+sleep 1
+done
+#}
+#! Update Tue Jun 16 08:14:48 CDT 2015
+# None of the jobs submitted was complete. Here is summary of completion from progress bar (percent of completion), also see @@2015-06-15-progressbar.txt@@:
+#{out
+Read 102 items
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+   0.21   50.34   63.78   57.94   75.14   99.54
+#}
+# Unfortunately @@eqtlbma@@ will not produce any results unless 100% complete. Looking into the error log there are 4 types of issues, also see @@2015-06-15-errors.txt@@:
+#{list
+# 80 out of 100 jobs exceeded memory limit, e.g.:
+## "slurmstepd-midway106: error: Job 14865254 exceeded memory limit (9250836 > 9216000), being killed"
+# 13 out of 100 jobs has early-on (at <1% progressbar) GSL error, e.g.:
+## "gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented. Default GSL error handler invoked."
+# 5 out of 100 jobs happened to not having any cis SNPs (or maybe have issues when running @@bedtools@@) so they are not analyzed.
+# 2 out of 100 jobs failed due to @@eqtlbma@@ error on duplicated SNPs (recall there is SNP duplication issue in GTEx input), e.g.:
+## "SNP 10_12000000_A_T_b37 is duplicated in file /project/mstephens/gtex/analysis/april2015/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices/Adipose_Subcutaneous_Analysis.snps.txt.gz"
+## "SNP 12_48000000_T_C_b37 is duplicated in file /project/mstephens/gtex/analysis/april2015/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices/Adipose_Subcutaneous_Analysis.snps.txt.gz"
+#}
+# So firstly I'll have to figure out if there is a way to reduce ram usage (without changing @@eqtlbma@@ code). I bet simply using more batches will help because it seems to me that the program holds all the result output in RAM and write them out all at once when all is complete. This is not good when the summary statistic data itself is large.
+# Then I'll have to reproduce and fix or bypass the gsl error.
+# Finally I will have to instead of fixing GTEx file I'll just exclude these two SNPs in question out of the picture, if I do not change the behavior of @@eqtlbma@@ (it seems to me that this should be a warning not an error). 
+#! Update Wed Jul 22 12:05:27 CDT 2015
+# A couple of issues with @@eqtlbma@@ were fixed based on suggestions from Tim. There should be no more RAM issue or gsl error. To bypass the 2 bad SNPs found so far, it is most straightforward to exclude both of them (because I do not know which one to keep!):
+mv Adipose_Subcutaneous_Analysis.snps.txt.gz Adipose_Subcutaneous_Analysis.snps.dup.txt.gz
+zgrep -vP "10_12000000_A_T_b37|12_48000000_T_C_b37" Adipose_Subcutaneous_Analysis.snps.dup.txt.gz | gzip --best > Adipose_Subcutaneous_Analysis.snps.txt.gz
+# Also from what I learned, it is impossible to analyse the data with 10,000 permutations. Even QBF procedure using @@--nperm 250@@ it will take months to complete. The plan now is to run without permutation for the entire analysis; then take my time to run @@--nperm 250@@ using half of midway nodes while running type model without permutations on the other half.
+#! Configuration model without permutation
+#{bash No permutation for configuration model 
+nBatches=100
+Model=normal.perm0
+for i in `seq $nBatches`; do
+echo '#!/bin/bash
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+     python $SrcDir/analysis_admin.py eqtlbma_batch \
+     -g $InputDir/tss_coords.bed.gz \
+     -s $InputDir/snp_coords.bed.gz \
+     -n '"$nBatches"' -b '"$i"' -w 100000 \
+     --seed 10086 -e ~/software/bin/eqtlbma_bf \
+     -a $ConfDir/eqtlbma.'"$Model"'.txt' |\
+sbatch -J eqtlbma_"$Model"_"$nBatches"_"$i" -e $LogDir/eqtlbma_"$Model"_"$nBatches"_"$i".e%j \
+       -o $LogDir/eqtlbma_"$Model"_"$nBatches"_"$i".o%j --mem-per-cpu=10000 --time=36:00:00
+sleep 1
+done
+#}

@@ -2,7 +2,7 @@
 #! GTEx summary statistics
 ###
 # Computations are done on the Midway cluster. @@GTEx.bashrc@@ sets up the proper shell environment for this computational workflow:
-source $HOME/GIT/type-model/conf/GTEx.bashrc
+source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
 ###
 # Formatting GTEx summary statistics v6
 ###
@@ -12,7 +12,7 @@ source $HOME/GIT/type-model/conf/GTEx.bashrc
 cd $AnlyDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs
 for i in `ls *.gz`; do
 echo '#!/bin/bash
-     source $HOME/GIT/type-model/conf/GTEx.bashrc
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
      python $SrcDir/analysis_admin.py ss_to_h5 \
      '"$i"' --action convert --output . --message "MatrixEQTL summary statistics of GTEx Release 2015.04.15"' |\
 sbatch -J ss2h5_$i -o $LogDir/ss2h5_$i.o%j -e $LogDir/ss2h5_$i.e%j
@@ -23,13 +23,13 @@ done
 #}
 #! Merge data across tissues
 #{bash HDF5 merge, in 50 batches
-source $HOME/GIT/type-model/conf/GTEx.bashrc
+source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
 zcat $InputDir/tss_coords.bed.gz | cut -f4 | split -l 1127 -d - $TmpDir/tss_coords.bed.split.
 k=0
 for i in `ls $TmpDir/tss_coords.bed.split.*`; do
 let k+=1
 echo '#!/bin/bash
-     source $HOME/GIT/type-model/conf/GTEx.bashrc
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
      python $SrcDir/analysis_admin.py ss_to_h5 \
      $DataDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs/*.h5 \
      --action merge --output $DataDir/MatrixEQTLSumStats/MatrixEQTLSumStats.'"$k"' \
@@ -44,13 +44,13 @@ done
 #{bash
 for i in `ls $DataDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs/*.cis.eqtl.gz`; do
 echo '#!/bin/bash
-     source $HOME/GIT/type-model/conf/GTEx.bashrc
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
      zcat '"$i"' | cut -f2 | sort -u | gzip --best > '"$i"'.uniqgenes.gz' |\
 sbatch -J count_gene -o $LogDir/count_gene.o%j -e $LogDir/count_gene.e%j
 done
 for i in `ls $DataDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs/*.h5`; do
 echo '#!/bin/bash
-     source $HOME/GIT/type-model/conf/GTEx.bashrc
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
      python $SrcDir/analysis_admin.py ss_to_h5 '"$i"' --action summary --output stdout | gzip --best > '"$i"'.h5genes.gz' |\
 sbatch -J count_gene_h5 -o $LogDir/count_gene_h5.o%j -e $LogDir/count_gene_h5.e%j
 done
@@ -71,13 +71,13 @@ python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --actio
 wget ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b144_GRCh37p13/VCF/All_20150605.vcf.gz
 # Build an annotation database matching SNP ID to rs ID as well as the cis-genes involved of up to {$\(\pm100,000\)$}bp.
 #{bash ID annotations, in 50 batches
-source $HOME/GIT/type-model/conf/GTEx.bashrc
+source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
 zcat $InputDir/snp_coords.bed.gz | split -l 205953 -d - $TmpDir/snp_coords.bed.split.
 k=0
 for i in `ls $TmpDir/snp_coords.bed.split.*`; do
 let k+=1
 echo '#!/bin/bash
-     source $HOME/GIT/type-model/conf/GTEx.bashrc
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
      cat '"$i"' | bash $SrcDir/FindrsIDcisGene.sh \
      $DBDir/dbSNP/All_20150605.vcf.gz $InputDir/tss_coords.bed.gz 100000 | gzip > \
      $DBDir/snp-gene-pairs.'"$k"'.gz' |\
@@ -224,94 +224,3 @@ for (ss in c('1_662622_G_A_b37', '1_676127_C_T_b37', '1_691541_AT_A_b37', '1_693
 5200 ENSG00000177757.1 1_693731_A_G_b37 -0.01080375 0.9255429
 #}
 # Thus @@eqtlbma_bf@@ agrees with @@MatrixEQTL@@ when input agree. Good! We'll have to update the analysis using new input data. 
-###
-# Analyzing GTEx using @@eqtlbma@@
-###
-#! Pre-processing
-#!! Extract input data from archive
-#{bash
-for i in GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatricesSupplement.tar.gz; do
-for j in `tar -tf $i`; do
-echo $i $j
-mkdir -p $(basename $i .tar.gz)
-echo -e '#!/bin/bash\ntar -zxvf '"$i"' '"$j"' -O | gzip --best > '"$(basename $i .tar.gz)"'/'"$j"'.gz\necho complete!' | sbatch -J Extract."$i"."$j" -o $LogDir/Extract."$i"."$j".o%j
-done
-done
-#}
-#!! Gene TSS coordinates file
-GetTSSCoords "$DataPrefix"eQTLInputFiles_genePositions.txt.gz $InputDir/tss_coords.bed.gz
-#!! SNP coordinates file
-# Unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format:
-GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 1
-GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 2
-#{note
-# In Sarah's analysis based on an earlier version of data, there are 55,993 genes and 6,856,776 SNPs provided in gene/snp lists. In the v6 release there are 56,318 genes and 10,297,646 SNPs listed; although the sumstats of v6 only has ~39,000 genes.
-#}
-#!! Input file lists
-#{bash
-rm -rf $InputDir/list_geno.txt
-DFolder="$DataPrefix"eQTLInputFiles_snpMatrices
-for i in `ls $DFolder`; do
-    j=`basename $i _Analysis.snps.txt.gz`
-    echo -e "$j\t$DFolder/$i" >> $InputDir/list_geno.txt
-done
-#
-rm -rf $InputDir/list_expr.txt 
-DFolder="$DataPrefix"eQTLInputFiles_geneLevelNormalizedExpressionMatrices
-for i in `ls $DFolder`; do
-    j=`basename $i _Analysis.expr.txt.gz`
-    echo -e "$j\t$DFolder/$i" >> $InputDir/list_expr.txt
-done
-#
-rm -rf $InputDir/list_covar.txt 
-DFolder="$DataPrefix"eQTLInputFiles_covariates
-for i in `ls $DFolder`; do
-    j=`basename $i _Analysis.covariates.txt.gz`
-    echo -e "$j\t$DFolder/$i" >> $InputDir/list_covar.txt
-done
-#}
-#! Run @@eqtlbma_bf@@ analysis in batches
-# @@analysis_admin eqtlbma_batch@@ generates batches on the fly and perform @@eqtlbma_bf@@ analysis in (embarrassing) parallel fashion on batches of genes. To use it,
-python analysis_admin.py eqtlbma_batch -h
-#{out eqtlbma_batch
-output:///python ../src/analysis_admin.py eqtlbma_batch -h
-#}
-# Here is the command which breaks the data into 100 batches and perform analysis
-#{bash 100 batches analysis 
-nBatches=100
-Model=normal
-for i in `seq $nBatches`; do
-echo '#!/bin/bash
-     source $HOME/GIT/type-model/conf/GTEx.bashrc
-     python $SrcDir/analysis_admin.py eqtlbma_batch \
-     -g $InputDir/tss_coords.bed.gz \
-     -s $InputDir/snp_coords.bed.gz \
-     -n '"$nBatches"' -b '"$i"' -w 100000 \
-     --seed 10086 -e ~/software/bin/eqtlbma_bf \
-     -a $ConfDir/eqtlbma.'"$Model"'.txt' |\
-sbatch -J eqtlbma_"$Model"_"$nBatches"_"$i" -e $LogDir/eqtlbma_"$Model"_"$nBatches"_"$i".e%j \
-       -o $LogDir/eqtlbma_"$Model"_"$nBatches"_"$i".o%j --mem-per-cpu=10000 --time=36:00:00
-sleep 1
-done
-#}
-#!!! Update Tue Jun 16 08:14:48 CDT 2015
-# None of the jobs submitted was complete. Here is summary of completion from progress bar (percent of completion), also see @@2015-06-15-progressbar.txt@@:
-#{out
-Read 102 items
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-   0.21   50.34   63.78   57.94   75.14   99.54
-#}
-# Unfortunately @@eqtlbma@@ will not produce any results unless 100% complete. Looking into the error log there are 4 types of issues, also see @@2015-06-15-errors.txt@@:
-#{list
-# 80 out of 100 jobs exceeded memory limit, e.g.:
-## "slurmstepd-midway106: error: Job 14865254 exceeded memory limit (9250836 > 9216000), being killed"
-# 13 out of 100 jobs has early-on (at <1% progressbar) GSL error, e.g.:
-## "gsl: svd.c:286: ERROR: svd of MxN matrix, M<N, is not implemented. Default GSL error handler invoked."
-# 5 out of 100 jobs happened to not having any cis SNPs (or maybe have issues when running @@bedtools@@) so they are not analyzed.
-# 2 out of 100 jobs failed due to @@eqtlbma@@ error on duplicated SNPs (recall there is SNP duplication issue in GTEx input), e.g.:
-## "SNP 10_12000000_A_T_b37 is duplicated in file /project/mstephens/gtex/analysis/april2015/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices/Adipose_Subcutaneous_Analysis.snps.txt.gz"
-## "SNP 12_48000000_T_C_b37 is duplicated in file /project/mstephens/gtex/analysis/april2015/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices/Adipose_Subcutaneous_Analysis.snps.txt.gz"
-#}
-# So firstly I'll have to figure out if there is a way to reduce ram usage (without changing @@eqtlbma@@ code). I bet simply using more batches will help because it seems to me that the program holds all the result output in RAM and write them out all at once when all is complete. This is not good when the summary statistic data itself is large.
-# Then I'll have to reproduce and fix or bypass the gsl error.
-# Finally I will have to instead of fixing GTEx file I'll just exclude these two SNPs in question out of the picture, if I do not change the behavior of @@eqtlbma@@ (it seems to me that this should be a warning not an error). 
