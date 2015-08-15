@@ -5,11 +5,13 @@ source ~/.bashrc
 export DataDir=/project/mstephens/gtex/analysis/april2015/eqtl_data
 export DataPrefix=$DataDir/GTEx_Analysis_2015-01-12_
 export InputDir=/project/mstephens/gtex/analysis/april2015/A.Input
-export TmpDir=$HOME/gtex/tmp
+export ArchiveDir=/project/mstephens/gtex/analysis/april2015/1.Archive
+export TmpDir=/scratch/midway/gaow
 export ConfDir=$HOME/GIT/gtex-eqtls/conf
 export SrcDir=$HOME/GIT/gtex-eqtls/src
-export LogDir=$HOME/gtex/log
+export LogDir=/project/mstephens/gtex/analysis/april2015/0.Log
 export DBDir=/project/mstephens/database
+export BFDir=/project/mstephens/gtex/analysis/april2015/C.eqtlbma_hm/RawBFs
 function GetTSSCoords() {
   zcat $1 | awk 'BEGIN{OFS="\t"}{print $2,$3,$3+1,$1,1000,"+"}' | tail -n+2 | sort -k1,1V -k2,2g | bgzip > $2
   tabix -p bed $2

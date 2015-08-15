@@ -73,7 +73,7 @@ sbatch -J eqtlbma_"$Model"_"$nBatches"_"$i" -e $LogDir/eqtlbma_"$Model"_"$nBatch
 sleep 1
 done
 #}
-#! Update Tue Jun 16 08:14:48 CDT 2015
+#! Failure, Tue Jun 16 08:14:48 CDT 2015
 # None of the jobs submitted was complete. Here is summary of completion from progress bar (percent of completion), also see @@2015-06-15-progressbar.txt@@:
 #{out
 Read 102 items
@@ -94,12 +94,19 @@ Read 102 items
 # So firstly I'll have to figure out if there is a way to reduce ram usage (without changing @@eqtlbma@@ code). I bet simply using more batches will help because it seems to me that the program holds all the result output in RAM and write them out all at once when all is complete. This is not good when the summary statistic data itself is large.
 # Then I'll have to reproduce and fix or bypass the gsl error.
 # Finally I will have to instead of fixing GTEx file I'll just exclude these two SNPs in question out of the picture, if I do not change the behavior of @@eqtlbma@@ (it seems to me that this should be a warning not an error). 
-#! Update Wed Jul 22 12:05:27 CDT 2015
-# A couple of issues with @@eqtlbma@@ were fixed based on suggestions from Tim. There should be no more RAM issue or gsl error. To bypass the 2 bad SNPs found so far, it is most straightforward to exclude both of them (because I do not know which one to keep!):
-mv Adipose_Subcutaneous_Analysis.snps.txt.gz Adipose_Subcutaneous_Analysis.snps.dup.txt.gz
-zgrep -vP "10_12000000_A_T_b37|12_48000000_T_C_b37" Adipose_Subcutaneous_Analysis.snps.dup.txt.gz | gzip --best > Adipose_Subcutaneous_Analysis.snps.txt.gz
-# Also from what I learned, it is impossible to analyse the data with 10,000 permutations. Even QBF procedure using @@--nperm 250@@ it will take months to complete. The plan now is to run without permutation for the entire analysis; then take my time to run @@--nperm 250@@ using half of midway nodes while running type model without permutations on the other half.
-#! Configuration model without permutation
+#! Lessons, Wed Jul 22 12:05:27 CDT 2015
+# A couple of issues with @@eqtlbma@@ were fixed based on suggestions from Tim. There should be no more RAM issue or gsl error. There are, however, some bad SNPs:
+cd $DataDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs
+cat *.error | cut -f3 -d":" | awk '{print $1}' | sort -u
+# To bypass the 5 bad SNPs found so far, it is most straightforward to exclude both of them (because I do not know which ones to keep!):
+cd $InputDir
+mv snp_coords.bed.gz snp_coords.bed.dup.gz
+mv snp_coords.bed.gz.tbi snp_coords.bed.dup.gz.tbi
+zgrep -vP "10_12000000_A_T_b37|12_48000000_T_C_b37|1_105000000_C_CATT_b37|14_81000000_TC_T_b37|2_72000000_G_A_b37" snp_coords.bed.dup.gz | bgzip > snp_coords.bed.gz
+tabix -p bed snp_coords.bed.gz
+# Also from what I learned, it is impossible to analyse the data with 10,000 permutations. Even QBF procedure using @@--nperm 250@@ it will take months to complete. The plan now is to run without permutation for the entire analysis just to harvest sumstats and raw BFs (and compare with MatrixEQTL); then while running type model with this result on half of midway nodes I also rerun the BF step with @@--nperm 250@@ on the other half of nodes.
+#! Success, configuration model without permutation
+# Job submission
 #{bash No permutation for configuration model 
 nBatches=100
 Model=normal.perm0
@@ -117,3 +124,51 @@ sbatch -J eqtlbma_"$Model"_"$nBatches"_"$i" -e $LogDir/eqtlbma_"$Model"_"$nBatch
 sleep 1
 done
 #}
+# Run completed under 24 hours, yielding to 45GB output file in various batches. For storage purpose it is best idea to first convert these files in different batches to HDF5 and merge them to one file & archive. Skipping this step for now as I want to move on to the HM and BMA steps. These output are archived as is, though:
+tar -cvf eqtlbma_bf.normal.perm0.tar *
+#! List of summary statistics
+# The following script produces sumstats lists for all results previously computed:
+#{bash make sumstats lists
+SumstatsDir=$ArchiveDir/eqtlbma_bf/July2015
+for i in `find $SumstatsDir -maxdepth 1 -name "eqtlbma_bf_normal_*" -type d`; do
+    for j in `ls $i/*_sumstats_*.txt.gz`; do
+        echo `echo $j | sed 's/\(.*sumstats_\)\(.*\).txt.gz/\2/g'` $j >> $i.ss.list    
+    done
+done
+#}
+# Future analysis can be based on summary statistics instead.
+###
+# The type model
+###
+# The raw BF data are fed to the type-model version of the hierarchical model EM algorithm to estimate hyperparameters. Data is 28GB compressed text which may exceed 256GB when all are loaded into RAM (which is what @@eqtlbma_hm@@ does!). Trying to run this on midway large RAM node and see if it crashes that node ...
+#{bash type model job submission
+cd $AnalysisDir
+mkdir -p C.eqtlbma_hm/RawBFs; cd C.eqtlbma_hm
+j=0; for i in `find $ArchiveDir/eqtlbma_bf/July2015 -name "*abf*"`; do let j=j+1; ln -s $i RawBFs/$j.gz; done
+echo '#!/bin/bash
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+     eqtlbma_hm --data "RawBFs/*.gz" --nsubgrp 44 --dim 5 \
+     --ngrid 10 --model types --out eqtlbma_hm_normal.txt.gz \
+     >& eqtlbma_hm.log' |\
+sbatch -J eqtlbma_hm -e $LogDir/eqtlbma_hm.e%j \
+       -o $LogDir/eqtlbma_hm.o%j --partition=bigmem --ntasks=1 \
+       --cpus-per-task=1 --mem-per-cpu=256000
+#}
+#{note
+# It hangs very long (or infinitely) in the queue for job with such big memory. I'm currently trying @@bigmem03@@ on PPS cluster.
+#}
+#!!! Tue July 31 11:28:21 CDT 2015
+# Even with large RAM the computation is not getting anywhere. Two solutions to this:
+#{list
+# Implement an on-line version of the current EM algorithm e.g., [Cappe & Mouline (2009)|@http://cs.stanford.edu/~pliang/papers/online-naacl2009.pdf@]
+# Use current EM but only compute from read subset of the data and see what it gives. 
+#}
+# These can be done in parallel. Naturally 2) can be done by just taking a few SNPs from each gene. Data is first reorganized to HDF5 format @@analysis_admin.py bf_to_h5 --action convert@@ and subsetting was done via @@analysis_admin.py bf_to_h5 --action slice@@
+#{bash bf_to_h5
+mkdir RawBF
+for i in `ls $BFDir/*l10abfs_raw.txt.gz`; do
+    echo python $SrcDir/analysis_admin.py bf_to_h5 $i --output . --action convert
+done 
+#}
+#!!! Fri Aug 14 13:55:18 CDT 2015
+# Even only taking a few SNPs per gene is prohibitively slow when confidence intervals (CI) are required. As a result a parallel implementation of CI computation was done to @@eqtlbma_hm@@. 

@@ -5,7 +5,7 @@
 Administrative program for data (GTEx) analysis
 """
 import os, sys, argparse, random, gzip, re, warnings, copy, math
-from utils import env, get_tb_grps, get_gs_pairs
+from utils import env, get_tb_grps, get_gs_pairs, TBData
 from utils import TBData as SSData
 import tables as tb
 import numpy as np
@@ -133,7 +133,53 @@ class SSDataParser:
         
     def dump(self):
         return self.data['output']
-    
+
+class BFDataParser:
+    def __init__(self, header = False):
+        self.data = {'data':[], 'rownames':[]}
+        self.header = header
+        self.previous_name = self.current_name = None
+        self.previous_snp_ = self.current_snp_ = None
+        self.count = -1
+        self.output = {} 
+
+    def parse(self, line):
+        if not line:
+            self.__reset()
+            self.current_name = None
+            return 1
+        line = line.strip().split()
+        self.count += 1
+        if self.header and self.count == 0:
+            self.ncols_ = len(line)
+            return 0
+        #
+        if self.previous_name is None:
+            self.previous_name = line[0]
+        if self.previous_snp_ is None:
+            self.previous_snp_ = line[1]
+        self.current_name = line[0]
+        self.current_snp_ = line[1]
+        if self.current_snp_ != self.previous_snp_ or self.current_name != self.previous_name:
+            self.__reset()
+        self.data['data'].append([line[i] for i in range(3, self.ncols_)])
+        self.data['rownames'].append(line[2])
+        return 0
+
+    def __reset(self):
+        self.data['data'] = np.array(self.data['data'], dtype = env.float)
+        self.data['rownames'] = np.array(self.data['rownames'])
+        self.data['colnames'] = np.array(['Grid_{}'.format(i-2) for i in range(3, self.ncols_)])
+        self.output[self.current_snp_] = copy.deepcopy(self.data)
+        self.previous_snp_ = self.current_snp_
+        self.data = {'data':[], 'rownames':[]}
+
+    def empty(self):
+        self.output = {}
+        
+    def dump(self):
+        return self.output
+
 def eqtlbma_batch(args):
     os.system('mkdir -p %s' % env.batch_file_dir)
     n_tss = int(check_output('zcat {} | wc -l'.format(args.gene_coords), shell = True))
@@ -304,6 +350,32 @@ def ss_to_h5(args):
                   sink(args.output)
         env.log("%s groups processed!\n" % (idx + 1 - failure_ct), flush = True)
 
+def bf_to_h5(args):
+    if args.action == 'convert':
+        for item in args.input:
+            bfp = BFDataParser(header = True)
+            group_counts = 0
+            bname = os.path.basename(item)
+            with gzip.open(item) as f:
+                while True:
+                    line = f.readline()
+                    quit = bfp.parse(line)
+                    if bfp.current_name != bfp.previous_name:
+                        group_counts += 1.0
+                        with warnings.catch_warnings():
+                            warnings.filterwarnings("ignore", category = tb.NaturalNameWarning)
+                            # warnings.filterwarnings("ignore", category = tb.PerformanceWarning)
+                            for k, value in bfp.dump().items():
+                                data = TBData(value, k, args.message, bfp.previous_name)
+                                data.sink(os.path.join(args.output, (bname.split(os.extsep, 1)[0] + ('_%i.h5' % (math.ceil(group_counts / args.maxsize)) if args.maxsize else '.h5'))))
+                        bfp.previous_name = bfp.current_name
+                        bfp.empty()
+                    if quit:
+                        env.log("[%s] Processed %s lines\n" % (bname, bfp.count), flush = True)
+                        break
+                    if bfp.count % env.batch['lines'] == 0:
+                        env.log("[%s] Processed %s lines" % (bname, bfp.count), flush = True)
+
 def sumstat_query(args):
     env.log("Loading data ...")
     try:
@@ -374,6 +446,19 @@ if __name__ == '__main__':
     p.add_argument('--gene-list', dest = 'gene_list', type = pathstr, help = 'Path to gene list file. If specified, genes for the merger will be read from this list rather than from input data (which will be much slower).')
     p.add_argument('--message', help = 'A message string of data description.')
     p.set_defaults(func=ss_to_h5)
+    #
+    p = subparsers.add_parser('bf_to_h5', help = 'Convert raw Bayes factor output to HDF5 format',
+                              formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    p.add_argument('input', nargs = '+', type = pathstr, help = 'Input data files.')
+    p.add_argument('--action', required = True,
+                   choices = ['convert'],
+                   help = '''Convert: deals with converting raw Bayes factor text files
+                   to HDF5 file''' )
+    p.add_argument('--maxsize', type = uint, help = 'Maximum number of groups per HDF5 file.')
+    p.add_argument('--output', required = True, type = pathstr, help = 'Output data dir / base name.')
+    p.add_argument('--message', help = 'A message string of data description.')
+    p.set_defaults(func=bf_to_h5)
+    #
     p = subparsers.add_parser('sumstat_query',
                               help = 'Query information from sumstats file in HDF5 format',
                               formatter_class=argparse.ArgumentDefaultsHelpFormatter)

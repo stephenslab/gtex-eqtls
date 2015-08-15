@@ -11,7 +11,8 @@ tb.parameters.MAX_GROUP_WIDTH = 51200
 # tb.parameters.CHUNK_CACHE_NELMTS = 521
 
 class TBData(dict):
-    def __init__(self, data, name, msg = None):
+    def __init__(self, data, name, msg = None, root = '/'):
+        self.__root = root.strip('/')
         self.__group = name
         self.__msg = msg
         try:
@@ -30,16 +31,22 @@ class TBData(dict):
 
     def sink(self, filename):
         with tb.open_file(filename, 'a') as f:
+            if self.__root:
+                try:
+                    f.create_group("/", self.__root)
+                except:
+                    pass
             try:
                 # there is existing data -- have to merge with current data
                 # have to do this because the input file lines are not grouped by gene names!!
                 # use try ... except to hopefully faster than if ... else
                 # e.g., if not f.__contains__('/{}'.format(self.__group)) ... else ...
-                for element in f.list_nodes('/{}'.format(self.__group)):
+                for element in f.list_nodes('/{}/{}'.format(self.__root, self.__group)):
                     if element.name != 'colnames':
                         self[element.name] = np.concatenate((element[:], self[element.name]))
             except tb.exceptions.NoSuchNodeError:
-                f.create_group("/", self.__group, self.__msg if self.__msg else self.__group)
+                f.create_group("/" + self.__root, self.__group,
+                               self.__msg if self.__msg else self.__group)
             for key in self:
                 self.__store_array(key, f)
             f.flush()
@@ -53,7 +60,7 @@ class TBData(dict):
 
     def __load(self, fstream):
         try:
-            for element in fstream.list_nodes('/{}'.format(self.__group)):
+            for element in fstream.list_nodes('/{}/{}'.format(self.__root, self.__group)):
                 self[element.name] = element[:]
             fstream.close()
         except:
@@ -68,7 +75,10 @@ class TBData(dict):
             pass
 
     def __store_array(self, name, fstream):
-        element = getattr(fstream.root, self.__group)
+        if self.__root:
+            element = getattr(getattr(fstream.root, self.__root), self.__group)
+        else:
+            element = getattr(fstream.root, self.__group)
         arr = self[name]
         if type(arr) is list:
             arr = np.array(arr)
