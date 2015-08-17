@@ -375,6 +375,32 @@ def bf_to_h5(args):
                         break
                     if bfp.count % env.batch['lines'] == 0:
                         env.log("[%s] Processed %s lines" % (bname, bfp.count), flush = True)
+    if args.action == 'cat':
+        for item in sorted(args.input):
+            for name in get_tb_grps([item]):
+                os.system('h5copy -i {0} -o {1} -s "/{2}" -d "/{2}"'.format(item, args.output, name))
+    if args.action == 'null':
+        # random.seed(911)
+        names = {}
+        for item in sorted(args.input):
+            env.log('Collecting gene-snp names from file {} ...'.format(item))
+            for gene_name in get_tb_grps([item], verbose = False):
+                names[gene_name] = get_tb_grps([item], gene_name, verbose = False)
+            env.log('Sampling from file {} ...'.format(item))
+            with tb.open_file(item) as f:
+                for gene_name in names:
+                    nb_pairs = int(len(names[gene_name]) * env.nb_null_pairs) if env.nb_null_pairs < 1 else env.nb_null_pairs
+                    for snp_name in random.sample(names[gene_name], nb_pairs):
+                        for element in f.list_nodes('/{}/{}'.format(gene_name, snp_name)):
+                            if element.name == 'data':
+                                data = element[:]
+                            if element.name == 'rownames':
+                                rownames = element[:]
+                        data = np.column_stack((np.array([gene_name for i in range(len(rownames))]),
+                                                np.array([snp_name for i in range(len(rownames))]),
+                                                rownames, data))
+                        with open(args.output, 'a') as fout:
+                            np.savetxt(fout, data, fmt="%s", delimiter = '\t')
 
 def sumstat_query(args):
     env.log("Loading data ...")
@@ -451,9 +477,10 @@ if __name__ == '__main__':
                               formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     p.add_argument('input', nargs = '+', type = pathstr, help = 'Input data files.')
     p.add_argument('--action', required = True,
-                   choices = ['convert'],
-                   help = '''Convert: deals with converting raw Bayes factor text files
-                   to HDF5 file''' )
+                   choices = ['convert', 'cat', 'null'],
+                   help = '''convert: deals with converting raw Bayes factor text files
+                   to HDF5 file; cat: concatenate multiple HDF5 files;
+                   null: output %s null gene-snp pairs''' % (env.nb_null_pairs if env.nb_null_pairs >= 1 else '{}%%'.format(env.nb_null_pairs * 100)))
     p.add_argument('--maxsize', type = uint, help = 'Maximum number of groups per HDF5 file.')
     p.add_argument('--output', required = True, type = pathstr, help = 'Output data dir / base name.')
     p.add_argument('--message', help = 'A message string of data description.')

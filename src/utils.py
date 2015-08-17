@@ -161,7 +161,7 @@ class Environment:
         self.common_suffix = '_Analysis.h5'
         self.duplicate_tag = '_duplicated_'
         self.batch_file_dir = 'batch_files'
-        self.nb_null_pairs = 3
+        self.nb_null_pairs = 0.05
         
     def error(self, msg = None, show_help = False, exit = False, to_file = None):
         if to_file:
@@ -207,15 +207,19 @@ class Environment:
 
 env = Environment()
 
-def get_tb_grps(filenames):
-    env.log('Collecting group names from input files ...')
+def get_tb_grps(filenames, group_name = None, verbose = True):
+    if verbose:
+        env.log('Collecting group names from input files ...')
     names = set()
     for filename in filenames:
-        env.log(filename, flush=True)
+        if verbose:
+            env.log(filename, flush=True)
         with tb.open_file(filename) as f:
-            names.update([node._v_name for node in f.root])
-    env.log('%s unique groups identified from %s files\n' % (len(names), len(filenames)), flush = True)
+            names.update([node._v_name for node in (f.root if group_name is None else getattr(f.root, '{}'.format(group_name)))])
+        if verbose:
+            env.log('%s unique groups identified from %s files\n' % (len(names), len(filenames)), flush = True)
     return sorted(names)
+
 
 def get_gs_pairs(data, name, option = 0):
     '''choose gene-snp pairs from data, controlled by option = N

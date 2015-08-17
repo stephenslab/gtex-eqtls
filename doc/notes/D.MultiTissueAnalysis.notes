@@ -163,12 +163,31 @@ sbatch -J eqtlbma_hm -e $LogDir/eqtlbma_hm.e%j \
 # Implement an on-line version of the current EM algorithm e.g., [Cappe & Mouline (2009)|@http://cs.stanford.edu/~pliang/papers/online-naacl2009.pdf@]
 # Use current EM but only compute from read subset of the data and see what it gives. 
 #}
-# These can be done in parallel. Naturally 2) can be done by just taking a few SNPs from each gene. Data is first reorganized to HDF5 format @@analysis_admin.py bf_to_h5 --action convert@@ and subsetting was done via @@analysis_admin.py bf_to_h5 --action slice@@
+# These can be done in parallel. Naturally 2) can be done by just taking a few SNPs from each gene. Data is first reorganized to HDF5 format @@analysis_admin.py bf_to_h5 --action convert@@ and subsetting was done via @@analysis_admin.py bf_to_h5 --action null@@
 #{bash bf_to_h5
-mkdir RawBF
+mkdir RawBF; cd RawBF
 for i in `ls $BFDir/*l10abfs_raw.txt.gz`; do
     echo python $SrcDir/analysis_admin.py bf_to_h5 $i --output . --action convert
 done 
+#python $SrcDir/analysis_admin.py bf_to_h5 *.h5 --output eqtlbma_bf_normal_l10abfs_raw --action cat
+#}
+#{bash bf_subset
+# Takes 45 sec to process per file single process. Multiple commands on same HD will not work due to I/O issues.
+for i in `ls *.h5`; do
+    j=$(basename "$i" .h5).subset.txt
+    python $SrcDir/analysis_admin.py bf_to_h5 $i --output $j --action null
+done
+cat header.txt *.subset.txt | gzip --best > $BFDir/eqtlbma_bf_normal_l10abfs_raw.subset.gz
+rm *.subset.txt
 #}
 #!!! Fri Aug 14 13:55:18 CDT 2015
-# Even only taking a few SNPs per gene is prohibitively slow when confidence intervals (CI) are required. As a result a parallel implementation of CI computation was done to @@eqtlbma_hm@@. 
+# Even only taking a few SNPs per gene is prohibitively slow when confidence intervals (CI) are required. As a result a parallel implementation of CI computation was done to @@eqtlbma_hm@@. Now trying to compute the problem using 16 cores, without using SQUAREM: 
+#{bash
+echo '#!/bin/bash
+     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+     eqtlbma_hm --data $BFDir/eqtlbma_bf_normal_l10abfs_raw.subset.gz --nsubgrp 44 --dim 5 \
+     --ngrid 10 --model types --out eqtlbma_hm_normal.txt.gz --getbf --getci --thread 16 \
+     >& eqtlbma_hm.log' |\
+sbatch -J eqtlbma_hm -e $LogDir/eqtlbma_hm.e%j \
+       -o $LogDir/eqtlbma_hm.o%j --ntasks=1 --cpus-per-task=16
+}
