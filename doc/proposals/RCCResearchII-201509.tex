@@ -14,7 +14,6 @@
 \usepackage{graphicx}
 
 \usepackage{multirow}
-
 % Sweave(-like)
 \usepackage{fancyvrb}
 \DefineVerbatimEnvironment{Sinput}{Verbatim}{fontshape=sl}
@@ -26,9 +25,8 @@
 \DefineVerbatimEnvironment{CodeOutput}{Verbatim}{}
 \newenvironment{CodeChunk}{}{}
 
-% cite package, to clean up citations in the main text. Do not remove.
-\usepackage{cite}
-
+\usepackage[maxnames=5,backend=bibtex]{biblatex}
+\bibliography{MultiTissue.bib}
 \usepackage{color}
 
 % Use doublespacing - comment out for single spacing
@@ -94,13 +92,12 @@
 impact}\label{research-goals-and-the-potential-impact}
 \addcontentsline{toc}{section}{Research goals and potential impact}
 Variation in gene expression plays a crucial role in the etiology of complex human disease.
-Understanding the genetic factors that underpin the quantitative levels of gene expression (known as expression quantitative trait loci, or eQTL) provides intermediate insight into biological basis for disease associations identified in genetic mapping studies such as GWAS CITATION. 
+Understanding the genetic factors that underpin the quantitative levels of gene expression (known as expression quantitative trait loci, or eQTL) provides intermediate insight into biological basis for disease associations identified in genetic mapping studies such as GWAS \cite{Albert2015}. 
 To date, most efforts on eQTL discovery have focused on their contribution to gene expression within a single type of cell or tissue. 
-Although the importance of shared eQTL between human cells and tissues has been well acknowledged CITATION, multi-cell and multi-tissue analyses remain challenging due to the lack of adequate data source and analytic tools that are both statistically powerful and computationally efficient.
+Although the importance of shared eQTL between human cells and tissues has been well acknowledged \cite{Dimas2009}, multi-cell and multi-tissue analyses remain challenging due to the lack of adequate data source and analytic tools that are both statistically powerful and computationally efficient.
 
-Recently, the Genotype Tissue Expression (GTEx) Project CITATION, a renowned global research effort aiming at understanding the role of regulatory variants in multiple tissues, have completed its Pilot Phase CITATION.
-Our group, being part of the Statistical Genetics Committee in GTEx, had previously developed a statistical framework that improved power to detect
-eQTL sharing among multiple tissues CITATION. 
+Recently, the Genotype Tissue Expression (GTEx) Project, a renowned global research effort aiming at understanding the role of regulatory variants in multiple tissues, have completed its Pilot Phase \cite{Ardlie2015}.
+Our group, being part of the Statistical Genetics Committee in GTEx, had previously developed a statistical framework that improved power to detect eQTL sharing among multiple tissues \cite{Flutre2013}. 
 However, a critical drawback of the framework is that its computational time is proportional to $2^R$ ($R$ is the number of tissues); consequently it becomes intractable to even consider over 10 tissues jointly. 
 On the other hand, however, there is an immediate urge for being capable of performing analyses involving large number of tissues, as we are faced with the challenge of analyzing the current phase of GTEx which has data on 44 tissues.
 
@@ -115,7 +112,7 @@ allocations}\label{results-from-previous-allocations}
 
 Our previous statistical framework for joint tissue analysis had been applied to the GTEx pilot phase involving 9 tissues.
 Computations were performed on the Midway cluster.
-The result have contributed to the \textit{Science} paper published in May, 2015 CITATION. 
+The result have contributed to the \textit{Science} paper published in May, 2015 \cite{Ardlie2015}. 
 
 For large tissue problem posed by the current GTEx data we are developing two approaches to model, respectively, the qualitative and quantitative heterogeneity among tissues using lower dimensional spaces of probability measures, thus avoiding a growth in computation from $2^9$ to $2^{44}$. 
 We are currently finishing up the theoretical portion and a proof-of-concept computer implementation of the new methods.
@@ -154,7 +151,5 @@ Thus we request 300,000 SUs for data analysis under this model.
 Substantial amount of output data for each gene and regulatory variant pair across genome will be generated in the joint GTEx data analysis. 
 Given that intermediate results are constantly removed as the analyses move on, we ultimately expect about 300GB for storing the genome-wide summary statistics.
 
-\section*{References}\label{references}
-\addcontentsline{toc}{section}{References}
-
+\printbibliography 
 \end{document}
