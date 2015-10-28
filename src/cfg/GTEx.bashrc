@@ -2,15 +2,15 @@ module load libtool/2.4
 module load zlib/1.2
 module load gsl/1.16 
 source ~/.bashrc
-export DataDir=/project/mstephens/gtex/analysis/april2015/eqtl_data
+export DataDir=/project/mstephens/data/external_private_supp/gtex-v6/eqtl_data
 export DataPrefix=$DataDir/GTEx_Analysis_2015-01-12_
 export InputDir=/project/mstephens/gtex/analysis/april2015/A.Input
 export ArchiveDir=/project/mstephens/gtex/analysis/april2015/1.Archive
 export TmpDir=/scratch/midway/gaow
-export ConfDir=$HOME/GIT/gtex-eqtls/conf
 export SrcDir=$HOME/GIT/gtex-eqtls/src
+export ConfDir=$SrcDir/cfg
 export LogDir=/project/mstephens/gtex/analysis/april2015/0.Log
-export DBDir=/project/mstephens/database
+export DBDir=/project/mstephens/data/internal_supp/gtex-v6-snp-gene-pairs
 export BFDir=/project/mstephens/gtex/analysis/april2015/C.eqtlbma_hm/RawBFs
 function GetTSSCoords() {
   zcat $1 | awk 'BEGIN{OFS="\t"}{print $2,$3,$3+1,$1,1000,"+"}' | tail -n+2 | sort -k1,1V -k2,2g | bgzip > $2

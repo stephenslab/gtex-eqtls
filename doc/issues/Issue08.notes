@@ -1,0 +1,5 @@
+###
+# Convergence problem with the EM algorithm for type model
+###
+#! Problem
+# Fitting type model with 5% of data takes long time (>300 hours on 16 threads) yet eventually ended up not converging. 

@@ -2,7 +2,7 @@
 #! GTEx summary statistics
 ###
 # Computations are done on the Midway cluster. @@GTEx.bashrc@@ sets up the proper shell environment for this computational workflow:
-source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
 ###
 # Formatting GTEx summary statistics v6
 ###
@@ -12,8 +12,8 @@ source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
 cd $AnlyDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs
 for i in `ls *.gz`; do
 echo '#!/bin/bash
-     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
-     python $SrcDir/analysis_admin.py ss_to_h5 \
+     source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
+     python $SrcDir/python/analysis_admin.py ss_to_h5 \
      '"$i"' --action convert --output . --message "MatrixEQTL summary statistics of GTEx Release 2015.04.15"' |\
 sbatch -J ss2h5_$i -o $LogDir/ss2h5_$i.o%j -e $LogDir/ss2h5_$i.e%j
 done
@@ -23,14 +23,14 @@ done
 #}
 #! Merge data across tissues
 #{bash HDF5 merge, in 50 batches
-source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
 zcat $InputDir/tss_coords.bed.gz | cut -f4 | split -l 1127 -d - $TmpDir/tss_coords.bed.split.
 k=0
 for i in `ls $TmpDir/tss_coords.bed.split.*`; do
 let k+=1
 echo '#!/bin/bash
-     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
-     python $SrcDir/analysis_admin.py ss_to_h5 \
+     source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
+     python $SrcDir/python/analysis_admin.py ss_to_h5 \
      $DataDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs/*.h5 \
      --action merge --output $DataDir/MatrixEQTLSumStats/MatrixEQTLSumStats.'"$k"' \
      --message "MatrixEQTL summary statistics of GTEx Release 2015.04.15" \
@@ -44,26 +44,26 @@ done
 #{bash
 for i in `ls $DataDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs/*.cis.eqtl.gz`; do
 echo '#!/bin/bash
-     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+     source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
      zcat '"$i"' | cut -f2 | sort -u | gzip --best > '"$i"'.uniqgenes.gz' |\
 sbatch -J count_gene -o $LogDir/count_gene.o%j -e $LogDir/count_gene.e%j
 done
 for i in `ls $DataDir/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs/*.h5`; do
 echo '#!/bin/bash
-     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
-     python $SrcDir/analysis_admin.py ss_to_h5 '"$i"' --action summary --output stdout | gzip --best > '"$i"'.h5genes.gz' |\
+     source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
+     python $SrcDir/python/analysis_admin.py ss_to_h5 '"$i"' --action summary --output stdout | gzip --best > '"$i"'.h5genes.gz' |\
 sbatch -J count_gene_h5 -o $LogDir/count_gene_h5.o%j -e $LogDir/count_gene_h5.e%j
 done
 #}
 # Counting (@@zcat *.xx.gz | sort -u | wc -l@@) and comparing results from both sources, I found there are indeed only 38933 genes in the output. So we are good.
 #}
 # Now merging the batches into one large HDF5 file
-python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats/*.h5 --action cat --output $DataDir/MatrixEQTLSumStats.h5
+python $SrcDir/python/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats/*.h5 --action cat --output $DataDir/MatrixEQTLSumStats.h5
 #! Select the ``best'' gene-snp pair
-python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --action max --output $DataDir/MatrixEQTLSumStats.Portable.h5
+python $SrcDir/python/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --action max --output $DataDir/MatrixEQTLSumStats.Portable.h5
 #! Select some ``null'' gene-snp pairs
 # For each gene I select up to 3 null gene-snp pairs, for use of calibrating Sarah's model
-python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --action null --output $DataDir/MatrixEQTLSumStats.Portable.h5 --gene-list <(zcat $DBDir/snp-gene-pairs/GTExV6Genes.gz)
+python $SrcDir/python/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --action null --output $DataDir/MatrixEQTLSumStats.Portable.h5 --gene-list <(zcat $DBDir/snp-gene-pairs/GTExV6Genes.gz)
 ###
 # Creating R interface for the new format
 ###
@@ -71,14 +71,14 @@ python $SrcDir/analysis_admin.py ss_to_h5 $DataDir/MatrixEQTLSumStats.h5 --actio
 wget ftp://ftp.ncbi.nih.gov/snp/organisms/human_9606_b144_GRCh37p13/VCF/All_20150605.vcf.gz
 # Build an annotation database matching SNP ID to rs ID as well as the cis-genes involved of up to {$\(\pm100,000\)$}bp.
 #{bash ID annotations, in 50 batches
-source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
+source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
 zcat $InputDir/snp_coords.bed.gz | split -l 205953 -d - $TmpDir/snp_coords.bed.split.
 k=0
 for i in `ls $TmpDir/snp_coords.bed.split.*`; do
 let k+=1
 echo '#!/bin/bash
-     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
-     cat '"$i"' | bash $SrcDir/FindrsIDcisGene.sh \
+     source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
+     cat '"$i"' | bash $SrcDir/shell/FindrsIDcisGene.sh \
      $DBDir/dbSNP/All_20150605.vcf.gz $InputDir/tss_coords.bed.gz 100000 | gzip > \
      $DBDir/snp-gene-pairs.'"$k"'.gz' |\
 sbatch -J snpid_"$k" -o $LogDir/snpid_"$k".o%j -e $LogDir/snpid_"$k".e%j

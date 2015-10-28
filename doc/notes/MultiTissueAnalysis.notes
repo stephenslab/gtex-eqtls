@@ -53,7 +53,7 @@ done
 # @@analysis_admin eqtlbma_batch@@ generates batches on the fly and perform @@eqtlbma_bf@@ analysis in (embarrassing) parallel fashion on batches of genes. To use it,
 python analysis_admin.py eqtlbma_batch -h
 #{out eqtlbma_batch
-output:///python ../../src/analysis_admin.py eqtlbma_batch -h
+output:///python ../../src/python/analysis_admin.py eqtlbma_batch -h
 #}
 # Here is the command which breaks the data into 100 batches and perform analysis
 #{bash 100 batches analysis 
@@ -61,8 +61,8 @@ nBatches=100
 Model=normal
 for i in `seq $nBatches`; do
 echo '#!/bin/bash
-     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
-     python $SrcDir/analysis_admin.py eqtlbma_batch \
+     source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
+     python $SrcDir/python/analysis_admin.py eqtlbma_batch \
      -g $InputDir/tss_coords.bed.gz \
      -s $InputDir/snp_coords.bed.gz \
      -n '"$nBatches"' -b '"$i"' -w 100000 \
@@ -81,8 +81,8 @@ nBatches=100
 Model=normal.perm0
 for i in `seq $nBatches`; do
 echo '#!/bin/bash
-     source $HOME/GIT/gtex-eqtls/conf/GTEx.bashrc
-     python $SrcDir/analysis_admin.py eqtlbma_batch \
+     source $HOME/GIT/gtex-eqtls/src/cfg/GTEx.bashrc
+     python $SrcDir/python/analysis_admin.py eqtlbma_batch \
      -g $InputDir/tss_coords.bed.gz \
      -s $InputDir/snp_coords.bed.gz \
      -n '"$nBatches"' -b '"$i"' -w 100000 \
