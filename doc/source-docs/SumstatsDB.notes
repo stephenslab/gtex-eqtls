@@ -1,4 +1,7 @@
 ###
+#! GTEx summary statistics database
+###
+###
 # Databases
 ###
 #! Multi-tissue summary stats
@@ -29,11 +32,11 @@
 3_52774835_AT_A_b37     rs35270761,rs397785457  ENSG00000016864.12,ENSG00000055955.11,ENSG00000055957.6 ...
 ...
 #}
-# The 3 columns are 
+# The 3 columns are
 #{list
 # SNP name in GTEx convention
-# rsID 
-# cis-genes, "i.e.", genes whose TSS is within 100,000bp up/down-stream of the SNP. 
+# rsID
+# cis-genes, "i.e.", genes whose TSS is within 100,000bp up/down-stream of the SNP.
 #}
 # This database will be used prior to searching the summary statistics.
 #{note
@@ -47,7 +50,7 @@
 ###
 # I provide a simple R script @@SumstatQuery.R@@ to make queries on this dataset. It has:
 #{list
-# A function that lists for given rsID the GTEx SNP ID and all its cis-genes. 
+# A function that lists for given rsID the GTEx SNP ID and all its cis-genes.
 # A function that loads sumstats data given gene name and GTEx SNP ID.
 #}
 # To use the script, @@RSQLite@@ and @@rhdf5@@ should be installed, "e.g.",
@@ -61,9 +64,9 @@ biocLite("rhdf5")
 #{r
 file:///../../src/R/Demo_SumstatQuery.R
 #}
-# For @@MatrixEQTLSumStats.h5@@, for given rsID you first search the GTEx SNP ID via @@ShowSNP@@, then load the cisGene of interest via @@GetSS@@ and extract information using the GTEx SNP ID as the row name key. 
+# For @@MatrixEQTLSumStats.h5@@, for given rsID you first search the GTEx SNP ID via @@ShowSNP@@, then load the cisGene of interest via @@GetSS@@ and extract information using the GTEx SNP ID as the row name key.
 #{note
 # If R complains the given row name does not exist, try to flip the DNA strand in the GTEx SNP ID and search again. For example, instead of searching for @@1_43124701_A_G_b37@@ you search for @@1_43124701_T_C_b37@@.
 #}
-# The best gene-snp data can be loaded to memory, via {$\texttt{GetSS("max", "MatrixEQTLSumStats.h5")}$}, or the portable version {$\texttt{GetSS("max", "MatrixEQTLSumStats.Portable.h5")}$}
-# Same for the ``null'' gene-snp data, via {$\texttt{GetSS("null", "MatrixEQTLSumStats.h5")}$}, or the portable version {$\texttt{GetSS("null", "MatrixEQTLSumStats.Portable.h5")}$}
+# The best gene-snp data can be loaded to memory, via @@GetSS('max', 'MatrixEQTLSumStats.h5')@@, or the portable version @@GetSS('max', 'MatrixEQTLSumStats.Portable.h5')@@
+# Same for the ``null'' gene-snp data, via @@GetSS('null', 'MatrixEQTLSumStats.h5')@@, or the portable version @@GetSS('null', 'MatrixEQTLSumStats.Portable.h5')@@

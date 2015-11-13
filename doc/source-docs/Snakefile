@@ -1,8 +1,13 @@
 configfile: "config.yaml"
+
 rule all:
   input:
     "../../src/snakemake/README.md",
-    "../notes/README.md"
+    "../notes/README.md",
+    "../notes/README.pdf",
+    ("../notes/{item}.md".format(item = item[:-6]) for item in config["doc-notes"].split()[1:]),
+    "../issues/README.md",
+    ("../issues/{item}.md".format(item = item[:-6]) for item in config["doc-issues"].split()[1:])
 
 rule src_snakemake:
   input:
@@ -14,8 +19,32 @@ rule src_snakemake:
 
 rule doc_notes:
   input:
-    config["doc-notes"].split()
+    md = config["doc-notes"].split()[0],
+    pdf = config["doc-notes"].split()[1:]
+  params:
+    prefix = "../notes/README"
   output:
-    "../notes/README.md"
+    "../notes/README.md",
+    "../notes/README.pdf"
   shell:
-    "{config[md]} {input} -o {output}"
+    "{config[md]} {input.md} -o {params.prefix};"
+    "{config[pdf]} {input.pdf} -o {params.prefix}"
+
+rule doc_notes_separate:
+  input:
+    config["doc-notes"].split()[1:]
+  output:
+    ("../notes/{item}.md".format(item = item[:-6]) for item in config["doc-notes"].split()[1:])
+  run:
+    for x, y in zip(input, output):
+        shell("{config[md]} {x} -o {y}")
+
+rule doc_issues:
+  input:
+    config["doc-issues"].split()
+  output:
+    "../issues/README.md",
+    ("../issues/{item}.md".format(item = item[:-6]) for item in config["doc-issues"].split()[1:])
+  run:
+    for x, y in zip(input, output):
+        shell("{config[md]} {x} -o {y}")

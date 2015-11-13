@@ -1,5 +1,6 @@
 md: tigernotes markdown
-pdf: tigernotes doc
+pdf: tigernotes doc  --footnote --font_size 12 -a "Gao Wang" -t "GTEx multi-tissue eQTL analysis"
 wiki: tigernotes dokuwiki --inline_toc --permission "@user"
 doc-sm: snakemake.notes
 doc-notes: About.notes Information.notes SummaryStats.notes SumstatsDB.notes QuasiPoissonModel.notes MultiTissueAnalysis.notes
+doc-issues: Issues.notes Issue07.notes Issue08.notes

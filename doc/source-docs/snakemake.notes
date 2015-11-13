@@ -11,3 +11,10 @@ source activate mt-eqtl # to deactivate use: source deactivate
 conda install -c r r=3.2.2
 Rscript R-packages.R
 #}
+#! Dependencies
+#{text
+file:///../../src/snakemake/python-packages.txt
+#}
+#{r
+file:///../../src/snakemake/R-packages.R
+#}
