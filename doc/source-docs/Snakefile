@@ -1,0 +1,21 @@
+configfile: "config.yaml"
+rule all:
+  input:
+    "../../src/snakemake/README.md",
+    "../notes/README.md"
+
+rule src_snakemake:
+  input:
+    config["doc-sm"]
+  output:
+    "../../src/snakemake/README.md"
+  shell:
+    "{config[md]} {input} -o {output}"
+
+rule doc_notes:
+  input:
+    config["doc-notes"].split()
+  output:
+    "../notes/README.md"
+  shell:
+    "{config[md]} {input} -o {output}"

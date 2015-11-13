@@ -1,0 +1,5 @@
+md: tigernotes markdown
+pdf: tigernotes doc
+wiki: tigernotes dokuwiki --inline_toc --permission "@user"
+doc-sm: snakemake.notes
+doc-notes: About.notes Information.notes SummaryStats.notes SumstatsDB.notes QuasiPoissonModel.notes MultiTissueAnalysis.notes

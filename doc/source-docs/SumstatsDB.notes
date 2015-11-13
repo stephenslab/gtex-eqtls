@@ -59,7 +59,7 @@ biocLite("rhdf5")
 #! Example query
 # The demo script below shows an example to extract information for gene ENSG00000171960.6 and SNP rs6600419, and examples to extract the best/null gene-snp pairs.
 #{r
-file:///../../src/Demo_SumstatQuery.R
+file:///../../src/R/Demo_SumstatQuery.R
 #}
 # For @@MatrixEQTLSumStats.h5@@, for given rsID you first search the GTEx SNP ID via @@ShowSNP@@, then load the cisGene of interest via @@GetSS@@ and extract information using the GTEx SNP ID as the row name key. 
 #{note
