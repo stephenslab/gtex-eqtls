@@ -2,12 +2,15 @@ configfile: "config.yaml"
 
 rule all:
   input:
+    "../README.md",
     "../../src/snakemake/README.md",
     "../notes/README.md",
     "../notes/README.pdf",
     ("../notes/{item}.md".format(item = item[:-6]) for item in config["doc-notes"].split()[1:]),
     "../issues/README.md",
-    ("../issues/{item}.md".format(item = item[:-6]) for item in config["doc-issues"].split()[1:])
+    ("../issues/{item}.md".format(item = item[:-6]) for item in config["doc-issues"].split()[1:]),
+    "../../data/README.md",
+    "../../src/README.md"
 
 rule src_snakemake:
   input:
@@ -48,3 +51,27 @@ rule doc_issues:
   run:
     for x, y in zip(input, output):
         shell("{config[md]} {x} -o {y}")
+
+rule doc_readme:
+  input:
+    config["doc-toc"]
+  output:
+    "../README.md"
+  shell:
+    "{config[md]} {input} -o {output}"
+
+rule data:
+  input:
+    config["doc-data"]
+  output:
+    "../../data/README.md"
+  shell:
+    "{config[md]} {input} -o {output}"
+
+rule src:
+  input:
+    config["doc-src"]
+  output:
+    "../../src/README.md"
+  shell:
+    "{config[md]} {input} -o {output}"
