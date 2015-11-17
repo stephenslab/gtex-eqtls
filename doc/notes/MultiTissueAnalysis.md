@@ -1,55 +1,24 @@
 # Analyzing GTEx Using `eqtlbma`
 ## Pre-processing
 ### Extract input data from archive
-```bash
-  for i in GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatricesSupplement.tar.gz; do
-  for j in `tar -tf $i`; do
-  echo $i $j
-  mkdir -p $(basename $i .tar.gz)
-  echo -e '#!/bin/bash\ntar -zxvf '"$i"' '"$j"' -O | gzip --best > '"$(basename $i .tar.gz)"'/'"$j"'.gz\necho complete!' | sbatch -J Extract."$i"."$j" -o $LogDir/Extract."$i"."$j".o%j
-  done
-  done
+```
+snakemake extract_data
 ```
 
-### Gene TSS coordinates file
-```
-GetTSSCoords "$DataPrefix"eQTLInputFiles_genePositions.txt.gz $InputDir/tss_coords.bed.gz
-```
-
-### SNP coordinates file
-Unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format:
+### Generate Gene TSS / SNP coordinates files
+The coordinate file for genes needs to be prepared. Also unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format.
 
 ```
-GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 1
-GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 2
+snakemake prepare_coords
 ```
 
 **_Note_**
 
  In Sarah's analysis based on an earlier version of data, there are 55,993 genes and 6,856,776 SNPs provided in gene/snp lists. In the v6 release there are 56,318 genes and 10,297,646 SNPs listed; although the sumstats of v6 only has ~39,000 genes.
 
-### Input file lists
-```bash
-  rm -rf $InputDir/list_geno.txt
-  DFolder="$DataPrefix"eQTLInputFiles_snpMatrices
-  for i in `ls $DFolder`; do
-      j=`basename $i _Analysis.snps.txt.gz`
-      echo -e "$j\t$DFolder/$i" >> $InputDir/list_geno.txt
-  done
-  #
-  rm -rf $InputDir/list_expr.txt
-  DFolder="$DataPrefix"eQTLInputFiles_geneLevelNormalizedExpressionMatrices
-  for i in `ls $DFolder`; do
-      j=`basename $i _Analysis.expr.txt.gz`
-      echo -e "$j\t$DFolder/$i" >> $InputDir/list_expr.txt
-  done
-  #
-  rm -rf $InputDir/list_covar.txt
-  DFolder="$DataPrefix"eQTLInputFiles_covariates
-  for i in `ls $DFolder`; do
-      j=`basename $i _Analysis.covariates.txt.gz`
-      echo -e "$j\t$DFolder/$i" >> $InputDir/list_covar.txt
-  done
+### Generate input file lists
+```
+snakemake prepare_input_lists
 ```
 
 ## The Configuration Model

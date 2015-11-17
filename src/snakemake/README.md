@@ -9,6 +9,14 @@ Commands below creates the `Python`/`R` environment required for this project
   Rscript R-packages.R
 ```
 
+On Midway cluster several modules should be loaded
+
+```bash
+  module load libtool/2.4
+  module load zlib/1.2
+  module load gsl/1.16
+```
+
 ### Dependencies
 ```
   python=3.5.0
@@ -27,4 +35,28 @@ Commands below creates the `Python`/`R` environment required for this project
   install_version("RSQLite", version = "1.0.0", repos = repo)
   source("http://bioconductor.org/biocLite.R")
   biocLite("rhdf5") # too bad I cannot install specified version for rhdf5
+```
+
+## The Pipeline
+Implementations are in `rules` and `workflow` directories listed below. The usage are found in project [documentation](../../doc/notes)
+
+```
+  ../../src/snakemake
+  |-- config.bashrc
+  |-- python-packages.txt
+  |-- README.md
+  |-- R-packages.R
+  |-- rules
+  |   |-- eqtlbma-batch.rules
+  |   |-- file-processing.rules
+  |   |-- matrix-eqtl.rules
+  |   `-- sumstat-to-h5.rules
+  `-- workflows
+      |-- BMAConfigModel
+      |   `-- Snakefile
+      |-- cluster.yaml
+      `-- config.yaml
+  
+  3 directories, 11 files
+  
 ```

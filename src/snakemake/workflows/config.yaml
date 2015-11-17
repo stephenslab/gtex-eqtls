@@ -1,0 +1,15 @@
+DataDir: /project/mstephens/data/external_private_supp/gtex-v6/eqtl_data
+SSData: /project/mstephens/data/external_private_supp/gtex-v6/eqtl_data/GTEx_Analysis_2015-01-12_MatrixEQTL_allCisSNPGenePairs
+InputDir: /project/mstephens/gtex/analysis/april2015/A.Input
+ArchiveDir: /project/mstephens/gtex/analysis/april2015/1.Archive
+TmpDir: /scratch/midway/gaow
+SrcDir: /home/gaow/GIT/gtex-eqtls/src
+ConfDir: /home/gaow/GIT/gtex-eqtls/src/cfg
+LogDir: /project/mstephens/gtex/analysis/april2015/0.Log
+DBDir: /project/mstephens/data/internal_supp/gtex-v6-snp-gene-pairs
+BFDir: /project/mstephens/gtex/analysis/april2015/C.eqtlbma_hm/RawBFs
+IsCluster: T
+ConfigBash: "source ~/GIT/gtex-eqtls/src/snakemake/config.bashrc;"
+GridL: /home/gaow/GIT/gtex-eqtls/data/eqtlbma/grid_phi2_oma2_general.txt.gz
+GridS: /home/gaow/GIT/gtex-eqtls/data/eqtlbma/grid_phi2_oma2_with-configs.txt.gz
+bma_bf: ~/software/bin/eqtlbma_bf

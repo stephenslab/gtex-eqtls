@@ -5,47 +5,15 @@
 # Pre-processing
 ###
 #! Extract input data from archive
-#{bash
-for i in GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatricesSupplement.tar.gz; do
-for j in `tar -tf $i`; do
-echo $i $j
-mkdir -p $(basename $i .tar.gz)
-echo -e '#!/bin/bash\ntar -zxvf '"$i"' '"$j"' -O | gzip --best > '"$(basename $i .tar.gz)"'/'"$j"'.gz\necho complete!' | sbatch -J Extract."$i"."$j" -o $LogDir/Extract."$i"."$j".o%j
-done
-done
-#}
-#! Gene TSS coordinates file
-GetTSSCoords "$DataPrefix"eQTLInputFiles_genePositions.txt.gz $InputDir/tss_coords.bed.gz
-#! SNP coordinates file
-# Unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format:
-GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 1
-GetSNPCoords "$DataPrefix"eQTLInputFiles_snpMatrices $InputDir/snp_coords.bed.gz 2
+snakemake extract_data
+#! Generate Gene TSS / SNP coordinates files
+# The coordinate file for genes needs to be prepared. Also unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format.
+snakemake prepare_coords
 #{note
 # In Sarah's analysis based on an earlier version of data, there are 55,993 genes and 6,856,776 SNPs provided in gene/snp lists. In the v6 release there are 56,318 genes and 10,297,646 SNPs listed; although the sumstats of v6 only has ~39,000 genes.
 #}
-#! Input file lists
-#{bash
-rm -rf $InputDir/list_geno.txt
-DFolder="$DataPrefix"eQTLInputFiles_snpMatrices
-for i in `ls $DFolder`; do
-    j=`basename $i _Analysis.snps.txt.gz`
-    echo -e "$j\t$DFolder/$i" >> $InputDir/list_geno.txt
-done
-#
-rm -rf $InputDir/list_expr.txt 
-DFolder="$DataPrefix"eQTLInputFiles_geneLevelNormalizedExpressionMatrices
-for i in `ls $DFolder`; do
-    j=`basename $i _Analysis.expr.txt.gz`
-    echo -e "$j\t$DFolder/$i" >> $InputDir/list_expr.txt
-done
-#
-rm -rf $InputDir/list_covar.txt 
-DFolder="$DataPrefix"eQTLInputFiles_covariates
-for i in `ls $DFolder`; do
-    j=`basename $i _Analysis.covariates.txt.gz`
-    echo -e "$j\t$DFolder/$i" >> $InputDir/list_covar.txt
-done
-#}
+#! Generate input file lists
+snakemake prepare_input_lists
 ###
 # The configuration model
 ###
@@ -56,7 +24,7 @@ python analysis_admin.py eqtlbma_batch -h
 output:///python ../../src/python/analysis_admin.py eqtlbma_batch -h
 #}
 # Here is the command which breaks the data into 100 batches and perform analysis
-#{bash 100 batches analysis 
+#{bash 100 batches analysis
 nBatches=100
 Model=normal
 for i in `seq $nBatches`; do
@@ -76,7 +44,7 @@ done
 # See my lab notebook for various failures and fixes running this command. Read on for procedure that succeeded.
 #! Configuration model without permutation
 # Job submission
-#{bash No permutation for configuration model 
+#{bash No permutation for configuration model
 nBatches=100
 Model=normal.perm0
 for i in `seq $nBatches`; do
@@ -101,7 +69,7 @@ tar -cvf eqtlbma_bf.normal.perm0.tar *
 SumstatsDir=$ArchiveDir/eqtlbma_bf/July2015
 for i in `find $SumstatsDir -maxdepth 1 -name "eqtlbma_bf_normal_*" -type d`; do
     for j in `ls $i/*_sumstats_*.txt.gz`; do
-        echo `echo $j | sed 's/\(.*sumstats_\)\(.*\).txt.gz/\2/g'` $j >> $i.ss.list    
+        echo `echo $j | sed 's/\(.*sumstats_\)\(.*\).txt.gz/\2/g'` $j >> $i.ss.list
     done
 done
 #}
@@ -109,5 +77,5 @@ done
 ###
 # The type model
 ###
-# The raw BF data are fed to the type-model version of the hierarchical model EM algorithm to estimate hyperparameters. Data is 28GB compressed text which may exceed 256GB when all are loaded into RAM (which is what @@eqtlbma_hm@@ does!). 
-# See my labnotes of July, 2015 to August, 2015 for failures and fixes. 
+# The raw BF data are fed to the type-model version of the hierarchical model EM algorithm to estimate hyperparameters. Data is 28GB compressed text which may exceed 256GB when all are loaded into RAM (which is what @@eqtlbma_hm@@ does!).
+# See my labnotes of July, 2015 to August, 2015 for failures and fixes.

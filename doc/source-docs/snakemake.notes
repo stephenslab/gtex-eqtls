@@ -11,10 +11,23 @@ source activate mt-eqtl # to deactivate use: source deactivate
 conda install -c r r=3.2.2
 Rscript R-packages.R
 #}
+# On Midway cluster several modules should be loaded
+#{bash
+module load libtool/2.4
+module load zlib/1.2
+module load gsl/1.16
+#}
 #! Dependencies
 #{text
 file:///../../src/snakemake/python-packages.txt
 #}
 #{r
 file:///../../src/snakemake/R-packages.R
+#}
+###
+# The pipeline
+###
+# Implementations are in @@rules@@ and @@workflow@@ directories listed below. The usage are found in project [documentation|@../../doc/notes@]
+#{out
+output:///tree ../../src/snakemake --charset=ascii
 #}

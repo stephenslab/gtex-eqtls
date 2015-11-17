@@ -10,7 +10,8 @@ rule all:
     "../issues/README.md",
     ("../issues/{item}.md".format(item = item[:-6]) for item in config["doc-issues"].split()[1:]),
     "../../data/README.md",
-    "../../src/README.md"
+    "../../src/README.md",
+    "../../log/README.md"
 
 rule src_snakemake:
   input:
@@ -73,5 +74,13 @@ rule src:
     config["doc-src"]
   output:
     "../../src/README.md"
+  shell:
+    "{config[md]} {input} -o {output}"
+
+rule log:
+  input:
+    config["doc-log"]
+  output:
+    "../../log/README.md"
   shell:
     "{config[md]} {input} -o {output}"

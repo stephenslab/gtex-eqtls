@@ -1,0 +1,109 @@
+import glob
+RawTars = ["GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz","GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz","GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices.tar.gz","GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatricesSupplement.tar.gz"]
+
+rule count_genes_from_data:
+  input:
+    expand("{path}/{tissue}.cis.eqtl.gz", path = config["SSData"], tissue = TISSUES)
+  output:
+    expand("{path}/{tissue}.genes.gz", path = config["TmpDir"], tissue = TISSUES)
+  run:
+    for x, y in zip(input, output):
+      shell('zcat {x} | cut -f2 | sort -u | gzip --best > {y}')
+    shell('zcat {} | sort -u | wc -l'.format(" ".join(output)))
+
+rule count_genes_from_h5:
+  input:
+    expand("{path}/{tissue}.h5", path = config["SSData"], tissue = TISSUES)
+  output:
+    expand("{path}/{tissue}.h5genes.gz", path = config["TmpDir"], tissue = TISSUES)
+  run:
+    for x, y in zip(input, output):
+      shell('python {config[SrcDir]}/python/analysis_admin.py ss_to_h5 {x} --action summary --output stdout | gzip --best > {y}')
+    shell('zcat {} | sort -u | wc -l'.format(" ".join(output)))
+
+rule prepare_snp_lookup_db:
+  input:
+    config["InputDir"] + "/snp_coords.bed.gz"
+  params:
+    prefix = config["TmpDir"] + "/snp_coords.bed.split."
+  output:
+    config["TmpDir"] + "/prepare_snp_lookup_db.out"
+  shell:
+    "zcat {input} |split -l 205953 -d - {params.prefix};"
+    "touch {output}"
+
+rule create_snp_lookup_db:
+  input:
+    coords = glob.glob(config["TmpDir"] + "/snp_coords.bed.split.*"),
+    link_file = config["TmpDir"] + "/prepare_merge_batch.out"
+  params:
+    prefix = config["DBDir"] + "/snp-gene-pairs",
+  output:
+    "{params.prefix}.gz",
+    "{params.prefix}.sqlite3"
+  run:
+    for idx, item in enumerate(input.coords):
+        shell('''cat {item} | bash {config[SrcDir]}/shell/FindrsIDcisGene.sh \
+        {config[DBDir]}/dbSNP/All_20150605.vcf.gz {config[InputDir]}/tss_coords.bed.gz 100000 | \
+        gzip --best > {params.prefix}.{idx}.gz''')
+    shell('''zcat {params.prefix}.*.gz | gzip --best > {output[0]}''')
+    shell('''wsqlite3 {output[1]} -i {output[0]} --as dbsnp144 -d '\t' --header coord rsid cisgenes''')
+    shell('''wsqlite {output[1]} "create index rsid_index on dbsnp144 (rsid)"''')
+    shell('''wsqlite {output[1]} "create index coord_index on dbsnp144 (coord)"''')
+
+rule extract_data:
+  workdir:
+    config["InputDir"]
+  input:
+    expand("{path}/{file}".format(path=config["DataDir"], file = x) for x in RawTars)
+  run:
+    for i in input:
+      for j in shell("tar -tf {i}"):
+        shell('''
+        mkdir -p $(basename {i} .tar.gz)
+        tar -zxvf {i} {j} -O | gzip --best > $(basename {i} .tar.gz)/{j}.gz
+        ''')
+
+rule prepare_coords:
+  input:
+    config["InputDir"] + "/eQTLInputFiles_genePositions.txt.gz",
+    config["InputDir"] + "/eQTLInputFiles_snpMatrices"
+  output:
+    config["InputDir"] + "/tss_coords.bed.gz",
+    config["InputDir"] + "/snp_coords.bed.gz"
+  shell:
+    '''
+    GetTSSCoords {input[0]} {output[0]}
+    GetSNPCoords {input[1]} {output[1]} 1
+    GetSNPCoords {input[1]} {output[1]} 2
+    '''
+
+rule prepare_input_lists:
+  input:
+    config["InputDir"] + "/eQTLInputFiles_snpMatrices",
+    config["InputDir"] + "/eQTLInputFiles_geneLevelNormalizedExpressionMatrices",
+    config["InputDir"] + "/eQTLInputFiles_covariates"
+  output:
+    config["InputDir"] + "/list_geno.txt",
+    config["InputDir"] + "/list_expr.txt",
+    config["InputDir"] + "/list_covar.txt"
+  shell:
+    '''
+    rm -rf {output[0]}
+    for i in `ls {input[0]}`; do
+        j=`basename $i _Analysis.snps.txt.gz`
+        echo -e "$j\t{input[0]}/$i" >> {output[0]}
+    done
+    #
+    rm -rf {output[1]}
+    for i in `ls {input[1]}`; do
+        j=`basename $i _Analysis.expr.txt.gz`
+        echo -e "$j\t{input[1]}/$i" >> {output[1]}
+    done
+    #
+    rm -rf {output[2]}
+    for i in `ls {input[2]}`; do
+        j=`basename $i _Analysis.covariates.txt.gz`
+        echo -e "$j\t{input[2]}/$i" >> {output[2]}
+    done
+    '''

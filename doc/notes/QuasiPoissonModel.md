@@ -2,19 +2,8 @@
 ## First Attempt
 Here is the command which breaks the data into 2,000 batches and perform analysis under quasi-Poisson model.
 
-```bash
-  nBatches=2000
-  Model=quasipoisson
-  for i in `seq $nBatches`; do
-  echo '#!/bin/bash
-       source $HOME/GIT/type-model/conf/GTEx.bashrc
-       python $SrcDir/analysis_admin.py eqtlbma_batch \
-       -g $InputDir/tss_coords.bed.gz \
-       -s $InputDir/snp_coords.bed.gz \
-       -n '"$nBatches"' -b '"$i"' -e ~/software/bin/eqtlbma_bf \
-       -a $ConfDir/eqtlbma.'"$Model"'.txt' |\
-  sbatch -J eqtlbma_$Model_$nBatches_$i -o $LogDir/eqtlbma_$Model_$nBatches_$i.o%j --mem-per-cpu=10000
-  done
+```
+snakemake eqtlbma_batch_poisson
 ```
 
 ### Result
