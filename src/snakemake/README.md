@@ -42,27 +42,31 @@ Implementations are in `rules` and `workflow` directories listed below. The usag
 
 ```
   ../../src/snakemake
-  |-- config.bashrc
   |-- python-packages.txt
   |-- README.md
   |-- R-packages.R
   |-- rules
   |   |-- eqtlbma-bf.rules
   |   |-- file-processing.rules
+  |   |-- lite-input.rules
   |   |-- matrix-eqtl.rules
   |   `-- sumstat-to-h5.rules
   `-- workflows
       |-- cluster.yaml
-      |-- config.yaml -> midway-V6-lite.yaml
       |-- eqtlbma
+      |   |-- config.yaml -> ../midway-V6-lite.yaml
+      |   |-- shell.py -> ../shell.py
       |   `-- Snakefile
       |-- Makefile
       |-- midway-V6-full.yaml
       |-- midway-V6-lite.yaml
-      `-- preprocessing
-          `-- Snakefile
+      |-- preprocessing
+      |   |-- config.yaml -> ../midway-V6-lite.yaml
+      |   |-- shell.py -> ../shell.py
+      |   `-- Snakefile
+      `-- shell.py
   
-  4 directories, 15 files
+  4 directories, 19 files
   
 ```
 
@@ -81,7 +85,13 @@ Available rules are
   snakemake find_genes_with_sumstats
   snakemake eqtlbma_toy
   snakemake extract_data
-  snakemake prepare_coords
+  snakemake get_lite_list
+  snakemake prepare_lite_covariates
+  snakemake prepare_lite_expression --config IsCluster=T
+  snakemake prepare_lite_snps --config IsCluster=T
+  snakemake prepare_coords --config tmp_step=1 IsCluster=T
+  snakemake prepare_coords --config tmp_step=2 IsCluster=T
+  snakemake get_lite_coords
   snakemake prepare_input_lists
   snakemake eqtlbma_batch_poisson
   
