@@ -47,16 +47,42 @@ Implementations are in `rules` and `workflow` directories listed below. The usag
   |-- README.md
   |-- R-packages.R
   |-- rules
-  |   |-- eqtlbma-batch.rules
+  |   |-- eqtlbma-bf.rules
   |   |-- file-processing.rules
   |   |-- matrix-eqtl.rules
   |   `-- sumstat-to-h5.rules
   `-- workflows
-      |-- BMAConfigModel
-      |   `-- Snakefile
       |-- cluster.yaml
-      `-- config.yaml
+      |-- config.yaml -> midway-V6-lite.yaml
+      |-- eqtlbma
+      |   `-- Snakefile
+      |-- Makefile
+      |-- midway-V6-full.yaml
+      |-- midway-V6-lite.yaml
+      `-- preprocessing
+          `-- Snakefile
   
-  3 directories, 11 files
+  4 directories, 15 files
+  
+```
+
+Available rules are
+
+```
+  snakemake sumstat_to_h5
+  snakemake prepare_merge_batch
+  snakemake merge_h5
+  snakemake count_genes_from_data
+  snakemake count_genes_from_h5
+  snakemake sample_max_null
+  snakemake prepare_snp_lookup_db
+  snakemake create_snp_lookup_db
+  snakemake prepare_matrix_eqtl_input
+  snakemake find_genes_with_sumstats
+  snakemake eqtlbma_toy
+  snakemake extract_data
+  snakemake prepare_coords
+  snakemake prepare_input_lists
+  snakemake eqtlbma_batch_poisson
   
 ```

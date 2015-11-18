@@ -46,7 +46,7 @@ class CoordChopper:
     def Clean(self):
         os.system('rm -f %s*' % self.gf)
         os.system('rm -f %s*' % self.sf)
-        
+
 class EQTLBMARunner:
     def __init__(self, args_file, exe_path, seed, batch_id, batch_idstr):
         self.args = ' '.join([line.strip('\n').strip('\\') for line in open(args_file).readlines()]).split()
@@ -79,7 +79,7 @@ class EQTLBMARunner:
               format(self.name, ('.' + ext) if ext else '')
         except ValueError:
             raise ValueError('Please specify "--out" in argument file!')
-        # 
+        #
         if self.seed:
             try:
                 self.args[self.args.index('--seed') + 1] = str(self.seed)
@@ -130,7 +130,7 @@ class SSDataParser:
         self.data['buffer']['colnames'] = np.array(['beta','t-stat','p-value'])
         self.data['output'] = copy.deepcopy(self.data['buffer'])
         self.data['buffer'] = {'data':[], 'rownames':[]}
-        
+
     def dump(self):
         return self.data['output']
 
@@ -141,7 +141,7 @@ class BFDataParser:
         self.previous_name = self.current_name = None
         self.previous_snp_ = self.current_snp_ = None
         self.count = -1
-        self.output = {} 
+        self.output = {}
 
     def parse(self, line):
         if not line:
@@ -176,7 +176,7 @@ class BFDataParser:
 
     def empty(self):
         self.output = {}
-        
+
     def dump(self):
         return self.output
 
@@ -255,12 +255,12 @@ class SSDataMerger(SSData):
         # Log them
         if len(dups):
             filename = os.path.splitext(filename)[0]
-            for item in dups: 
+            for item in dups:
                 env.error('{}:{} appeared {} times in {}'.\
                           format(self.__group, item, seen[item] + 1, filename),
                           to_file = filename + '.error')
         return obs
-    
+
 def ss_to_h5(args):
     if args.action == 'convert':
         # Benchmark:
@@ -417,6 +417,8 @@ def sumstat_query(args):
             env.log("Available SNP names are:")
             for item in data['rownames']:
                 print(item)
+    else:
+        print('\n'.join(data[args.snp]))
 
 if __name__ == '__main__':
     def uint(value):
@@ -424,7 +426,7 @@ if __name__ == '__main__':
         if ivalue < 0:
             raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
         return ivalue
-        
+
     def pathstr(value):
         return os.path.abspath(os.path.expanduser(value))
     #

@@ -31,3 +31,7 @@ file:///../../src/snakemake/R-packages.R
 #{out
 output:///tree ../../src/snakemake --charset=ascii
 #}
+# Available rules are
+#{out
+output:///grep -h '^snakemake' SummaryStats.notes SumstatsDB.notes MultiTissueAnalysis.notes QuasiPoissonModel.notes
+#}

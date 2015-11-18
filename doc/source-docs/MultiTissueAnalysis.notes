@@ -6,6 +6,22 @@
 ###
 #! Extract input data from archive
 snakemake extract_data
+#{important
+# This is a large data-set. It is always not good idea to run any software / methods in development in this production-level data. My strategy for this project is to make a small subset of data to test on each step, fix the software / workflow and establish the procedure. Once established, I will run the analysis on the entire data-set. ""Only comments / results fro the full data-set is documented here"".
+# The subset of data is generated using the [same data|@SumstatsDB.md@] I have prepared for the @@matrix-ash@@ method development. This also makes these two methods developments comparable.
+# The @@snakemake@@ workflow are identical between the subset and the full data, except the difference in @@config.yaml@@ which is a symbolic link to configurations under either version. Switching between versions is just @@make lite@@ vs @@make full@@.
+# The Lite version is prepared by commands below, under @@preprocessing@@ folder:
+#{bash
+snakemake get_lite_list
+snakemake prepare_lite_covariates
+snakemake prepare_lite_expression --config IsCluster=T
+snakemake prepare_lite_snps --config IsCluster=T
+cd /project/mstephens/gtex/analysis/april2015/Lite
+ln -s data-null data-dir
+ln -s data-max/GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices data-null/GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices
+#}
+# I verified the data integrity: 16069 genes, 15507 unique max SNPs and 47643 unique null SNPs, matching with the lite data without an error. This is exactly the subset of data using which @@matrix-ash@@ was developed.
+#}
 #! Generate Gene TSS / SNP coordinates files
 # The coordinate file for genes needs to be prepared. Also unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format.
 snakemake prepare_coords

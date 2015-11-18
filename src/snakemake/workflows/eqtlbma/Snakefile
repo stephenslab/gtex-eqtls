@@ -1,0 +1,18 @@
+"""
+eqtlbma pipeline
+
+This pipeline analyzes eQTL data via eqtlbma program, under
+various BMA models.
+"""
+__author__ = "Gao Wang"
+
+# Global settings
+configfile: "../config.yaml"
+shell.executable("/bin/bash")
+shell.prefix(config["ConfigBash"])
+
+# Rules
+include: "../../rules/eqtlbma-bf.rules"
+
+rule clean:
+  shell: "rm -rf {config[TmpDir]}/*"

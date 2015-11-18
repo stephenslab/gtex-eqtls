@@ -2,28 +2,16 @@ import glob
 
 rule sumstat_to_h5:
   input:
-    expand("{path}/{tissue}.cis.eqtl.gz", path = config["SSData"], tissue = TISSUES)
+    expand("{path}/{tissue}.cis.eqtl.gz", path = config["SSData"], tissue = config["V6Tissues"].split())
   output:
-    expand("{path}/{tissue}.h5", path = config["SSData"], tissue = TISSUES)
+    expand("{path}/{tissue}.h5", path = config["SSData"], tissue = config["V6Tissues"].split())
   log:
-    expand("{path}/{tissue}.sumstat_to_h5", path = config["LogDir"], tissue = TISSUES)
+    expand("{path}/{tissue}.sumstat_to_h5", path = config["LogDir"], tissue = config["V6Tissues"].split())
   run:
     for x, y, z in zip(input, output, log):
-        cmd = '''python {config[SrcDir]}/python/analysis_admin.py ss_to_h5 \
+        shell('''python {config[SrcDir]}/python/analysis_admin.py ss_to_h5 \
         {x} --action convert --output {y} --message \
-        "MatrixEQTL summary statistics of GTEx Release 2015.04.15" &> {z}'''
-        shell(cmd)
-        # where to run
-        # if config["IsCluster"] == "F":
-        #    shell.executable("/bin/bash")
-        #    shell.prefix(config["ConfigBash"])
-        #    shell(cmd)
-        # else:
-        #     shell("""
-        #     echo '''#!/bin/bash
-        #     source {0}
-        #     {1}
-        #     '''""".format(config["ConfigBash"], cmd))
+        "MatrixEQTL summary statistics of GTEx Release 2015.04.15" &> {z}''')
 
 rule prepare_merge_batch:
   input:

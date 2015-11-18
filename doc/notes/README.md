@@ -9,5 +9,5 @@ The procedures are organized in separate *chapters* each for a specific assignme
 *	 [General Information](Information.md)
 *	 [Single Tissue Summary Statistics](SummaryStats.md)
 *	 [Summary Statistics Database](SumstatsDB.md)
-*	 [Single Tissue Quasi-Poisson Model](QuasiPoissonModel.md)
 *	 [Multi-tissue analysis](MultiTissueAnalysis.md)
+*	 [Multi-tissue Quasi-Poisson Model](QuasiPoissonModel.md)

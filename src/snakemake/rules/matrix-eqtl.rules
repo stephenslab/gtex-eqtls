@@ -1,11 +1,9 @@
-SampleTissue = "Adipose_Subcutaneous"
-
 rule prepare_matrix_eqtl_input:
   params:
     nb_snps = 501,
-    covar = SampleTissue + "_Analysis.covariates.txt",
-    snp = SampleTissue + "_Analysis.snps.txt",
-    expr = SampleTissue + "_Analysis.expr.txt"
+    covar = config["V6Tissues"].split()[0] + ".covariates.txt",
+    snp = config["V6Tissues"].split()[0] + ".snps.txt",
+    expr = config["V6Tissues"].split()[0] + ".expr.txt"
   input:
     covar = config["DataDir"] + "/GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz",
     snp = config["DataDir"] + "/GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz",
@@ -48,7 +46,7 @@ rule find_genes_with_sumstats:
  input:
    config["TmpDir"] + "/geneloc.txt",
    config["TmpDir"] + "/snpsloc.txt",
-   config["InputDir"] + "/{}_Analysis.h5".format(SampleTissue)
+   config["InputDir"] + "/{}.h5".format(config["V6Tissues"].split()[0])
  output:
    config["TmpDir"] + "/find_genes_with_sumstats.out"
  run:
@@ -62,24 +60,24 @@ rule find_genes_with_sumstats:
      ''')
 
 rule eqtlbma_toy:
-  workdir: config["TmpDir"]
   params:
-    name = "TestTissue"
+    name = "TestTissue",
     prefix = "ToyEQTLBMA"
   input:
     geneloc_bed = config["TmpDir"] + "/geneloc.bed",
     snpsloc_bed = config["TmpDir"] + "/snpsloc.bed",
   output:
-    {params.prefix}_sumstats_{params.name}.txt.gz
+    config["TmpDir"] + "/ToyEQTLBMA_sumstats_TestTissue.txt.gz"
   shell:
     '''
-    echo -e "{params.name}\tSNP.txt.gz" > list_geno.txt
-    echo -e "{params.name}\tGE.txt" > list_expl.txt
-    echo -e "{params.name}\tCovariates.txt" > list_covar.txt
-    {config[bma_bf]} --geno list_geno.txt --exp list_expl.txt --covar list_covar.txt \
-           --scoord {input.snpsloc_bed} --gcoord {input.geneloc_bed} \
-           --out {params.prefix} --analys join --outss --bfs sin \
-           --gridL {config[GridL]} --gridS {config[GridS]} \
-           --error uvlr --thread 4
+    echo -e "{params.name}\tSNP.txt.gz" > {config[TmpDir]}/list_geno.txt
+    echo -e "{params.name}\tGE.txt" > {config[TmpDir]}/list_expl.txt
+    echo -e "{params.name}\tCovariates.txt" > {config[TmpDir]}/list_covar.txt
+    {config[bma_bf]} --geno {config[TmpDir]}/list_geno.txt \
+                     --exp {config[TmpDir]}/list_expl.txt --covar {config[TmpDir]}/list_covar.txt \
+                     --scoord {input.snpsloc_bed} --gcoord {input.geneloc_bed} \
+                     --out {config[TmpDir]}/{params.prefix} --analys join --outss --bfs sin \
+                     --gridL {config[GridL]} --gridS {config[GridS]} \
+                     --error uvlr --thread 4
     zcat {output} | head | cut -f1,2,7,9
     '''

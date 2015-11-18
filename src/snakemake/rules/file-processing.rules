@@ -1,11 +1,10 @@
 import glob
-RawTars = ["GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz","GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz","GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices.tar.gz","GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatricesSupplement.tar.gz"]
 
 rule count_genes_from_data:
   input:
-    expand("{path}/{tissue}.cis.eqtl.gz", path = config["SSData"], tissue = TISSUES)
+    expand("{path}/{tissue}.cis.eqtl.gz", path = config["SSData"], tissue = config["V6Tissues"].split())
   output:
-    expand("{path}/{tissue}.genes.gz", path = config["TmpDir"], tissue = TISSUES)
+    expand("{path}/{tissue}.genes.gz", path = config["TmpDir"], tissue = config["V6Tissues"].split())
   run:
     for x, y in zip(input, output):
       shell('zcat {x} | cut -f2 | sort -u | gzip --best > {y}')
@@ -13,9 +12,9 @@ rule count_genes_from_data:
 
 rule count_genes_from_h5:
   input:
-    expand("{path}/{tissue}.h5", path = config["SSData"], tissue = TISSUES)
+    expand("{path}/{tissue}.h5", path = config["SSData"], tissue = config["V6Tissues"].split())
   output:
-    expand("{path}/{tissue}.h5genes.gz", path = config["TmpDir"], tissue = TISSUES)
+    expand("{path}/{tissue}.h5genes.gz", path = config["TmpDir"], tissue = config["V6Tissues"].split())
   run:
     for x, y in zip(input, output):
       shell('python {config[SrcDir]}/python/analysis_admin.py ss_to_h5 {x} --action summary --output stdout | gzip --best > {y}')
@@ -52,16 +51,14 @@ rule create_snp_lookup_db:
     shell('''wsqlite {output[1]} "create index coord_index on dbsnp144 (coord)"''')
 
 rule extract_data:
-  workdir:
-    config["InputDir"]
   input:
-    expand("{path}/{file}".format(path=config["DataDir"], file = x) for x in RawTars)
+    expand("{path}/{file}".format(path=config["DataDir"], file = x) for x in config["V6Tarballs"].split())
   run:
     for i in input:
       for j in shell("tar -tf {i}"):
         shell('''
-        mkdir -p $(basename {i} .tar.gz)
-        tar -zxvf {i} {j} -O | gzip --best > $(basename {i} .tar.gz)/{j}.gz
+        mkdir -p {config[InputDir]}/$(basename {i} .tar.gz)
+        tar -zxvf {i} {j} -O | gzip --best >  {config[InputDir]}/$(basename {i} .tar.gz)/{j}.gz
         ''')
 
 rule prepare_coords:
