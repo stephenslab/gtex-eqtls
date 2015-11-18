@@ -27,11 +27,11 @@ file:///../../src/snakemake/R-packages.R
 ###
 # The pipeline
 ###
-# Implementations are in @@rules@@ and @@workflow@@ directories listed below. The usage are found in project [documentation|@../../doc/notes@]
+# Implementations are in @@rules@@ and @@workflow@@ directories listed below: 
 #{out
 output:///tree ../../src/snakemake --charset=ascii
 #}
-# Available rules are
+# Available data analysis commands are listed below. All the analysis for this project can be reproduced by typing these commands. Relevant context are found in [documentation|@../../doc/notes@].
 #{out
 output:///grep -h '^snakemake' SummaryStats.notes SumstatsDB.notes MultiTissueAnalysis.notes QuasiPoissonModel.notes
 #}

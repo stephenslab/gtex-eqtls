@@ -38,7 +38,7 @@ On Midway cluster several modules should be loaded
 ```
 
 ## The Pipeline
-Implementations are in `rules` and `workflow` directories listed below. The usage are found in project [documentation](../../doc/notes)
+Implementations are in `rules` and `workflow` directories listed below:
 
 ```
   ../../src/snakemake
@@ -52,12 +52,10 @@ Implementations are in `rules` and `workflow` directories listed below. The usag
   |   |-- matrix-eqtl.rules
   |   `-- sumstat-to-h5.rules
   `-- workflows
-      |-- cluster.yaml
       |-- eqtlbma
       |   |-- config.yaml -> ../midway-V6-lite.yaml
       |   |-- shell.py -> ../shell.py
       |   `-- Snakefile
-      |-- Makefile
       |-- midway-V6-full.yaml
       |-- midway-V6-lite.yaml
       |-- preprocessing
@@ -66,11 +64,11 @@ Implementations are in `rules` and `workflow` directories listed below. The usag
       |   `-- Snakefile
       `-- shell.py
   
-  4 directories, 19 files
+  4 directories, 17 files
   
 ```
 
-Available rules are
+Available data analysis commands are listed below. All the analysis for this project can be reproduced by typing these commands. Relevant context are found in [documentation](../../doc/notes).
 
 ```
   snakemake sumstat_to_h5
