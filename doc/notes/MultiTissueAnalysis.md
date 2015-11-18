@@ -7,7 +7,7 @@ snakemake extract_data
 
 **_Important_**
 
- This is a large data-set. It is always not good idea to run any software / methods in development in this production-level data. My strategy for this project is to make a small subset of data to test on each step, fix the software / workflow and establish the procedure. Once established, I will run the analysis on the entire data-set. **Only comments / results fro the full data-set is documented here**.
+ This is a large data-set. It is always not good idea to run any software / methods in development on production-level data. My strategy for this project is to make a small subset of data to test on each step, fix the software / workflow and establish the procedure. Once established, I will run the analysis on the entire data-set. **Only comments / results fro the full data-set is documented here**.
  The subset of data is generated using the [same data](SumstatsDB.md) I have prepared for the `matrix-ash` method development. This also makes these two methods developments comparable.
  The `snakemake` workflow are identical between the subset and the full data, except the difference in `config.yaml` which is a symbolic link to configurations under either version. Switching between versions is just `make lite` vs `make full`.
  The Lite version is prepared by commands below, under `preprocessing` folder:
@@ -19,6 +19,8 @@ snakemake extract_data
   cd /project/mstephens/gtex/analysis/april2015/Lite
   ln -s data-null data-dir
   ln -s data-max/GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices data-null/GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices
+  ln -s /project/mstephens/data/external_private_supp/gtex-v6/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_genePositions.txt.gz data-null/GTEx_Analysis_2015-01-12_eQTLInputFiles_genePositions.txt.gz
+  ln -s /project/mstephens/data/external_private_supp/gtex-v6/eqtl_data/GTEx_Analysis_2015-01-12_eQTLInputFiles_genePositions.txt.gz data-max/GTEx_Analysis_2015-01-12_eQTLInputFiles_genePositions.txt.gz
 ```
 
  I verified the data integrity: 16069 genes, 15507 unique max SNPs and 47643 unique null SNPs, matching with the lite data without an error. This is exactly the subset of data using which `matrix-ash` was developed.
@@ -27,12 +29,17 @@ snakemake extract_data
 The coordinate file for genes needs to be prepared. Also unfortunately the release does not come with a list of SNPs (union) involved. Getting such a list is quite a heavy duty. Takes 10min to extract ID's in parallel and 50min to concatenate them into a unique list in bed format.
 
 ```
-snakemake prepare_coords
+snakemake prepare_coords --config tmp_step=1 IsCluster=T
+snakemake prepare_coords --config tmp_step=2 IsCluster=T
 ```
 
-**_Note_**
+In Sarah's analysis based on an earlier version of data, there are 55,993 genes and 6,856,776 SNPs provided in gene/snp lists. In the v6 release there are 56,318 genes and 10,297,646 SNPs listed; although the sumstats of V6 only has ~39,000 genes.
 
- In Sarah's analysis based on an earlier version of data, there are 55,993 genes and 6,856,776 SNPs provided in gene/snp lists. In the v6 release there are 56,318 genes and 10,297,646 SNPs listed; although the sumstats of v6 only has ~39,000 genes.
+The TSS / SNP coords file for the lite data-set is prepared based on output from above commands, via:
+
+```
+snakemake get_lite_coords
+```
 
 ### Generate input file lists
 ```

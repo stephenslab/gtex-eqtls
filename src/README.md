@@ -22,6 +22,7 @@ Configuration files are located under the `cfg` folder:
 |  Code  |  Description  |
 |:------:|:-------------:  |
 |  `FindrsIDcisGene.sh`  |  match rs ID with GTEx SNP names and their cis-genes  |
+|  `GetCoords.sh`  |  prepare gene/snp coordinates bed file for `eqtlbma`  |
 
 ### Tests
 [Unit-tests](tests/) for codes written.

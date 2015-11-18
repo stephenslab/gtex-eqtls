@@ -1,15 +1,15 @@
 #
 DataDir: /project/mstephens/data/external_private_supp/gtex-v6/eqtl_data
-InputDir: /project/mstephens/gtex/analysis/april2015/Full/Input
-ArchiveDir: /project/mstephens/gtex/analysis/april2015/Full/Archive
-LogDir: /project/mstephens/gtex/analysis/april2015/Full/Log
-BFDir: /project/mstephens/gtex/analysis/april2015/Full/Archive/eqtlbma_hm/RawBFs
+InputDir: /project/mstephens/gtex/analysis/april2015/Full/input
+ArchiveDir: /project/mstephens/gtex/analysis/april2015/Full/archive
+LogDir: /project/mstephens/gtex/analysis/april2015/Full/log
+BFDir: /project/mstephens/gtex/analysis/april2015/Full/archive/eqtlbma_hm/RawBFs
 TmpDir: /scratch/midway/gaow
 #
 IsCluster: F
 SrcDir: /home/gaow/GIT/gtex-eqtls/src
 ConfDir: /home/gaow/GIT/gtex-eqtls/src/cfg
-ConfigBash: "source ~/GIT/gtex-eqtls/src/snakemake/config.bashrc;"
+ConfigBash: "source ~/.bashrc;"
 ConfigCluster: "sbatch -J snakejob -e LOGDIR/stderr.%j -o LOGDIR/stdout.%j --ntasks=1 --cpus-per-task=1"
 GridL: /home/gaow/GIT/gtex-eqtls/data/eqtlbma/grid_phi2_oma2_general.txt.gz
 GridS: /home/gaow/GIT/gtex-eqtls/data/eqtlbma/grid_phi2_oma2_with-configs.txt.gz
@@ -19,3 +19,4 @@ DBDir: /project/mstephens/data/internal_supp/gtex-v6-snp-gene-pairs
 H5Dir: /project/mstephens/data/internal_supp/gtex-v6-sumstat-hdf5
 V6Tarballs: GTEx_Analysis_2015-01-12_eQTLInputFiles_covariates.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_geneLevelNormalizedExpressionMatrices.tar.gz GTEx_Analysis_2015-01-12_eQTLInputFiles_snpMatricesSupplement.tar.gz
 V6Tissues: Adipose_Subcutaneous_Analysis Adipose_Visceral_Omentum_Analysis Adrenal_Gland_Analysis Artery_Aorta_Analysis Artery_Coronary_Analysis Artery_Tibial_Analysis Brain_Anterior_cingulate_cortex_BA24_Analysis Brain_Caudate_basal_ganglia_Analysis Brain_Cerebellar_Hemisphere_Analysis Brain_Cerebellum_Analysis Brain_Cortex_Analysis Brain_Frontal_Cortex_BA9_Analysis Brain_Hippocampus_Analysis Brain_Hypothalamus_Analysis Brain_Nucleus_accumbens_basal_ganglia_Analysis Brain_Putamen_basal_ganglia_Analysis Breast_Mammary_Tissue_Analysis Cells_EBV-transformed_lymphocytes_Analysis Cells_Transformed_fibroblasts_Analysis Colon_Sigmoid_Analysis Colon_Transverse_Analysis Esophagus_Gastroesophageal_Junction_Analysis Esophagus_Mucosa_Analysis Esophagus_Muscularis_Analysis Heart_Atrial_Appendage_Analysis Heart_Left_Ventricle_Analysis Liver_Analysis Lung_Analysis Muscle_Skeletal_Analysis Nerve_Tibial_Analysis Ovary_Analysis Pancreas_Analysis Pituitary_Analysis Prostate_Analysis Skin_Not_Sun_Exposed_Suprapubic_Analysis Skin_Sun_Exposed_Lower_leg_Analysis Small_Intestine_Terminal_Ileum_Analysis Spleen_Analysis Stomach_Analysis Testis_Analysis Thyroid_Analysis Uterus_Analysis Vagina_Analysis Whole_Blood_Analysis
+V6Prefix: GTEx_Analysis_2015-01-12_eQTLInputFiles_

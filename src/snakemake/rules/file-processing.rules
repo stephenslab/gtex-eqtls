@@ -1,4 +1,4 @@
-import glob
+import os, glob
 
 rule count_genes_from_data:
   input:
@@ -63,42 +63,56 @@ rule extract_data:
 
 rule prepare_coords:
   input:
-    config["InputDir"] + "/eQTLInputFiles_genePositions.txt.gz",
-    config["InputDir"] + "/eQTLInputFiles_snpMatrices"
+    config["DataDir"] + "/" + config["V6Prefix"] + "genePositions.txt.gz",
+    config["DataDir"] + "/" + config["V6Prefix"] + "snpMatrices"
   output:
     config["InputDir"] + "/tss_coords.bed.gz",
-    config["InputDir"] + "/snp_coords.bed.gz"
-  shell:
-    '''
-    GetTSSCoords {input[0]} {output[0]}
-    GetSNPCoords {input[1]} {output[1]} 1
-    GetSNPCoords {input[1]} {output[1]} 2
-    '''
+    config["InputDir"] + "/snp_coords.bed.gz",
+    config["InputDir"] + "/tss_coords.bed.gz.tbi",
+    config["InputDir"] + "/snp_coords.bed.gz.tbi"
+  run:
+    xx = glob.glob(os.path.join(config["DataDir"], config["V6Prefix"] + "snpMatrices", "*"))
+    yy = [config["TmpDir"] + "/{}_tmp.txt".format(x) for x, item in enumerate(xx)]
+    if config["tmp_step"] == '1':
+       shell('''
+            source {config[SrcDir]}/shell/GetCoords.sh
+            GetTSSCoords {input[0]} {output[0]}
+            ''')
+       for x, y in zip (xx, yy):
+         shell('''
+              source {config[SrcDir]}/shell/GetCoords.sh
+              GetSNPCoords 1 {x} {y}
+              ''')
+    else:
+        shell('''
+            source {config[SrcDir]}/shell/GetCoords.sh
+            GetSNPCoords 2 {output[1]} {yy}
+            ''')
 
 rule prepare_input_lists:
   input:
-    config["InputDir"] + "/eQTLInputFiles_snpMatrices",
-    config["InputDir"] + "/eQTLInputFiles_geneLevelNormalizedExpressionMatrices",
-    config["InputDir"] + "/eQTLInputFiles_covariates"
+    config["DataDir"] + "/" + config["V6Prefix"] + "snpMatrices",
+    config["DataDir"] + "/" + config["V6Prefix"] + "geneLevelNormalizedExpressionMatrices",
+    config["DataDir"] + "/" + config["V6Prefix"] + "covariates"
   output:
     config["InputDir"] + "/list_geno.txt",
     config["InputDir"] + "/list_expr.txt",
     config["InputDir"] + "/list_covar.txt"
   shell:
     '''
-    rm -rf {output[0]}
+    rm -f {output[0]}
     for i in `ls {input[0]}`; do
         j=`basename $i _Analysis.snps.txt.gz`
         echo -e "$j\t{input[0]}/$i" >> {output[0]}
     done
     #
-    rm -rf {output[1]}
+    rm -f {output[1]}
     for i in `ls {input[1]}`; do
         j=`basename $i _Analysis.expr.txt.gz`
         echo -e "$j\t{input[1]}/$i" >> {output[1]}
     done
     #
-    rm -rf {output[2]}
+    rm -f {output[2]}
     for i in `ls {input[2]}`; do
         j=`basename $i _Analysis.covariates.txt.gz`
         echo -e "$j\t{input[2]}/$i" >> {output[2]}
