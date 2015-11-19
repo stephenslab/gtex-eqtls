@@ -1,5 +1,5 @@
 python=3.5.0
-snakemake=3.4.2
+snakemake=3.5.2
 scipy=0.16.0
 pandas=0.17.0
 h5py=2.5.0
