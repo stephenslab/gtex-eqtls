@@ -23,17 +23,17 @@ rule prepare_matrix_eqtl_input:
     # covar
     tar -zxvf {input.covar} {params.covar}
     wc -l {params.covar}
-    cut -f1 {params.covar} | tr "\n" ", "
+    cut -f1 {params.covar} | tr "\\n" ", "
     mv {params.covar} {output.covar}
     # snp / locations for some snps
     tar -zxvf {input.snp} {params.snp} -O | head -{params.nb_snps} > {output.snp}
-    echo -e "snp\tchr\tpos" > {output.snpsloc}
-    cut {output.snp} -f1 | tail -n+2 | awk -F"_" '{print $0"\t""chr"$1"\t"$2}' >> {output.snpsloc}
+    echo -e "snp\\tchr\\tpos" > {output.snpsloc}
+    cut {output.snp} -f1 | tail -n+2 | awk -F"_" '{{print $0"\\t""chr"$1"\\t"$2}}' >> {output.snpsloc}
     # create @@bedtools@@ input and run @@bedtools@@ to search for genes within 1000bp range to the SNPs of interest.
-    tail -n+2 {input.genes} | awk '{print $2"\t"$3"\t"$4+1"\t"$1"\t"1"\t""+"}' > {output.geneloc_bed}
-    cut {output.snp} -f1 | tail -n+2 | awk -F"_" '{print $1"\t"$2"\t"$2+1"\t"$0"\t"1"\t""+"}' > {output.snpsloc_bed}
+    tail -n+2 {input.genes} | awk '{{print $2"\\t"$3"\\t"$4+1"\\t"$1"\\t"1"\\t""+"}}' > {output.geneloc_bed}
+    cut {output.snp} -f1 | tail -n+2 | awk -F"_" '{{print $1"\\t"$2"\\t"$2+1"\\t"$0"\\t"1"\\t""+"}}' > {output.snpsloc_bed}
     bedtools closest -a  {output.snpsloc_bed} -b {output.geneloc_bed} |\
-    awk '{if (($8-$2)<1000 && ($8-$2)>-1000) print $0}' > {output.gspairs_tmp}
+    awk '{{if (($8-$2)<1000 && ($8-$2)>-1000) print $0}}' > {output.gspairs_tmp}
     # Extracted expression data for selected genes
     tar -zxvf {input.expr} {params.expr} -O | head -1 > {output.expr}
     tar -zxvf {input.expr} {params.expr} -O | grep -wf <(cut -f10 {output.gspairs_tmp} | sort -u) >> {output.expr}
@@ -70,9 +70,9 @@ rule eqtlbma_toy:
     config["TmpDir"] + "/ToyEQTLBMA_sumstats_TestTissue.txt.gz"
   shell:
     '''
-    echo -e "{params.name}\tSNP.txt.gz" > {config[TmpDir]}/list_geno.txt
-    echo -e "{params.name}\tGE.txt" > {config[TmpDir]}/list_expl.txt
-    echo -e "{params.name}\tCovariates.txt" > {config[TmpDir]}/list_covar.txt
+    echo -e "{params.name}\\tSNP.txt.gz" > {config[TmpDir]}/list_geno.txt
+    echo -e "{params.name}\\tGE.txt" > {config[TmpDir]}/list_expl.txt
+    echo -e "{params.name}\\tCovariates.txt" > {config[TmpDir]}/list_covar.txt
     {config[bma_bf]} --geno {config[TmpDir]}/list_geno.txt \
                      --exp {config[TmpDir]}/list_expl.txt --covar {config[TmpDir]}/list_covar.txt \
                      --scoord {input.snpsloc_bed} --gcoord {input.geneloc_bed} \
