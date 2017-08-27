@@ -1,0 +1,7 @@
+name: 'GTEx eQTL'
+repo: 'http://github.com/stephenslab/gtex-eqtl'
+footer: "&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago"
+include_dir: ['analysis', 'utils', 'writeup']
+#homepage: "writeup/Overview.ipynb"
+release_message: "Build website via jnbinder"
+reverse_autoindex: ['analysis', 'writeup'] 

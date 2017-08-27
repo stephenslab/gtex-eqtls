@@ -1,1 +1,0 @@
---geno $AnlyDir/list_geno.txt --exp $AnlyDir/list_explevels.txt --anchor TSS --cis 100000 --out eqtlbma_bf_quasipoisson --lik quasipoisson --analys join --outss --maf 0.05 --gridL $AnlyDir/grid_phi2_oma2_general.txt.gz --gridS $AnlyDir/grid_phi2_oma2_with-configs.txt.gz --bfs sin --error uvlr --fiterr 0.5 -v 1
