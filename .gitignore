@@ -1,2 +1,4 @@
-output/MatrixEQTLSumStats.Portable.h5
-.snakemake
+Overview.ipynb
+**/.sos
+**/.ipynb_checkpoints
+docs/__pycache__

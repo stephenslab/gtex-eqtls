@@ -1,5 +1,5 @@
 name: 'GTEx eQTL'
-repo: 'http://github.com/stephenslab/gtex-eqtl'
+repo: 'http://github.com/stephenslab/gtex-eqtls'
 footer: "&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago"
 include_dir: ['analysis', 'writeup']
 #homepage: "writeup/Overview.ipynb"

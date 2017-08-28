@@ -1,2 +1,2 @@
 # GTEx eQTL analysis
-http://stephenslab.github.io/gtex-eqtl
+http://stephenslab.github.io/gtex-eqtls
