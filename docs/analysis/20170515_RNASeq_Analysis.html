@@ -212,7 +212,7 @@ div.cell {
 }
 .display_control_panel .display_control {
     opacity: 0;
-}.lan_ir .input_prompt { background-color:  !important }.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}</style>
+}.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -393,12 +393,71 @@ body {
 <span class="n">genotype</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx/gtex7/variant_calls/GTEx_Analysis_2016-01-15_v7_WholeGenomeSeq_635Ind_PASS_AB02_GQ20_HETX_MISS15_PLINKQC.PIR.vcf.gz&quot;</span>
 <span class="n">sample_attr</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx/gtex7/sample_annotations/GTEx_Analysis_2016-01-15_v7_SampleAttributesDS.txt&quot;</span>
 <span class="n">cwd</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx&quot;</span>
+<span class="p">[</span><span class="n">peer</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;R_peer_source_1.3.tgz&quot;</span><span class="p">)</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">download:</span>
+    <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">downloads</span><span class="o">/</span><span class="n">PMBio</span><span class="o">/</span><span class="n">peer</span><span class="o">/</span><span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
+<span class="kn">run:</span>
+    <span class="n">R</span> <span class="n">CMD</span> <span class="n">INSTALL</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
 </pre></div>
 </div>
 </div>
 </div>
 </div>
     </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Data-file-format-conversion">Data file format conversion<a class="anchor-link" href="#Data-file-format-conversion">&#182;</a></h2><p>Code chunk below is prototyping codes to convert RNA-seq file to HDF5 format. It is no longer needed because conversions have been done inside the normalization step next section. But it is useful in case the original data will have to be processed separately.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">RNASeq_to_HDF5</span><span class="p">]</span>
+<span class="c1"># Convert RNASeq data to HDF5</span>
+<span class="kn">parameter:</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;np.uint32&#39;</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input[0]!nb}.hdf5&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">python:</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+    <span class="kn">import</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">os</span>
+    <span class="k">def</span> <span class="nf">load_data</span><span class="p">(</span><span class="n">fdata</span><span class="p">,</span> <span class="n">fsample</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;First col of expression data is ENCODE gene name, 2nd col is HUGO name&#39;&#39;&#39;</span>
+        <span class="n">head</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fdata</span><span class="p">,</span> <span class="n">skiprows</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">nrows</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">dt</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;Description&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="s1">&#39;Name&#39;</span><span class="p">:</span> <span class="nb">str</span><span class="p">}</span>
+        <span class="n">dt</span><span class="o">.</span><span class="n">update</span><span class="p">({</span><span class="n">x</span><span class="p">:</span> <span class="n">dtype</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">head</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">dt</span><span class="p">})</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fdata</span><span class="p">,</span> <span class="n">compression</span><span class="o">=</span><span class="s1">&#39;gzip&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> 
+                           <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dt</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fsample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">sample_dict</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="k">for</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">samples</span><span class="p">[[</span><span class="s1">&#39;SAMPID&#39;</span><span class="p">,</span> <span class="s1">&#39;SMTSD&#39;</span><span class="p">,</span> <span class="s1">&#39;SMAFRZE&#39;</span><span class="p">]]</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s1">&#39;EXCLUDE&#39;</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">sample_dict</span><span class="p">:</span>
+                <span class="n">sample_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">if</span> <span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+                <span class="n">sample_dict</span><span class="p">[</span><span class="n">row</span><span class="p">[</span><span class="mi">1</span><span class="p">]]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">row</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">,</span> <span class="nb">dict</span><span class="p">((</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[\W\d]+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sample_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
+    <span class="c1">#</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">sample</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">dtype</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">dtype</span><span class="p">})</span>
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">sample</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">}</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">}):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+        <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -433,7 +492,7 @@ body {
         <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.qnorm.h5&quot;</span><span class="p">,</span>
         <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.h5&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;rpkm&#39;</span><span class="p">,</span> <span class="s1">&#39;reads&#39;</span><span class="p">),</span>
         <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.h5&quot;</span>
-<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span><span class="p">,</span> <span class="kp">queue</span> <span class="o">=</span> <span class="s2">&quot;mstephens&quot;</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s2">&quot;20:00:00&quot;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s2">&quot;60G&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span><span class="p">,</span> <span class="kp">queue</span> <span class="o">=</span> <span class="s2">&quot;mstephens&quot;</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s2">&quot;20:00:00&quot;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s2">&quot;90G&quot;</span>
 <span class="kn">python:</span>
     <span class="c1"># Adopted by Gao Wang from:</span>
     <span class="c1"># https://github.com/broadinstitute/gtex-pipeline</span>
@@ -554,7 +613,7 @@ body {
             <span class="bp">self</span><span class="o">.</span><span class="n">vcf</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">attributes</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">3</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">prefix</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">nnbr</span><span class="p">}</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="s1">&#39;.&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">dr</span><span class="p">}</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">expression_threshold</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">rpkm_cutoff</span><span class="p">}</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">count_threshold</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">read_cutoff</span><span class="p">}</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">min_samples</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">sample_cutoff</span><span class="p">}</span>
@@ -590,7 +649,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="A-peek-into-normalized-expression-data">A peek into normalized expression data<a class="anchor-link" href="#A-peek-into-normalized-expression-data">&#182;</a></h2><p>Code chunk below shows how to load it to R, and how the data is stored:</p>
+<h2 id="A-peek-into-normalized-expression-data">A peek into normalized expression data<a class="anchor-link" href="#A-peek-into-normalized-expression-data">&#182;</a></h2><p>Code chunk below shows how to load it to R, and how the data is stored. For example to list all data groups in the HDF5 file:</p>
 </div>
 </div>
 </div><div class="rendered lan_R">
@@ -676,7 +735,15 @@ body {
 </div>
 </div>
 </div>
-    </div><div class="rendered lan_R">
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>and to view table <code>/Lung</code>:</p>
+</div>
+</div>
+</div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[5]:</div>
@@ -709,7 +776,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>So the group specific data object <code>mydata</code> has attribute <code>axis0</code> for sample names, <code>axis1</code> for gene names, and <code>block0_values</code> the 474 * 56202 data matrix. One can make <code>t(block0_values)</code> a separate matrix and set its rownames to <code>axis1</code> and colnames to <code>axis0</code>.</p>
+<p>So the group <code>/Lung</code> has attribute <code>axis0</code> for sample names, <code>axis1</code> for gene names, and <code>block0_values</code> the 414 * 43624 data matrix. One can make <code>t(block0_values)</code> a separate matrix and set its rownames to <code>axis1</code> and colnames to <code>axis0</code>.</p>
 </div>
 </div>
 </div>
@@ -717,9 +784,9 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="PEER-factor-analysis">PEER factor analysis<a class="anchor-link" href="#PEER-factor-analysis">&#182;</a></h2><p>This step is computationally intensive -- takes a few days to analyze all tissues, on a desktop computer.</p>
+<h2 id="PEER-factor-analysis">PEER factor analysis<a class="anchor-link" href="#PEER-factor-analysis">&#182;</a></h2><p>The top of this document has code chunk that installs <code>PEER</code> R package.</p>
 <p>PEER factor analysis package has a number of configuable parameters. For this analysis I use default values hard-coded into the script. Therefore these settings cannot be configured from input parameter though it is straightforward to implement them as parameters.</p>
-<p>For every tissue I compute PEER factor using the top 10,000 expressed genes.</p>
+<p>For every tissue I compute PEER factor using the top 10,000 expressed genes. It takes 1hr to 3hrs to complete each tissue.</p>
 </div>
 </div>
 </div>
@@ -735,8 +802,7 @@ body {
 <span class="kn">input:</span> <span class="kp">for_each</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;tissues&#39;</span><span class="p">]</span>
 <span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/peer_analysis/${_tissues}_PEER_covariates.txt&quot;</span><span class="p">,</span> 
         <span class="s2">&quot;${cwd!a}/peer_analysis/${_tissues}_PEER_alpha.txt&quot;</span><span class="p">,</span> 
-        <span class="s2">&quot;${cwd!a}/peer_analysis/${_tissues}_PEER_residuals.txt&quot;</span><span class="p">,</span> 
-        <span class="kp">group_by</span> <span class="o">=</span> <span class="mi">3</span>
+        <span class="s2">&quot;${cwd!a}/peer_analysis/${_tissues}_PEER_residuals.txt&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s2">&quot;30:00:00&quot;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s2">&quot;8G&quot;</span><span class="p">,</span> <span class="kp">trunk_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="kp">trunk_workers</span><span class="o">=</span><span class="mi">1</span>
 <span class="kn">R:</span>
     <span class="n">alphaprior_a</span><span class="o">=</span><span class="mf">0.001</span>
@@ -815,18 +881,27 @@ body {
     <span class="n">colnames</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="n">rownames</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
     <span class="c1"># write results</span>
     <span class="n">cat</span><span class="p">(</span><span class="s2">&quot;PEER: writing results ... &quot;</span><span class="p">)</span>
-    <span class="n">WriteTable</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]},</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>  <span class="c1"># format(X, digits=6)</span>
-    <span class="n">WriteTable</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">1</span><span class="p">]}),</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>
-    <span class="n">WriteTable</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">2</span><span class="p">]},</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>
+    <span class="n">WriteTable</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>  <span class="c1"># format(X, digits=6)</span>
+    <span class="n">WriteTable</span><span class="p">(</span><span class="n">A</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>
+    <span class="n">WriteTable</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>
     <span class="n">cat</span><span class="p">(</span><span class="s2">&quot;done.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
 </div>
+</div><div class="hidden_output">
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Execute-workflows">Execute workflows<a class="anchor-link" href="#Execute-workflows">&#182;</a></h2><p>See execution cells below.</p>
+</div>
+</div>
+</div>
+		</div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">rnaseq</span>
@@ -840,26 +915,45 @@ body {
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
-<table id="table_mstephens_625c925888ceff0ddc1543b0d5b25a41" style="border: 0px"><tr style="border: 0px">
-                        <td style="border: 0px">
-                        <i id="status_mstephens_625c925888ceff0ddc1543b0d5b25a41"
-                            class="fa fa-2x fa-fw fa-square-o"
-                            onmouseover="$('#status_mstephens_625c925888ceff0ddc1543b0d5b25a41').addClass('fa-stop').removeClass('fa-square-o')"
-                            onmouseleave="$('#status_mstephens_625c925888ceff0ddc1543b0d5b25a41').addClass('fa-square-o').removeClass('fa-stop')"
-                            onclick="kill_task('625c925888ceff0ddc1543b0d5b25a41', 'mstephens')"
-                        ></i> </td>
-                        <td style="border:0px"><a onclick="task_info('625c925888ceff0ddc1543b0d5b25a41', 'mstephens')"><pre>625c925888ceff0ddc1543b0d5b25a41</pre></a></td>
-                        <td style="border:0px">&nbsp;</td>
-                        <td style="border:0px;text-align=right;">
-                        <pre><time id="duration_mstephens_625c925888ceff0ddc1543b0d5b25a41" datetime="1503882892000.5896">0 sec</time></pre></td>
-                        </tr>
-                        </table>
+<div class="sos_hint">1 task completed: <a onclick="task_info('9b995fe7c3b980d751892e558f116c10', 'mstephens')">9b99</a></div>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>INFO: 9b995fe7c3b980d751892e558f116c10 <span class="ansi-green-fg">received</span> dict_keys([&#39;/home/gaow/Documents/GTEx/rn...
+</pre>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<div class="sos_hint">53 tasks completed: <a onclick="task_info('f2a011a9681da1a1fc54ca6b81deb548', 'localhost')">f2a0</a>, <a onclick="task_info('13a862ba169224177255f186d5754625', 'localhost')">13a8</a>, ..., <a onclick="task_info('ce28df86efb482d56e488c89bcd79cad', 'localhost')">ce28</a></div>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
 </div>
 </div>
         </div>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
+    </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[8]:</div>
@@ -926,7 +1020,7 @@ loaded via a namespace (and not attached):
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/c49382372af53399209a877b26c55a14bbdb3628/analysis/20170515_RNASeq_Analysis.ipynb"><code>analysis/20170515_RNASeq_Analysis.ipynb</code></a> committed by Gao Wang on Sun Aug 27 20:16:14 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/c49382372af53399209a877b26c55a14bbdb3628">revision 2, c493823</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/53ef24c608d6571c8b8b69403af7b73148e603d5/analysis/20170515_RNASeq_Analysis.ipynb"><code>analysis/20170515_RNASeq_Analysis.ipynb</code></a> committed by Gao Wang on Mon Aug 28 10:07:27 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/53ef24c608d6571c8b8b69403af7b73148e603d5">revision 5, 53ef24c</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
