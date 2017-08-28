@@ -360,7 +360,7 @@ body {
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
-   <a href="http://github.com/stephenslab/gtex-eqtl"> <span class="fa fa-github"></span> </a>
+   <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
       </div><!--/.nav-collapse -->
@@ -403,7 +403,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-file-format-conversion-&amp;-normalization">Data file format conversion &amp; normalization<a class="anchor-link" href="#Data-file-format-conversion-&amp;-normalization">&#182;</a></h2><p>Quantile normalization of RNA-seq data</p>
+<h2 id="Data-file-format-conversion-&amp;-normalization">Data file format conversion &amp; normalization<a class="anchor-link" href="#Data-file-format-conversion-&amp;-normalization">&#182;</a></h2><p>Quantile normalization of RNA-seq data -- see code chunk below.</p>
 <ol>
 <li>expression values are quantile normalized to the average empirical distribution observed across samples</li>
 <li>for each gene, expression values are inverse quantile normalized to a standard normal distribution across samples<ul>
@@ -412,7 +412,7 @@ body {
 </li>
 <li>input are rpkm file (for normalization), count file (for QC) and vcf file (for removing samples that do not have genotypes)</li>
 </ol>
-<p>It results in 4 <strong>analysis ready expression data files</strong> in HDF5 format of different versions / organizations of the same information: emperical quantile normalized and standard normal quantile normalized, saved as a flat file or grouped by tissues.</p>
+<p>It results in 4 <strong>analysis ready expression data files</strong> in HDF5 format of different versions / organizations of the same information: emperical quantile normalized and standard normal quantile normalized, saved as a flat file or grouped by tissues; plus 2 original Count and RPKM files converted to HDF5 format.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -427,11 +427,13 @@ body {
 <span class="kn">parameter:</span> <span class="n">read_cutoff</span> <span class="o">=</span> <span class="mi">5</span>
 <span class="kn">parameter:</span> <span class="n">sample_cutoff</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="kn">input:</span> <span class="n">rna_rpkm</span><span class="p">,</span> <span class="n">rna_cnts</span><span class="p">,</span> <span class="n">genotype</span><span class="p">,</span> <span class="n">sample_attr</span>
-<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.qnorm.std.flat.h5&quot;</span><span class="p">,</span> 
+<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.qnorm.std.flat.h5&quot;</span><span class="p">,</span>
         <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.qnorm.flat.h5&quot;</span><span class="p">,</span> 
         <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.qnorm.std.h5&quot;</span><span class="p">,</span> 
-        <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.qnorm.h5&quot;</span>
-<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+        <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.qnorm.h5&quot;</span><span class="p">,</span>
+        <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.h5&quot;</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;rpkm&#39;</span><span class="p">,</span> <span class="s1">&#39;reads&#39;</span><span class="p">),</span>
+        <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.h5&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span><span class="p">,</span> <span class="kp">queue</span> <span class="o">=</span> <span class="s2">&quot;mstephens&quot;</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s2">&quot;20:00:00&quot;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s2">&quot;60G&quot;</span>
 <span class="kn">python:</span>
     <span class="c1"># Adopted by Gao Wang from:</span>
     <span class="c1"># https://github.com/broadinstitute/gtex-pipeline</span>
@@ -569,10 +571,14 @@ body {
     <span class="n">prefix</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">prefix</span><span class="p">)</span>
     <span class="n">quant_std_per_tissue</span> <span class="o">=</span> <span class="n">annotate_tissue_data</span><span class="p">(</span><span class="n">quant_std_df</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
     <span class="n">quant_per_tissue</span> <span class="o">=</span> <span class="n">annotate_tissue_data</span><span class="p">(</span><span class="n">quant_df</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="n">expression_per_tissue</span> <span class="o">=</span> <span class="n">annotate_tissue_data</span><span class="p">(</span><span class="n">expression_df</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+    <span class="n">counts_per_tissue</span> <span class="o">=</span> <span class="n">annotate_tissue_data</span><span class="p">(</span><span class="n">counts_df</span><span class="p">,</span> <span class="n">args</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
     <span class="n">quant_std_df</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.qnorm.std.flat.h5&quot;</span><span class="p">,</span>  <span class="s1">&#39;GTExV7&#39;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
     <span class="n">quant_df</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.qnorm.flat.h5&quot;</span><span class="p">,</span> <span class="s1">&#39;GTExV7&#39;</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;w&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
     <span class="n">write_per_tissue_data</span><span class="p">(</span><span class="n">quant_per_tissue</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.qnorm.h5&quot;</span><span class="p">)</span>
     <span class="n">write_per_tissue_data</span><span class="p">(</span><span class="n">quant_std_per_tissue</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.qnorm.std.h5&quot;</span><span class="p">)</span>
+    <span class="n">write_per_tissue_data</span><span class="p">(</span><span class="n">expression_per_tissue</span><span class="p">,</span> <span class="n">prefix</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span><span class="p">)</span>
+    <span class="n">write_per_tissue_data</span><span class="p">(</span><span class="n">counts_per_tissue</span><span class="p">,</span> <span class="n">prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;rpkm&#39;</span><span class="p">,</span> <span class="s1">&#39;reads&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;done.&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -584,9 +590,136 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="A-peek-into-normalized-expression-data">A peek into normalized expression data<a class="anchor-link" href="#A-peek-into-normalized-expression-data">&#182;</a></h2><p>Code chunk below shows how to load it to R, and how the data is stored:</p>
+</div>
+</div>
+</div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># source(&quot;http://bioconductor.org/biocLite.R&quot;)</span>
+<span class="c1"># biocLite(&quot;rhdf5&quot;)</span>
+<span class="n">library</span><span class="p">(</span><span class="n">rhdf5</span><span class="p">)</span>
+<span class="n">fdata</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx/rna-processed/GTEx_v7_RNA-seq_RNA-SeQCv1.1.8_gene_rpkm.qnorm.std.h5&#39;</span>
+<span class="n">meta</span> <span class="o">=</span> <span class="n">h5ls</span><span class="p">(</span><span class="n">fdata</span><span class="p">)</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">meta</span><span class="err">$</span><span class="n">group</span><span class="p">)</span>
+<span class="n">groups</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="n">groups</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">)]</span>
+<span class="n">groups</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<ol class=list-inline>
+	<li>'/Adipose_Subcutaneous'</li>
+	<li>'/Adipose_Visceral_Omentum'</li>
+	<li>'/Adrenal_Gland'</li>
+	<li>'/Artery_Aorta'</li>
+	<li>'/Artery_Coronary'</li>
+	<li>'/Artery_Tibial'</li>
+	<li>'/Bladder'</li>
+	<li>'/Brain_Amygdala'</li>
+	<li>'/Brain_Anterior_cingulate_cortex_BA'</li>
+	<li>'/Brain_Caudate_basal_ganglia'</li>
+	<li>'/Brain_Cerebellar_Hemisphere'</li>
+	<li>'/Brain_Cerebellum'</li>
+	<li>'/Brain_Cortex'</li>
+	<li>'/Brain_Frontal_Cortex_BA'</li>
+	<li>'/Brain_Hippocampus'</li>
+	<li>'/Brain_Hypothalamus'</li>
+	<li>'/Brain_Nucleus_accumbens_basal_ganglia'</li>
+	<li>'/Brain_Putamen_basal_ganglia'</li>
+	<li>'/Brain_Spinal_cord_cervical_c'</li>
+	<li>'/Brain_Substantia_nigra'</li>
+	<li>'/Breast_Mammary_Tissue'</li>
+	<li>'/Cells_EBV_transformed_lymphocytes'</li>
+	<li>'/Cells_Transformed_fibroblasts'</li>
+	<li>'/Cervix_Ectocervix'</li>
+	<li>'/Cervix_Endocervix'</li>
+	<li>'/Colon_Sigmoid'</li>
+	<li>'/Colon_Transverse'</li>
+	<li>'/Esophagus_Gastroesophageal_Junction'</li>
+	<li>'/Esophagus_Mucosa'</li>
+	<li>'/Esophagus_Muscularis'</li>
+	<li>'/Fallopian_Tube'</li>
+	<li>'/Heart_Atrial_Appendage'</li>
+	<li>'/Heart_Left_Ventricle'</li>
+	<li>'/Kidney_Cortex'</li>
+	<li>'/Liver'</li>
+	<li>'/Lung'</li>
+	<li>'/Minor_Salivary_Gland'</li>
+	<li>'/Muscle_Skeletal'</li>
+	<li>'/Nerve_Tibial'</li>
+	<li>'/Ovary'</li>
+	<li>'/Pancreas'</li>
+	<li>'/Pituitary'</li>
+	<li>'/Prostate'</li>
+	<li>'/Skin_Not_Sun_Exposed_Suprapubic'</li>
+	<li>'/Skin_Sun_Exposed_Lower_leg'</li>
+	<li>'/Small_Intestine_Terminal_Ileum'</li>
+	<li>'/Spleen'</li>
+	<li>'/Stomach'</li>
+	<li>'/Testis'</li>
+	<li>'/Thyroid'</li>
+	<li>'/Uterus'</li>
+	<li>'/Vagina'</li>
+	<li>'/Whole_Blood'</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+    </div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">mydata</span> <span class="o">&lt;-</span> <span class="n">h5read</span><span class="p">(</span><span class="n">fdata</span><span class="p">,</span> <span class="s2">&quot;/Lung&quot;</span><span class="p">)</span>
+<span class="nb">str</span><span class="p">(</span><span class="n">mydata</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>List of 4
+ $ axis0        : chr [1:414(1d)] &#34;GTEX-111CU-0326-SM-5GZXO&#34; &#34;GTEX-111FC-1126-SM-5GZWU&#34; &#34;GTEX-111VG-0726-SM-5GIDC&#34; &#34;GTEX-111YS-0626-SM-5GZXV&#34; ...
+ $ axis1        : chr [1:43624(1d)] &#34;ENSG00000223972.4&#34; &#34;ENSG00000227232.4&#34; &#34;ENSG00000243485.2&#34; &#34;ENSG00000237613.2&#34; ...
+ $ block0_items : chr [1:414(1d)] &#34;GTEX-111CU-0326-SM-5GZXO&#34; &#34;GTEX-111FC-1126-SM-5GZWU&#34; &#34;GTEX-111VG-0726-SM-5GIDC&#34; &#34;GTEX-111YS-0626-SM-5GZXV&#34; ...
+ $ block0_values: num [1:414, 1:43624] 0.181 0.012 -0.665 -0.739 0.377 ...
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So the group specific data object <code>mydata</code> has attribute <code>axis0</code> for sample names, <code>axis1</code> for gene names, and <code>block0_values</code> the 474 * 56202 data matrix. One can make <code>t(block0_values)</code> a separate matrix and set its rownames to <code>axis1</code> and colnames to <code>axis0</code>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="PEER-factor-analysis">PEER factor analysis<a class="anchor-link" href="#PEER-factor-analysis">&#182;</a></h2><p>This step is computationally intensive -- takes a few days to analyze all tissues, on a desktop computer.</p>
 <p>PEER factor analysis package has a number of configuable parameters. For this analysis I use default values hard-coded into the script. Therefore these settings cannot be configured from input parameter though it is straightforward to implement them as parameters.</p>
-<p>For every tissue I compute PEER factor using the top 20,000 expressed genes.</p>
+<p>For every tissue I compute PEER factor using the top 10,000 expressed genes.</p>
 </div>
 </div>
 </div>
@@ -604,14 +737,14 @@ body {
         <span class="s2">&quot;${cwd!a}/peer_analysis/${_tissues}_PEER_alpha.txt&quot;</span><span class="p">,</span> 
         <span class="s2">&quot;${cwd!a}/peer_analysis/${_tissues}_PEER_residuals.txt&quot;</span><span class="p">,</span> 
         <span class="kp">group_by</span> <span class="o">=</span> <span class="mi">3</span>
-<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span> <span class="c1">#, walltime = &quot;20:00:00&quot;, cores = 1, mem = &quot;4G&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s2">&quot;30:00:00&quot;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s2">&quot;8G&quot;</span><span class="p">,</span> <span class="kp">trunk_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="kp">trunk_workers</span><span class="o">=</span><span class="mi">1</span>
 <span class="kn">R:</span>
     <span class="n">alphaprior_a</span><span class="o">=</span><span class="mf">0.001</span>
     <span class="n">alphaprior_b</span><span class="o">=</span><span class="mf">0.01</span>
     <span class="n">epsprior_a</span><span class="o">=</span><span class="mf">0.1</span>
     <span class="n">epsprior_b</span><span class="o">=</span><span class="mi">10</span>
     <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span>
-    <span class="n">use_genes</span> <span class="o">=</span> <span class="mi">20000</span>
+    <span class="n">use_genes</span> <span class="o">=</span> <span class="mi">10000</span>
     <span class="n">expr</span><span class="o">.</span><span class="n">h5</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">}</span>
     <span class="n">library</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">quietly</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>  <span class="c1"># https://github.com/PMBio/peer</span>
     <span class="n">library</span><span class="p">(</span><span class="n">rhdf5</span><span class="p">,</span> <span class="n">quietly</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
@@ -690,13 +823,13 @@ body {
 </div>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">rnaseq</span><span class="p">:</span><span class="mi">1</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">rnaseq</span>
 </pre></div>
 </div>
 </div>
@@ -707,18 +840,18 @@ body {
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
-<table id="table_localhost_e9d1e0590cf991268d1b0f2dd771ce78" style="border: 0px"><tr style="border: 0px">
+<table id="table_mstephens_625c925888ceff0ddc1543b0d5b25a41" style="border: 0px"><tr style="border: 0px">
                         <td style="border: 0px">
-                        <i id="status_localhost_e9d1e0590cf991268d1b0f2dd771ce78"
+                        <i id="status_mstephens_625c925888ceff0ddc1543b0d5b25a41"
                             class="fa fa-2x fa-fw fa-square-o"
-                            onmouseover="$('#status_localhost_e9d1e0590cf991268d1b0f2dd771ce78').addClass('fa-stop').removeClass('fa-square-o')"
-                            onmouseleave="$('#status_localhost_e9d1e0590cf991268d1b0f2dd771ce78').addClass('fa-square-o').removeClass('fa-stop')"
-                            onclick="kill_task('e9d1e0590cf991268d1b0f2dd771ce78', 'localhost')"
+                            onmouseover="$('#status_mstephens_625c925888ceff0ddc1543b0d5b25a41').addClass('fa-stop').removeClass('fa-square-o')"
+                            onmouseleave="$('#status_mstephens_625c925888ceff0ddc1543b0d5b25a41').addClass('fa-square-o').removeClass('fa-stop')"
+                            onclick="kill_task('625c925888ceff0ddc1543b0d5b25a41', 'mstephens')"
                         ></i> </td>
-                        <td style="border:0px"><a onclick="task_info('e9d1e0590cf991268d1b0f2dd771ce78', 'localhost')"><pre>e9d1e0590cf991268d1b0f2dd771ce78</pre></a></td>
+                        <td style="border:0px"><a onclick="task_info('625c925888ceff0ddc1543b0d5b25a41', 'mstephens')"><pre>625c925888ceff0ddc1543b0d5b25a41</pre></a></td>
                         <td style="border:0px">&nbsp;</td>
                         <td style="border:0px;text-align=right;">
-                        <pre><time id="duration_localhost_e9d1e0590cf991268d1b0f2dd771ce78" datetime="1503875290684.0764">0 sec</time></pre></td>
+                        <pre><time id="duration_mstephens_625c925888ceff0ddc1543b0d5b25a41" datetime="1503882892000.5896">0 sec</time></pre></td>
                         </tr>
                         </table>
 </div>
@@ -726,21 +859,13 @@ body {
         </div>
 </div>
 </div>
-</div>
-    </div><div class="rendered lan_R">
+</div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="c1"># source(&quot;http://bioconductor.org/biocLite.R&quot;)</span>
-<span class="c1"># biocLite(&quot;rhdf5&quot;)</span>
-<span class="n">library</span><span class="p">(</span><span class="n">rhdf5</span><span class="p">)</span>
-<span class="n">fdata</span> <span class="o">=</span> <span class="s1">&#39;data1/rna-seq/GTEx_v7_RNA-seq_RNA-SeQCv1.1.8_gene_rpkm.gct.hdf5&#39;</span>
-<span class="n">meta</span> <span class="o">=</span> <span class="n">h5ls</span><span class="p">(</span><span class="n">fdata</span><span class="p">)</span>
-<span class="n">groups</span> <span class="o">=</span> <span class="n">unique</span><span class="p">(</span><span class="n">meta</span><span class="err">$</span><span class="n">group</span><span class="p">)</span>
-<span class="n">groups</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="n">groups</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">)]</span>
-<span class="n">groups</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
 </pre></div>
 </div>
 </div>
@@ -751,92 +876,47 @@ body {
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
-<ol class=list-inline>
-	<li>'/Adipose_Subcutaneous'</li>
-	<li>'/Adipose_Visceral_Omentum'</li>
-	<li>'/Adrenal_Gland'</li>
-	<li>'/Artery_Aorta'</li>
-	<li>'/Artery_Coronary'</li>
-	<li>'/Artery_Tibial'</li>
-	<li>'/Bladder'</li>
-	<li>'/Brain_Amygdala'</li>
-	<li>'/Brain_Anterior_cingulate_cortex_BA'</li>
-	<li>'/Brain_Caudate_basal_ganglia'</li>
-	<li>'/Brain_Cerebellar_Hemisphere'</li>
-	<li>'/Brain_Cerebellum'</li>
-	<li>'/Brain_Cortex'</li>
-	<li>'/Brain_Frontal_Cortex_BA'</li>
-	<li>'/Brain_Hippocampus'</li>
-	<li>'/Brain_Hypothalamus'</li>
-	<li>'/Brain_Nucleus_accumbens_basal_ganglia'</li>
-	<li>'/Brain_Putamen_basal_ganglia'</li>
-	<li>'/Brain_Spinal_cord_cervical_c'</li>
-	<li>'/Brain_Substantia_nigra'</li>
-	<li>'/Breast_Mammary_Tissue'</li>
-	<li>'/Cells_EBV_transformed_lymphocytes'</li>
-	<li>'/Cells_Leukemia_cell_line_CML'</li>
-	<li>'/Cells_Transformed_fibroblasts'</li>
-	<li>'/Cervix_Ectocervix'</li>
-	<li>'/Cervix_Endocervix'</li>
-	<li>'/Colon_Sigmoid'</li>
-	<li>'/Colon_Transverse'</li>
-	<li>'/Esophagus_Gastroesophageal_Junction'</li>
-	<li>'/Esophagus_Mucosa'</li>
-	<li>'/Esophagus_Muscularis'</li>
-	<li>'/Fallopian_Tube'</li>
-	<li>'/Heart_Atrial_Appendage'</li>
-	<li>'/Heart_Left_Ventricle'</li>
-	<li>'/Kidney_Cortex'</li>
-	<li>'/Liver'</li>
-	<li>'/Lung'</li>
-	<li>'/Minor_Salivary_Gland'</li>
-	<li>'/Muscle_Skeletal'</li>
-	<li>'/Nerve_Tibial'</li>
-	<li>'/Ovary'</li>
-	<li>'/Pancreas'</li>
-	<li>'/Pituitary'</li>
-	<li>'/Prostate'</li>
-	<li>'/Skin_Not_Sun_Exposed_Suprapubic'</li>
-	<li>'/Skin_Sun_Exposed_Lower_leg'</li>
-	<li>'/Small_Intestine_Terminal_Ileum'</li>
-	<li>'/Spleen'</li>
-	<li>'/Stomach'</li>
-	<li>'/Testis'</li>
-	<li>'/Thyroid'</li>
-	<li>'/Uterus'</li>
-	<li>'/Vagina'</li>
-	<li>'/Whole_Blood'</li>
-</ol>
-</div>
-</div>
-        </div>
-</div>
-</div>
-</div>
-    </div><div class="rendered lan_R">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="n">mydata</span> <span class="o">&lt;-</span> <span class="n">h5read</span><span class="p">(</span><span class="n">fdata</span><span class="p">,</span> <span class="s2">&quot;/Lung&quot;</span><span class="p">)</span>
-<span class="nb">str</span><span class="p">(</span><span class="n">mydata</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="output_wrapper">
-<div class="output">
-<div class="hidden_output">
-<div class="output_area">
-<div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>List of 4
- $ axis0        : chr [1:474(1d)] &#34;GTEX-111CU-0326-SM-5GZXO&#34; &#34;GTEX-111FC-1126-SM-5GZWU&#34; &#34;GTEX-111VG-0726-SM-5GIDC&#34; &#34;GTEX-111YS-0626-SM-5GZXV&#34; ...
- $ axis1        : chr [1:56202(1d)] &#34;ENSG00000223972.4&#34; &#34;ENSG00000227232.4&#34; &#34;ENSG00000243485.2&#34; &#34;ENSG00000237613.2&#34; ...
- $ block0_items : chr [1:474(1d)] &#34;GTEX-111CU-0326-SM-5GZXO&#34; &#34;GTEX-111FC-1126-SM-5GZWU&#34; &#34;GTEX-111VG-0726-SM-5GIDC&#34; &#34;GTEX-111YS-0626-SM-5GZXV&#34; ...
- $ block0_values: int [1:474, 1:56202] 4 5 4 1 5 5 1 3 0 1 ...
-</pre>
+<p class="session_section">SoS</p>
+<table class="session_info">
+<tr>
+<th>SoS Version</th><td><pre>0.9.8.10</pre></td>
+</tr>
+</table>
+<p class="session_section">R</p>
+<table class="session_info">
+<tr>
+<th>Kernel</th><td><pre>ir</pre></td>
+</tr>
+<tr>
+<th>Language</th><td><pre>R</pre></td>
+</tr>
+<tr>
+<td colspan="2"><pre>R version 3.4.0 (2017-04-21)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: BunsenLabs GNU/Linux 8.7 (Hydrogen)
+Matrix products: default
+BLAS: /usr/lib64/microsoft-r/3.4/lib64/R/lib/libRblas.so
+LAPACK: /usr/lib/libopenblasp-r0.2.12.so
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+other attached packages:
+[1] RevoUtilsMath_10.0.0
+loaded via a namespace (and not attached):
+ [1] compiler_3.4.0      R6_2.2.0            magrittr_1.5       
+ [4] RevoUtils_10.0.4    IRdisplay_0.4.4     pbdZMQ_0.2-5       
+ [7] tools_3.4.0         crayon_1.3.2        uuid_0.1-2         
+[10] stringi_1.1.5       IRkernel_0.8.7.9000 jsonlite_1.4       
+[13] stringr_1.2.0       digest_0.6.12       repr_0.12.0        
+[16] evaluate_0.10      </pre></td>
+</tr>
+</table>
 </div>
 </div>
         </div>
@@ -844,17 +924,9 @@ body {
 </div>
 </div>
     </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>So the group specific data object <code>mydata</code> has attribute <code>axis0</code> for sample names, <code>axis1</code> for gene names, and <code>block0_values</code> the 474 * 56202 data matrix. One can make <code>t(block0_values)</code> a separate matrix and set its rownames to <code>axis1</code> and colnames to <code>axis0</code>.</p>
-</div>
-</div>
-</div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtl/blob/ed2cbcf71d475ee295c25b8517f18795ba1862d3/analysis/20170515_RNASeq_Analysis.ipynb"><code>analysis/20170515_RNASeq_Analysis.ipynb</code></a> committed by Gao Wang on Sun Aug 27 18:28:33 2017 <a href="http://github.com/stephenslab/gtex-eqtl/commit/ed2cbcf71d475ee295c25b8517f18795ba1862d3">revision 1, ed2cbcf</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/c49382372af53399209a877b26c55a14bbdb3628/analysis/20170515_RNASeq_Analysis.ipynb"><code>analysis/20170515_RNASeq_Analysis.ipynb</code></a> committed by Gao Wang on Sun Aug 27 20:16:14 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/c49382372af53399209a877b26c55a14bbdb3628">revision 2, c493823</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
