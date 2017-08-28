@@ -355,6 +355,9 @@ body {
   <a href="../analysis.html">Analysis</a>
 </li>
 <li>
+  <a href="../prototype.html">Prototype</a>
+</li>
+<li>
   <a href="../writeup.html">Writeup</a>
 </li>
       </ul>
@@ -396,7 +399,7 @@ body {
 <span class="kn">parameter:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx&#39;</span>
 <span class="kn">parameter:</span> <span class="n">geno</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/ToyExample/3mashgenes.genotype.h5&quot;</span>
 <span class="kn">parameter:</span> <span class="n">expr</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/ToyExample/3mashgenes.expr.h5&quot;</span>
-<span class="kn">parameter:</span> <span class="n">covar</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/h5_formatted/GTEx7.covariates.h5&quot;</span>
+<span class="kn">parameter:</span> <span class="n">covar</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/h5_formatted/GTEx7.covariates.orth.h5&quot;</span>
 <span class="kn">parameter:</span> <span class="n">tissues</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">expr</span><span class="p">,</span> <span class="n">libver</span><span class="o">=</span><span class="s1">&#39;latest&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
 <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="n">geno</span><span class="p">,</span> <span class="n">libver</span><span class="o">=</span><span class="s1">&#39;latest&#39;</span><span class="p">)</span>
 <span class="kn">parameter:</span> <span class="n">genes</span> <span class="o">=</span> <span class="p">[]</span>
@@ -565,7 +568,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/1240d17d9836a2d2a2e006d82bf65fe8f9cefb77/analysis/20170814_MR_ASH_GTEx.ipynb"><code>analysis/20170814_MR_ASH_GTEx.ipynb</code></a> committed by Gao Wang on Mon Aug 28 14:35:27 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/1240d17d9836a2d2a2e006d82bf65fe8f9cefb77">revision 1, 1240d17</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/cce2e2f3a097ef23beda45a553ce3e78cde03abd/analysis/20170814_MR_ASH_GTEx.ipynb"><code>analysis/20170814_MR_ASH_GTEx.ipynb</code></a> committed by Gao Wang on Mon Aug 28 16:24:53 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/cce2e2f3a097ef23beda45a553ce3e78cde03abd">revision 2, cce2e2f</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

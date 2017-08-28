@@ -12,6 +12,9 @@ docs/analysis/20170824_MR_ASH_Lung.html
 docs/index.html
 docs/index.tpl
 docs/js/docs.js
+docs/prototype.html
+docs/prototype.tpl
+docs/prototype/20170828_PEER_Not_Orthogonal.html
 docs/writeup.html
 docs/writeup.tpl
 docs/writeup/GTEx7_Analysis_Plan.html

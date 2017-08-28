@@ -71,11 +71,11 @@ $( document ).ready(function(){
             st.toc_index=0;
             // fire the main function with these parameters
             table_of_contents(cfg, st);
-            var file=analysisDict[$("h1:first").attr("id")];
+            var file=prototypeDict[$("h1:first").attr("id")];
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
-            var docs=analysisArray;
-            var pos=analysisArray.indexOf(file);
+            var docs=prototypeArray;
+            var pos=prototypeArray.indexOf(file);
             for (var a=pos;a>=0;a--){
                   var name=docs[a]
                   $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
@@ -373,109 +373,76 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Extract-dataset-for-given-genes">Extract dataset for given genes<a class="anchor-link" href="#Extract-dataset-for-given-genes">&#182;</a></h1><p>A procedure useful to create toy data from data bundle for methods / pipeline development, and more.</p>
+<h1 id="PEER-analysis-result-not-orthogonal">PEER analysis result not orthogonal<a class="anchor-link" href="#PEER-analysis-result-not-orthogonal">&#182;</a></h1>
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Here as an example we focus on genes selected due to the <a href="https://stephenslab.github.io/gtexresults_mash/TwoSNP/2SNP.sos">LD show-case table in the mash paper</a>: see <a href="https://stephenslab.github.io/gtexresults_mash/TwoSNP/">this table</a> for motivation that these genes get selected.</p>
-<p>Note that this workflow itself can take an arbitary list of genes down the line, via</p>
-<pre><code>sos run this_notebook.ipynb extract_gene_data --glist /path/to/genelist.txt</code></pre>
-<p>This can be useful to select genes of interest for specific analysis.</p>
-</div>
-</div>
-</div><div class="rendered lan_SoS">
+</div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
-<span class="kn">parameter:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx&#39;</span>
-<span class="kn">parameter:</span> <span class="n">glist</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GIT/github/gtex-eqtls/data/3mashgenes.txt&#39;</span>
-<span class="n">rna_cnts</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx/gtex7/rna-seq/GTEx_Data_2016-01-15_v7_RNA-seq_RNA-SeQCv1.1.8_gene_reads.gct.gz&quot;</span>
-<span class="n">ann_file</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/h5_formatted/${rna_cnts!bn}.annotation&quot;</span>
-<span class="kn">parameter:</span> <span class="n">geno_file</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/h5_formatted/GTEx7.Imputed.genotyped.filtered.cis.h5&quot;</span>
-<span class="kn">parameter:</span> <span class="n">expr_file</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/rna_processed/GTEx_Data_2016-01-15_v7_RNA-seq_RNA-SeQCv1.1.8_gene_rpkm.qnorm.std.h5&quot;</span>
-<span class="p">[</span><span class="n">extract_gene_data</span><span class="p">]</span>
-<span class="c1"># Given gene list, extract SNP and expression data from formatted database</span>
-<span class="kn">input:</span> <span class="n">geno_file</span><span class="p">,</span> <span class="n">expr_file</span>
-<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/ToyExample/${glist!bn}.genotype.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;${cwd!a}/ToyExample/${glist!bn}.expr.h5&quot;</span>
-<span class="kn">task:</span>
-<span class="kn">python:</span>
-    <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-    <span class="kn">import</span> <span class="nn">os</span>
-    <span class="c1"># load gene annotation</span>
-    <span class="n">ann</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">ann_file</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="n">header</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">names</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;chr&#39;</span><span class="p">,</span> <span class="s1">&#39;gene&#39;</span><span class="p">],</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">usecols</span> <span class="o">=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">3</span><span class="p">))</span>
-    <span class="n">ann</span> <span class="o">=</span> <span class="p">{</span><span class="n">g</span><span class="p">:</span><span class="n">c</span> <span class="k">for</span> <span class="n">g</span><span class="p">,</span> <span class="n">c</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">ann</span><span class="p">[</span><span class="s1">&#39;gene&#39;</span><span class="p">],</span> <span class="n">ann</span><span class="p">[</span><span class="s1">&#39;chr&#39;</span><span class="p">])}</span>
-    <span class="c1"># load gene list</span>
-    <span class="n">genes</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">glist</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="n">header</span> <span class="o">=</span> <span class="bp">None</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-    <span class="c1"># purge existing toy</span>
-    <span class="n">gfile</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">}</span>
-    <span class="n">efile</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">}</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">gfile</span><span class="p">):</span>
-       <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">gfile</span><span class="p">)</span>
-    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">efile</span><span class="p">):</span>
-       <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">efile</span><span class="p">)</span>
-    <span class="c1"># build &amp; save genotypes</span>
-    <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">genes</span><span class="p">:</span>
-        <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-        <span class="k">if</span> <span class="n">g</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">ann</span><span class="p">:</span>
-           <span class="k">print</span><span class="p">(</span><span class="s2">&quot;Gene {} not found&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">g</span><span class="p">))</span>
-           <span class="k">continue</span>
-        <span class="n">chrom</span> <span class="o">=</span> <span class="n">ann</span><span class="p">[</span><span class="n">g</span><span class="p">]</span>
-        <span class="n">geno</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="s1">&#39;chr{}/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">g</span><span class="p">))</span>
-        <span class="n">geno</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">gfile</span><span class="p">,</span> <span class="s1">&#39;chr{}/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">chrom</span><span class="p">,</span> <span class="n">g</span><span class="p">),</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
-    <span class="c1"># extract &amp; save expression</span>
-    <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">pd</span><span class="o">.</span><span class="n">HDFStore</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-        <span class="n">expr</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">key</span><span class="p">)</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">genes</span><span class="p">]</span>
-        <span class="n">expr</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">efile</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
-</pre></div>
-</div>
-</div>
-</div>
-</div>
-    </div><div class="rendered lan_SoS">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">extract_gene_data</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+<span class="n">pfile</span> <span class="o">=</span> <span class="s1">&#39;/home/gaow/Documents/GTEx/peer_analysis/Heart_Atrial_Appendage_PEER_covariates.txt&#39;</span>
+<span class="n">peer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+<span class="n">peer</span><span class="o">.</span><span class="n">shape</span>
 </pre></div>
 </div>
 </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
 <div class="output_area">
-<div class="prompt"></div>
-<div class="output_html rendered_html output_subarea ">
-<table id="table_localhost_516639420143ee2775c6219cdf3ce824" style="border: 0px"><tr style="border: 0px">
-                        <td style="border: 0px">
-                        <i id="status_localhost_516639420143ee2775c6219cdf3ce824"
-                            class="fa fa-2x fa-fw fa-square-o"
-                            onmouseover="$('#status_localhost_516639420143ee2775c6219cdf3ce824').addClass('fa-stop').removeClass('fa-square-o')"
-                            onmouseleave="$('#status_localhost_516639420143ee2775c6219cdf3ce824').addClass('fa-square-o').removeClass('fa-stop')"
-                            onclick="kill_task('516639420143ee2775c6219cdf3ce824', 'localhost')"
-                        ></i> </td>
-                        <td style="border:0px"><a onclick="task_info('516639420143ee2775c6219cdf3ce824', 'localhost')"><pre>516639420143ee2775c6219cdf3ce824</pre></a></td>
-                        <td style="border:0px">&nbsp;</td>
-                        <td style="border:0px;text-align=right;">
-                        <pre><time id="duration_localhost_516639420143ee2775c6219cdf3ce824" datetime="1503945430197.111">0 sec</time></pre></td>
-                        </tr>
-                        </table>
+<div class="prompt output_prompt">Out[1]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>(264, 35)</pre>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
     </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So there are 264 samples in this tissue and 35 PEER factors has been computed from expression data (see <a href="http://stephenslab.github.io/gtex-eqtls/writeup/GTEx7_Analysis_Plan.html#Covariates">why 35 PEER factors are generated</a>).</p>
+<p>Now let's check its orthonormal basis:</p>
+</div>
+</div>
+</div><div class="rendered lan_Python3">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.linalg</span>
+<span class="n">bmat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">orth</span><span class="p">(</span><span class="n">peer</span><span class="p">)</span>
+<span class="n">bmat</span><span class="o">.</span><span class="n">shape</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt output_prompt">Out[2]:</div>
+<div class="output_text output_subarea output_execute_result">
+<pre>(264, 31)</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>So there should in fact only be 31 independent factors.</p>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
@@ -488,7 +455,6 @@ body {
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -498,15 +464,34 @@ body {
 <th>SoS Version</th><td><pre>0.9.8.10</pre></td>
 </tr>
 </table>
+<p class="session_section">Python3</p>
+<table class="session_info">
+<tr>
+<th>Kernel</th><td><pre>python3</pre></td>
+</tr>
+<tr>
+<th>Language</th><td><pre>Python3</pre></td>
+</tr>
+<tr>
+<th>Version</th><td><pre>3.6.1 |Continuum Analytics, Inc.| (default, May 11 2017, 13:09:58) 
+[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]</pre></td>
+</tr>
+<tr>
+<th>pandas</th><td><pre>0.20.2</pre></td>
+</tr>
+<tr>
+<th>scipy</th><td><pre>0.19.1</pre></td>
+</tr>
+</table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
+    </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/e6e179ee86083588b81358885fd507a807a5bfb6/analysis/20170627_Subset_Genes.ipynb"><code>analysis/20170627_Subset_Genes.ipynb</code></a> committed by Gao Wang on Mon Aug 28 13:41:21 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/e6e179ee86083588b81358885fd507a807a5bfb6">revision 1, e6e179e</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/cce2e2f3a097ef23beda45a553ce3e78cde03abd/prototype/20170828_PEER_Not_Orthogonal.ipynb"><code>prototype/20170828_PEER_Not_Orthogonal.ipynb</code></a> committed by Gao Wang on Mon Aug 28 16:24:53 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/cce2e2f3a097ef23beda45a553ce3e78cde03abd">revision 1, cce2e2f</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

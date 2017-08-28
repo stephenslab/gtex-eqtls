@@ -212,7 +212,7 @@ div.cell {
 }
 .display_control_panel .display_control {
     opacity: 0;
-}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}</style>
+}.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -355,6 +355,9 @@ body {
   <a href="../analysis.html">Analysis</a>
 </li>
 <li>
+  <a href="../prototype.html">Prototype</a>
+</li>
+<li>
   <a href="../writeup.html">Writeup</a>
 </li>
       </ul>
@@ -370,7 +373,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Association-mapping-covariates">Association mapping covariates<a class="anchor-link" href="#Association-mapping-covariates">&#182;</a></h1><p>Merge covariates info from multiple sources into analysis-ready file in HDF5 format.</p>
+<h1 id="Association-mapping-covariates">Association mapping covariates<a class="anchor-link" href="#Association-mapping-covariates">&#182;</a></h1><p>Merge covariates info from multiple sources and find orthonormal basis for covariate matrix</p>
 </div>
 </div>
 </div>
@@ -379,13 +382,13 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Covariates for analysis we've got so far include sample phenotypes (sex), sample attributes (genotyping platform), top principle components for population structure, and PEER factors. All saved in various files.</p>
-<p>Workflow below consolidates these files and generates a <strong>single analysis ready covariate file</strong> in HDF5 format.</p>
+<p>Workflow below consolidates these files and generates a <strong>single analysis ready covariate file</strong> in HDF5 format. There are two versions I save: the orginal covar matrix and its orthonomal basis (which will be used as input to association analysis down the line).</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="kp">run</span> <span class="n">format_covariates</span>
@@ -401,11 +404,12 @@ body {
 <span class="kn">parameter:</span> <span class="n">pc_file</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/genotype_plink/GTEx7.Imputed.prune.pc.ped&quot;</span>
 <span class="kn">parameter:</span> <span class="n">covar_file</span> <span class="o">=</span> <span class="s2">&quot;${phenotype!a}&quot;</span>
 <span class="kn">input:</span> <span class="n">peer_factors</span><span class="p">,</span> <span class="n">pc_file</span><span class="p">,</span> <span class="n">covar_file</span><span class="p">,</span> <span class="n">platform_info</span>
-<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/h5_formatted/GTEx7.covariates.h5&quot;</span>
+<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/h5_formatted/GTEx7.covariates.raw.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;${cwd!a}/h5_formatted/GTEx7.covariates.orth.h5&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">python:</span>
     <span class="kn">import</span> <span class="nn">os</span>
     <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <span class="kn">import</span> <span class="nn">scipy.linalg</span>
     <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">ar</span><span class="p">}):</span>
        <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
     <span class="n">pc</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">pc_file</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">header</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span><span class="p">,</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
@@ -423,7 +427,9 @@ body {
         <span class="n">samples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">samples</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
         <span class="n">samples</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">dat</span><span class="o">.</span><span class="n">columns</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">left_index</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">right_index</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
-        <span class="n">samples</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="s1">&#39;/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="o">-</span><span class="mi">20</span><span class="p">])),</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
+        <span class="n">samples</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="s1">&#39;/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="o">-</span><span class="mi">20</span><span class="p">])),</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
+        <span class="n">samples_orth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">orth</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">samples_orth</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="s1">&#39;/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">[:</span><span class="o">-</span><span class="mi">20</span><span class="p">])),</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
 <span class="p">[</span><span class="n">recode_platform</span><span class="p">:</span> <span class="kp">provides</span> <span class="o">=</span> <span class="n">platform_info</span><span class="p">]</span>
 <span class="c1"># Covariate &quot;platform&quot; needs to be recoded to numeric</span>
 <span class="kn">input:</span> <span class="n">sample_attr</span>
@@ -467,15 +473,20 @@ body {
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
-<div class="sos_hint">1 task completed: <a onclick="task_info('3497fb265aa5304e8b02b9d39b1548b4', 'localhost')">3497</a></div>
-</div>
-</div>
-        </div><div class="hidden_output">
-<div class="output_area">
-<div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>
-</pre>
+<table id="table_localhost_3a0a09c2d750847657fa637de9356215" style="border: 0px"><tr style="border: 0px">
+                        <td style="border: 0px">
+                        <i id="status_localhost_3a0a09c2d750847657fa637de9356215"
+                            class="fa fa-2x fa-fw fa-square-o"
+                            onmouseover="$('#status_localhost_3a0a09c2d750847657fa637de9356215').addClass('fa-stop').removeClass('fa-square-o')"
+                            onmouseleave="$('#status_localhost_3a0a09c2d750847657fa637de9356215').addClass('fa-square-o').removeClass('fa-stop')"
+                            onclick="kill_task('3a0a09c2d750847657fa637de9356215', 'localhost')"
+                        ></i> </td>
+                        <td style="border:0px"><a onclick="task_info('3a0a09c2d750847657fa637de9356215', 'localhost')"><pre>3a0a09c2d750847657fa637de9356215</pre></a></td>
+                        <td style="border:0px">&nbsp;</td>
+                        <td style="border:0px;text-align=right;">
+                        <pre><time id="duration_localhost_3a0a09c2d750847657fa637de9356215" datetime="1503955303854.1863">0 sec</time></pre></td>
+                        </tr>
+                        </table>
 </div>
 </div>
         </div>
@@ -485,7 +496,7 @@ body {
     </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
@@ -514,7 +525,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/3e98d4da4aee3cda771310d8dcd19cde8755b270/analysis/20170605_Prepare_Covariates.ipynb"><code>analysis/20170605_Prepare_Covariates.ipynb</code></a> committed by Gao Wang on Mon Aug 28 13:09:16 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/3e98d4da4aee3cda771310d8dcd19cde8755b270">revision 1, 3e98d4d</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/cce2e2f3a097ef23beda45a553ce3e78cde03abd/analysis/20170605_Prepare_Covariates.ipynb"><code>analysis/20170605_Prepare_Covariates.ipynb</code></a> committed by Gao Wang on Mon Aug 28 16:24:53 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/cce2e2f3a097ef23beda45a553ce3e78cde03abd">revision 2, cce2e2f</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

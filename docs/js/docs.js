@@ -1,4 +1,6 @@
 var analysisArray = ['20170824_MR_ASH_Lung', '20170814_MR_ASH_GTEx', '20170627_Subset_Genes', '20170605_Prepare_Covariates', '20170530_CisSNP', '20170523_Genotype_Formatting_PCA', '20170518_Imputation', '20170515_RNASeq_Analysis', '20170424_dbGaP_Download']
 var analysisDict = {"Download-data-from-dbGaP-1":"20170424_dbGaP_Download","RNA-Seq-data-preprocessing-1":"20170515_RNASeq_Analysis","GTEx-V7-genotype-data-imputation-1":"20170518_Imputation","Imputation-data-post-processing-and-PCA-analysis-1":"20170523_Genotype_Formatting_PCA","Extract-cis-SNP-1":"20170530_CisSNP","Association-mapping-covariates-1":"20170605_Prepare_Covariates","Extract-dataset-for-given-genes-1":"20170627_Subset_Genes","MR-ASH-on-GTEx-genes-1":"20170814_MR_ASH_GTEx","MR-ASH-analysis-on-Lung-1":"20170824_MR_ASH_Lung"}
+var prototypeArray = ['20170828_PEER_Not_Orthogonal']
+var prototypeDict = {"PEER-analysis-result-not-orthogonal-1":"20170828_PEER_Not_Orthogonal"}
 var writeupArray = ['GTEx7_Analysis_Plan']
 var writeupDict = {"GTEx-V7-eQTL-data-analysis-procedure-1":"GTEx7_Analysis_Plan"}
