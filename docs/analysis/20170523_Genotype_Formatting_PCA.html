@@ -373,7 +373,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Imputation-data-post-processing-and-PCA-analysis">Imputation data post-processing and PCA analysis<a class="anchor-link" href="#Imputation-data-post-processing-and-PCA-analysis">&#182;</a></h1><p>Processes VCF files from Michigan imputation server by removing imputed sites and fix variant IDs. We also perform MDS analysis to obtain covariates for association analysis.</p>
+<h1 id="Imputation-data-post-processing-and-PCA-analysis">Imputation data post-processing and PCA analysis<a class="anchor-link" href="#Imputation-data-post-processing-and-PCA-analysis">&#182;</a></h1><p>Process VCF files from Michigan imputation server by removing imputed sites and fix variant IDs. We also perform MDS analysis to obtain covariates for association analysis.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -410,8 +410,8 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Genotype-filtering-and-formatting">Genotype filtering and formatting<a class="anchor-link" href="#Genotype-filtering-and-formatting">&#182;</a></h2><p>The primary goal here is to convert genotypes from VCF format to PLINK binary format, to make it easy to obtain various statistics down the road, and perform some routine analysis. During the conversion, imputed sites are removed and variant ID for tri-allelic sites are fixed. Also both the original and imputed data are converted and saved separately. As a bonus step, MDS analysis for global ancestry is performed at the end for both data-sets.</p>
-<h3 id="VCF-to-PLINK-conversion">VCF to PLINK conversion<a class="anchor-link" href="#VCF-to-PLINK-conversion">&#182;</a></h3><p>Code chunk below converts from VCF to PLINK format along with various minor adjustments.</p>
+<h2 id="Genotype-filtering-and-formatting">Genotype filtering and formatting<a class="anchor-link" href="#Genotype-filtering-and-formatting">&#182;</a></h2><p>The primary goal here is to convert genotypes from VCF format to PLINK binary format, to make it easy to obtain various statistics and perform routine analysis down the road. During the conversion, imputed sites are removed and variant ID for tri-allelic sites are fixed. Also both the original and imputed data are converted and saved separately.</p>
+<h3 id="VCF-to-PLINK-conversion">VCF to PLINK conversion<a class="anchor-link" href="#VCF-to-PLINK-conversion">&#182;</a></h3><p>Code chunk below converts from VCF to PLINK format, fixing variant ID issues along the course.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -494,7 +494,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Removing-imputed-variant-sites">Removing imputed variant sites<a class="anchor-link" href="#Removing-imputed-variant-sites">&#182;</a></h3><p>Code chunk below compares <code>GTEx7.dbGap</code> and <code>GTEx7.Imputed</code> and extract only genotyped variants from imputation results. Additional filter on minor allele frequency and minor allele counts is also applied.</p>
+<h3 id="Remove-imputed-variant-sites">Remove imputed variant sites<a class="anchor-link" href="#Remove-imputed-variant-sites">&#182;</a></h3><p>Code chunk below compares <code>GTEx7.dbGap</code> and <code>GTEx7.Imputed</code> and extract only genotyped variants from imputation results. Additional filters on minor allele frequency and minor allele counts are also applied. The result is genotype input for eQTL discovery, saved in PLINK format.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -554,12 +554,12 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Global-ancestry-PCA-/-MDS-analysis">Global ancestry PCA / MDS analysis<a class="anchor-link" href="#Global-ancestry-PCA-/-MDS-analysis">&#182;</a></h2><p>Code chunk below: basically involve LD pruning and MDS analysis via the <code>king</code> program. Particularly we want to compare:</p>
+<h2 id="Global-ancestry-PCA-/-MDS-analysis">Global ancestry PCA / MDS analysis<a class="anchor-link" href="#Global-ancestry-PCA-/-MDS-analysis">&#182;</a></h2><p>After LD pruning I perform MDS analysis via the <code>king</code> program. We want to find out in terms of PCA plot:</p>
 <ul>
-<li>If imputation data and original data behave the same in terms of PCA</li>
+<li>If imputated data and original data behave the same</li>
 <li>Are there any difference before / after removing imputed sites</li>
 </ul>
-<p>We also compare our results with Broad PCA analysis release.</p>
+<p>See code chunk below for implementation.</p>
 </div>
 </div>
 </div>
@@ -671,7 +671,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Plot-Broad-PCA-results">Plot Broad PCA results<a class="anchor-link" href="#Plot-Broad-PCA-results">&#182;</a></h2>
+<h3 id="Plot-Broad-PCA-results">Plot Broad PCA results<a class="anchor-link" href="#Plot-Broad-PCA-results">&#182;</a></h3>
 </div>
 </div>
 </div>
@@ -679,7 +679,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>GTEx has provided in dbGaP the PCA analysis before imputation. I want to verify it agrees with my PCA analysis for imputed data. Code chunk below matches sample label with GTEx provided PCA results to prepare data for plot, and saved to a temporary file <code>/tmp/GTExPCA.ped</code>.</p>
+<p>GTEx has provided in dbGaP the PCA analysis done at Broad before imputation. I want to verify it agrees with my PCA analysis for imputed data. Code chunk below matches sample label with Broad PCA results to prepare data for plot, and saved to a temporary file <code>/tmp/GTExPCA.ped</code> (previewed below) to be used by the same plot routine I developed here.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -1463,7 +1463,15 @@ body {
 </div>
 </div>
 </div>
-    </div><div class="rendered lan_SoS">
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The results are quite consistent across different datasets.</p>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[3]:</div>
@@ -1511,7 +1519,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/3e98d4da4aee3cda771310d8dcd19cde8755b270/analysis/20170523_Genotype_Formatting_PCA.ipynb"><code>analysis/20170523_Genotype_Formatting_PCA.ipynb</code></a> committed by Gao Wang on Mon Aug 28 13:09:16 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/3e98d4da4aee3cda771310d8dcd19cde8755b270">revision 4, 3e98d4d</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170523_Genotype_Formatting_PCA.ipynb"><code>analysis/20170523_Genotype_Formatting_PCA.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 5, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

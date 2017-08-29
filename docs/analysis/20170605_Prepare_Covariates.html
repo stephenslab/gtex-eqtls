@@ -373,7 +373,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Association-mapping-covariates">Association mapping covariates<a class="anchor-link" href="#Association-mapping-covariates">&#182;</a></h1><p>Merge covariates info from multiple sources and find orthonormal basis for covariate matrix</p>
+<h1 id="Association-mapping-covariates">Association mapping covariates<a class="anchor-link" href="#Association-mapping-covariates">&#182;</a></h1><p>Merge covariates info from multiple sources and find orthonormal basis for covariate matrix.</p>
 </div>
 </div>
 </div>
@@ -382,7 +382,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Covariates for analysis we've got so far include sample phenotypes (sex), sample attributes (genotyping platform), top principle components for population structure, and PEER factors. All saved in various files.</p>
-<p>Workflow below consolidates these files and generates a <strong>single analysis ready covariate file</strong> in HDF5 format. There are two versions I save: the orginal covar matrix and its orthonomal basis (which will be used as input to association analysis down the line).</p>
+<p>Workflow below consolidates these files and generates a <strong>single analysis ready covariate file</strong> in HDF5 format. There are two versions I save: the orginal covar matrix and its orthonormal basis (which will be used as input to association analysis down the line).</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -493,7 +493,19 @@ body {
 </div>
 </div>
 </div>
-    </div><div class="rendered lan_SoS">
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="About-orthonormal-basis">About orthonormal basis<a class="anchor-link" href="#About-orthonormal-basis">&#182;</a></h2><p>In my initial analysis I've got error message from <code>varbvs</code> package:</p>
+<pre><code>&gt; varbvs::varbvsmix(X, Z, y, sa = c(0,mixsd^2))
+Error in solve.default(crossprod(Z), c(y %*% Z)) : 
+  system is computationally singular: reciprocal condition number = 3.53577e-17</code></pre>
+<p>The reason <code>crossprod(Z)</code> is near singular is because some colums of <code>Z</code> are highly correlated (<code>cor(Z)</code> near singular). Since <a href="../prototype/20170828_PEER_Not_Orthogonal.html">PEER factors are not orthogonal</a> it may create such problem. Since we use an improper prior on <code>Z</code> and we do not need to interpret the <code>Z</code> part of the model, we will use such orthogonal basis that spans the same space as <code>Z</code> with reduced rank to avoid the numerical problem. That way we do not have to improve prior on <code>Z</code>.</p>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
@@ -525,7 +537,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/cce2e2f3a097ef23beda45a553ce3e78cde03abd/analysis/20170605_Prepare_Covariates.ipynb"><code>analysis/20170605_Prepare_Covariates.ipynb</code></a> committed by Gao Wang on Mon Aug 28 16:24:53 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/cce2e2f3a097ef23beda45a553ce3e78cde03abd">revision 2, cce2e2f</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170605_Prepare_Covariates.ipynb"><code>analysis/20170605_Prepare_Covariates.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 3, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

@@ -212,7 +212,7 @@ div.cell {
 }
 .display_control_panel .display_control {
     opacity: 0;
-}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}</style>
+}.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -373,7 +373,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Extract-dataset-for-given-genes">Extract dataset for given genes<a class="anchor-link" href="#Extract-dataset-for-given-genes">&#182;</a></h1><p>A procedure useful to create toy data from data bundle for methods / pipeline development, and more.</p>
+<h1 id="Extract-dataset-for-given-genes">Extract dataset for given genes<a class="anchor-link" href="#Extract-dataset-for-given-genes">&#182;</a></h1><p>A procedure useful to create toy data from data bundle for methods development and closer look at real data of interest.</p>
 </div>
 </div>
 </div>
@@ -381,10 +381,10 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here as an example we focus on genes selected due to the <a href="https://stephenslab.github.io/gtexresults_mash/TwoSNP/2SNP.sos">LD show-case table in the mash paper</a>: see <a href="https://stephenslab.github.io/gtexresults_mash/TwoSNP/">this table</a> for motivation that these genes get selected.</p>
+<p>As an example we focus on genes selected due to the <a href="https://stephenslab.github.io/gtexresults_mash/TwoSNP/2SNP.sos">LD show-case table in the mash paper</a>: see <a href="https://stephenslab.github.io/gtexresults_mash/TwoSNP/">this table</a> for motivation that these genes get selected.</p>
 <p>Note that this workflow itself can take an arbitary list of genes down the line, via</p>
 <pre><code>sos run this_notebook.ipynb extract_gene_data --glist /path/to/genelist.txt</code></pre>
-<p>This can be useful to select genes of interest for specific analysis.</p>
+<p>This can be useful to select genes of interest for specific analysis. See implementation below.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -404,7 +404,7 @@ body {
 <span class="c1"># Given gene list, extract SNP and expression data from formatted database</span>
 <span class="kn">input:</span> <span class="n">geno_file</span><span class="p">,</span> <span class="n">expr_file</span>
 <span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/ToyExample/${glist!bn}.genotype.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;${cwd!a}/ToyExample/${glist!bn}.expr.h5&quot;</span>
-<span class="kn">task:</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">python:</span>
     <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
     <span class="kn">import</span> <span class="nn">os</span>
@@ -506,7 +506,7 @@ body {
 </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/e6e179ee86083588b81358885fd507a807a5bfb6/analysis/20170627_Subset_Genes.ipynb"><code>analysis/20170627_Subset_Genes.ipynb</code></a> committed by Gao Wang on Mon Aug 28 13:41:21 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/e6e179ee86083588b81358885fd507a807a5bfb6">revision 1, e6e179e</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170627_Subset_Genes.ipynb"><code>analysis/20170627_Subset_Genes.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 2, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

@@ -381,7 +381,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p><strong>Update</strong>: on Aug 14 2017 updated eQTL pipeline for <a href="img/eQTL_pipeline_AWG_call_081417.pdf">V7 &amp; 8 are released</a>. Major changes involve normalization procedure (relevant here) and PEER factor analysis.</p>
+<p><strong>Update</strong>: on Aug 14 and Aug 20 2017 <a href="https://github.com/stephenslab/gtex-eqtls/tree/master/data/confidential/eQTL_pipeline_AWG_call_081417.pdf">updated eQTL pipeline for V7 &amp; 8</a>  are released. Major changes involve normalization procedure (relevant here) and choice of number of PEER factors.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -396,14 +396,6 @@ body {
 <span class="n">genotype</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx/gtex7/variant_calls/GTEx_Analysis_2016-01-15_v7_WholeGenomeSeq_635Ind_PASS_AB02_GQ20_HETX_MISS15_PLINKQC.PIR.vcf.gz&quot;</span>
 <span class="n">sample_attr</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx/gtex7/sample_annotations/GTEx_Analysis_2016-01-15_v7_SampleAttributesDS.txt&quot;</span>
 <span class="n">cwd</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx&quot;</span>
-<span class="p">[</span><span class="n">peer</span><span class="p">]</span>
-<span class="kn">output:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;R_peer_source_1.3.tgz&quot;</span><span class="p">)</span>
-<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
-<span class="kn">download:</span>
-    <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">downloads</span><span class="o">/</span><span class="n">PMBio</span><span class="o">/</span><span class="n">peer</span><span class="o">/</span><span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
-<span class="kn">run:</span>
-    <span class="n">R</span> <span class="n">CMD</span> <span class="n">INSTALL</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
-    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
 </pre></div>
 </div>
 </div>
@@ -414,7 +406,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-file-format-conversion">Data file format conversion<a class="anchor-link" href="#Data-file-format-conversion">&#182;</a></h2><p>Code chunk below is prototyping codes to convert RNA-seq file to HDF5 format. It is no longer needed because conversions have been done inside the normalization step next section. But it is useful in case the original data will have to be processed separately.</p>
+<h2 id="Data-file-format-conversion">Data file format conversion<a class="anchor-link" href="#Data-file-format-conversion">&#182;</a></h2><p>Code chunk below is prototyping codes to convert RNA-seq file to HDF5 format. It is not needed when the normalization workflow is executed (next section) because normalization workflow performs format conversion on original data. But it is useful to have here, in case the original data will have to be processed separately.</p>
 </div>
 </div>
 </div>
@@ -465,16 +457,17 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-file-format-conversion-&amp;-normalization">Data file format conversion &amp; normalization<a class="anchor-link" href="#Data-file-format-conversion-&amp;-normalization">&#182;</a></h2><p>Quantile normalization of RNA-seq data -- see code chunk below.</p>
+<h2 id="Data-file-format-conversion-&amp;-normalization">Data file format conversion &amp; normalization<a class="anchor-link" href="#Data-file-format-conversion-&amp;-normalization">&#182;</a></h2><p>Quantile normalization of RNA-seq data</p>
 <ol>
-<li>expression values are quantile normalized to the average empirical distribution observed across samples</li>
-<li>for each gene, expression values are inverse quantile normalized to a standard normal distribution across samples<ul>
+<li>input are rpkm file (for normalization), count file (for QC) and vcf file (for removing samples that do not have genotypes)</li>
+<li>Expression values are quantile normalized to the average empirical distribution observed across samples</li>
+<li>For each gene, expression values are inverse quantile normalized to a standard normal distribution across samples<ul>
 <li>genes are selected based on expression thresholds of &gt;0.1 RPKM in &gt;10 samples and &gt;5 reads in &gt;10 samples</li>
 </ul>
 </li>
-<li>input are rpkm file (for normalization), count file (for QC) and vcf file (for removing samples that do not have genotypes)</li>
 </ol>
-<p>It results in 4 <strong>analysis ready expression data files</strong> in HDF5 format of different versions / organizations of the same information: emperical quantile normalized and standard normal quantile normalized, saved as a flat file or grouped by tissues; plus 2 original Count and RPKM files converted to HDF5 format.</p>
+<p>It results in 4 <strong>analysis ready expression data files</strong> in HDF5 format of different versions / organizations of the same information: emperical quantile normalized and standard normal quantile normalized, saved as flat tables or grouped by tissues. Additionally 2 original Count and RPKM files are converted to HDF5 format grouped by tissues.</p>
+<p>See code chunk below for an implementation.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -652,7 +645,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="A-peek-into-normalized-expression-data">A peek into normalized expression data<a class="anchor-link" href="#A-peek-into-normalized-expression-data">&#182;</a></h2><p>Code chunk below shows how to load it to R, and how the data is stored. For example to list all data groups in the HDF5 file:</p>
+<h2 id="A-glance-at-normalized-expression-data">A glance at normalized expression data<a class="anchor-link" href="#A-glance-at-normalized-expression-data">&#182;</a></h2><p>Code chunk below shows how to load data in HDF5 to R, and how the information is organized. For example here are all data groups in the HDF5 file of standardized QN transformed expression data:</p>
 </div>
 </div>
 </div><div class="rendered lan_R">
@@ -743,7 +736,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>and to view table <code>/Lung</code>:</p>
+<p>and here is preview of table <code>/Lung</code>:</p>
 </div>
 </div>
 </div><div class="rendered lan_R">
@@ -779,7 +772,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>So the group <code>/Lung</code> has attribute <code>axis0</code> for sample names, <code>axis1</code> for gene names, and <code>block0_values</code> the 414 * 43624 data matrix. One can make <code>t(block0_values)</code> a separate matrix and set its rownames to <code>axis1</code> and colnames to <code>axis0</code>.</p>
+<p>So <code>/Lung</code> has attribute <code>axis0</code> for sample names, <code>axis1</code> for gene names, and <code>block0_values</code> the 414 * 43624 data matrix. One can make <code>t(block0_values)</code> a separate matrix and set its rownames to <code>axis1</code> and colnames to <code>axis0</code>.</p>
 </div>
 </div>
 </div>
@@ -787,8 +780,33 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="PEER-factor-analysis">PEER factor analysis<a class="anchor-link" href="#PEER-factor-analysis">&#182;</a></h2><p>The top of this document has code chunk that installs <code>PEER</code> R package.</p>
-<p>PEER factor analysis package has a number of configuable parameters. For this analysis I use default values hard-coded into the script. Therefore these settings cannot be configured from input parameter though it is straightforward to implement them as parameters.</p>
+<h2 id="PEER-factor-analysis">PEER factor analysis<a class="anchor-link" href="#PEER-factor-analysis">&#182;</a></h2><p>Code chunk below installs <code>PEER</code> R packages.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">peer</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">cwd</span><span class="p">,</span> <span class="s2">&quot;R_peer_source_1.3.tgz&quot;</span><span class="p">)</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">download:</span>
+    <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">downloads</span><span class="o">/</span><span class="n">PMBio</span><span class="o">/</span><span class="n">peer</span><span class="o">/</span><span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
+<span class="kn">run:</span>
+    <span class="n">R</span> <span class="n">CMD</span> <span class="n">INSTALL</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>PEER factor analysis package has a number of configuable parameters. For this analysis I use default values hard-coded into the script (see code chunk below, step <code>rnaseq_2</code>). Therefore these settings cannot be configured from input parameter though it is straightforward to implement it otherwise.</p>
 <p>For every tissue I compute PEER factor using the top 10,000 expressed genes. It takes 1hr to 3hrs to complete each tissue.</p>
 </div>
 </div>
@@ -1023,7 +1041,7 @@ loaded via a namespace (and not attached):
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/53ef24c608d6571c8b8b69403af7b73148e603d5/analysis/20170515_RNASeq_Analysis.ipynb"><code>analysis/20170515_RNASeq_Analysis.ipynb</code></a> committed by Gao Wang on Mon Aug 28 10:07:27 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/53ef24c608d6571c8b8b69403af7b73148e603d5">revision 5, 53ef24c</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170515_RNASeq_Analysis.ipynb"><code>analysis/20170515_RNASeq_Analysis.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 6, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

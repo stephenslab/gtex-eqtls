@@ -373,7 +373,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Extract-cis-SNP">Extract cis-SNP<a class="anchor-link" href="#Extract-cis-SNP">&#182;</a></h1><p>We annotate genotype data by gene positions and extract cis-SNP. Data extraction is performed via <code>PLINK</code> and saved to HDF5 format.</p>
+<h1 id="Extract-cis-SNP">Extract cis-SNP<a class="anchor-link" href="#Extract-cis-SNP">&#182;</a></h1><p>We annotate genotype data by gene positions and extract cis-SNP. Data are extracted from <code>PLINK</code> files and saved to HDF5 format.</p>
 </div>
 </div>
 </div>
@@ -394,7 +394,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Annotate-genes">Annotate genes<a class="anchor-link" href="#Annotate-genes">&#182;</a></h2><p>Annotate genes to chromosomal positions. Genes are taken from the GTEx expression file.</p>
+<h2 id="Annotate-genes">Annotate genes<a class="anchor-link" href="#Annotate-genes">&#182;</a></h2><p>Code chunk below annotates genes to chromosomal positions. Genes are taken from the GTEx expression file.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -410,8 +410,9 @@ body {
 <span class="kn">input:</span> <span class="n">rna_cnts</span>
 <span class="kn">output:</span> <span class="s2">&quot;${cwd}/h5_formatted/${input!bn}.annotation&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">run:</span>
+    <span class="n">zcat</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">}</span> <span class="o">|</span> <span class="n">cut</span> <span class="o">-</span><span class="n">f</span> <span class="mi">1</span> <span class="o">|</span> <span class="n">tail</span> <span class="o">-</span><span class="n">n</span><span class="o">+</span><span class="mi">4</span> <span class="o">|</span> <span class="n">cut</span> <span class="o">-</span><span class="n">f</span> <span class="mi">1</span> <span class="o">-</span><span class="n">d</span> <span class="s1">&#39;.&#39;</span> <span class="o">&gt;</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">n</span><span class="p">}</span><span class="o">.</span><span class="n">gene_id</span>
 <span class="kn">R:</span>
-    <span class="n">system</span><span class="p">(</span><span class="s2">&quot;zcat ${input} | cut -f 1 | tail -n+4 | cut -f 1 -d &#39;.&#39; &gt; ${input!n}.gene_id&quot;</span><span class="p">)</span>
     <span class="n">values</span> <span class="o">=</span> <span class="n">unlist</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}.gene_id&quot;</span><span class="p">,</span> <span class="n">stringsAsFactors</span><span class="o">=</span><span class="n">FALSE</span><span class="p">))</span> 
     <span class="n">ensembl</span> <span class="o">=</span> <span class="n">biomaRt</span><span class="p">::</span><span class="n">useMart</span><span class="p">(</span><span class="s2">&quot;ensembl&quot;</span><span class="p">,</span> <span class="n">dataset</span><span class="o">=</span><span class="s2">&quot;hsapiens_gene_ensembl&quot;</span><span class="p">,</span> <span class="n">host</span><span class="o">=</span><span class="s2">&quot;www.ensembl.org&quot;</span><span class="p">)</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">biomaRt</span><span class="p">::</span><span class="n">getBM</span><span class="p">(</span><span class="n">attributes</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="s2">&quot;chromosome_name&quot;</span><span class="p">,</span> <span class="s2">&quot;start_position&quot;</span><span class="p">,</span> <span class="s2">&quot;end_position&quot;</span><span class="p">,</span> <span class="s2">&quot;ensembl_gene_id&quot;</span><span class="p">,</span> <span class="s2">&quot;hgnc_symbol&quot;</span><span class="p">),</span> <span class="n">filters</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="s2">&quot;ensembl_gene_id&quot;</span><span class="p">),</span> <span class="n">values</span> <span class="o">=</span> <span class="n">values</span><span class="p">,</span>  <span class="n">mart</span> <span class="o">=</span> <span class="n">ensembl</span><span class="p">)</span>
@@ -442,7 +443,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Make-cis-SNP-tables">Make cis-SNP tables<a class="anchor-link" href="#Make-cis-SNP-tables">&#182;</a></h2><p>Using position annotations previously obtained, we work though the genotype data <code>GTEx7.Imputed.genotyped.filtered</code>, creating for each gene a table containing its cis-SNPs. Variants are first annotated to genes, then cis-SNPs to extract are defined as SNPs 1,000,000 bp up/downstream of the gene's TSS site. Code chunk below implements the procedure. It results a <strong>single analysis ready file</strong> in HDF5 format containing ~50K groups of genotype data (gene-names).</p>
+<h2 id="Make-cis-SNP-tables">Make cis-SNP tables<a class="anchor-link" href="#Make-cis-SNP-tables">&#182;</a></h2><p>Using position annotations previously obtained, we work though the genotype data <code>GTEx7.Imputed.genotyped.filtered</code>, creating for each gene a table containing its cis-SNPs. Variants are first annotated to genes, then cis-SNPs to extract are defined as SNPs 1,000,000 bp up/downstream of the gene's TSS site. The outcome is a <strong>single analysis ready file</strong> in HDF5 format containing ~50K groups of genotype data (gene-names). Code chunk below implements the procedure.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -558,7 +559,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/e6e179ee86083588b81358885fd507a807a5bfb6/analysis/20170530_CisSNP.ipynb"><code>analysis/20170530_CisSNP.ipynb</code></a> committed by Gao Wang on Mon Aug 28 13:41:21 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/e6e179ee86083588b81358885fd507a807a5bfb6">revision 2, e6e179e</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170530_CisSNP.ipynb"><code>analysis/20170530_CisSNP.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 3, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

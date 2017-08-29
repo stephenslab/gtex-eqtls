@@ -212,7 +212,7 @@ div.cell {
 }
 .display_control_panel .display_control {
     opacity: 0;
-}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}</style>
+}.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -373,7 +373,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Compute-pairwise-LD-for-selected-SNPs">Compute pairwise LD for selected SNPs<a class="anchor-link" href="#Compute-pairwise-LD-for-selected-SNPs">&#182;</a></h1><p>For real data we use <code>PLINK</code> for its performance.</p>
+<h1 id="Compute-pairwise-LD-for-selected-SNPs">Compute pairwise LD for selected SNPs<a class="anchor-link" href="#Compute-pairwise-LD-for-selected-SNPs">&#182;</a></h1><p>Though it is straightfoward enough to do it in R / Python, I use PLINK to compute the LD matrix.</p>
 </div>
 </div>
 </div>
@@ -381,7 +381,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Though it is straightfoward enough to do it in R / Python, I use PLINK to compute the LD matrix: first I extract the subset of variants of interest from all data, then use PLINK <code>--r2</code> option to compute LD stats and finally report a summary.</p>
+<p>PLINK is highly efficient. First I extract the subset of variants of interest from all data, then for a quick look I use <code>--indep-pairwise</code> to prune SNPs at given LD level. Finally I use <code>--r2</code> option to compute LD stats and formally report a summary.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -566,12 +566,14 @@ body {
 </div>
 <div class="output_wrapper">
 <div class="output">
+<div class="hidden_output">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">1 task completed: <a onclick="task_info('5b8b72200e012d39f40eca525b4bf6ea', 'localhost')">5b8b</a></div>
 </div>
 </div>
+        </div><div class="hidden_output">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -625,6 +627,7 @@ Marker lists written to
 </pre>
 </div>
 </div>
+        </div>
 </div>
 </div>
 </div>
@@ -632,7 +635,16 @@ Marker lists written to
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Examine-LD-strengths-per-chromosome">Examine LD strengths per chromosome<a class="anchor-link" href="#Examine-LD-strengths-per-chromosome">&#182;</a></h2><p>This section takes a deeper look at LD pattern. We load all data and compute some summary statistics on LD strength.</p>
+<p>Here I executed steps 1 &amp; 2. You'll see PLINK's log if you expand the code chunk above. But the relevant PLINK output message here is:</p>
+<pre><code>Pruning complete.  4204 of 13030 variants removed.</code></pre>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Examine-LD-strengths-per-chromosome">Examine LD strengths per chromosome<a class="anchor-link" href="#Examine-LD-strengths-per-chromosome">&#182;</a></h2><p>This section takes a deeper look at LD pattern using results from steps 3 &amp; 4. Cell below loads all data and compute some summary statistics on LD strength.</p>
 </div>
 </div>
 </div><div class="rendered lan_R">
@@ -670,7 +682,7 @@ Marker lists written to
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here is summary of proportion of pairs on each chromosome (row) having LD greater than thresholds (column)</p>
+<p>Here is summary of proportion of pairs on each chromosome (row) having LD greater than thresholds (column):</p>
 </div>
 </div>
 </div><div class="rendered lan_R">
@@ -759,7 +771,7 @@ Marker lists written to
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here is summary of number of unique SNPs involved on each chromosome (row) having LD greater than thresholds (column)</p>
+<p>Here is summary of number of unique SNPs involved on each chromosome (row) having LD greater than thresholds (column):</p>
 </div>
 </div>
 </div><div class="rendered lan_R">
@@ -939,7 +951,7 @@ loaded via a namespace (and not attached):
 </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/709eb174988b5e1543654445e781f21d33a506ee/analysis/20170828_Compute_LD.ipynb"><code>analysis/20170828_Compute_LD.ipynb</code></a> committed by Gao Wang on Mon Aug 28 20:19:43 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/709eb174988b5e1543654445e781f21d33a506ee">revision 1, 709eb17</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170828_Compute_LD.ipynb"><code>analysis/20170828_Compute_LD.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 2, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

@@ -382,9 +382,13 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This notebook analyzes a toy example <a href="20170627_Subset_Genes.html">previously created</a>. I'm creating this workflow to the best of my knowledge to make it general enough for use with later analysis. Ideally by running:</p>
-<pre><code>sos run 20170814_MR_ASH_GTEx.ipynb mr_ash --tissues Lung --geno /path/to/geno.h5 \
-    --expr /path/to/expr.h5 --covar /path/to/covar.h5</code></pre>
+<pre><code>sos run 20170814_MR_ASH_GTEx.ipynb mr_ash \
+    --tissues Lung \
+    --geno /path/to/geno.h5 \
+    --expr /path/to/expr.h5 \
+    --covar /path/to/covar.h5</code></pre>
 <p>(@wei it is generally difficult to write reusuable bioinformatics workflows unless with lots of engineering that I cannot afford, but we'll see how far we can go from here!)</p>
+<p>Code chunk below implements the workflow.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -568,7 +572,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/cce2e2f3a097ef23beda45a553ce3e78cde03abd/analysis/20170814_MR_ASH_GTEx.ipynb"><code>analysis/20170814_MR_ASH_GTEx.ipynb</code></a> committed by Gao Wang on Mon Aug 28 16:24:53 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/cce2e2f3a097ef23beda45a553ce3e78cde03abd">revision 2, cce2e2f</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170814_MR_ASH_GTEx.ipynb"><code>analysis/20170814_MR_ASH_GTEx.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 3, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

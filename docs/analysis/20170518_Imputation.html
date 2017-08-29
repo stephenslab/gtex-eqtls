@@ -421,8 +421,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Data-processing-for-imputation-server">Data processing for imputation server<a class="anchor-link" href="#Data-processing-for-imputation-server">&#182;</a></h2><p>Imputation server requires VCF input, by chromosome, each with complete header info.</p>
-<h3 id="Genotype-summary-statistics">Genotype summary statistics<a class="anchor-link" href="#Genotype-summary-statistics">&#182;</a></h3><p>Code chunk below calculates gneotype missing rate by sites and by individuals, and make plots.</p>
+<h2 id="Genotype-missingness-summary">Genotype missingness summary<a class="anchor-link" href="#Genotype-missingness-summary">&#182;</a></h2><p>Code below calculates missing rate by loci and by individuals. Plots are made to summarize the results.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -528,7 +527,15 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Genotype-preprocessing-workflow">Genotype preprocessing workflow<a class="anchor-link" href="#Genotype-preprocessing-workflow">&#182;</a></h3><p>Code chunk below prepares input VCF file for UMich Imputation Server.</p>
+<p>Missing rates are mostly under 1%. This should make imputation relatively straightforward.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Data-processing-for-imputation-server">Data processing for imputation server<a class="anchor-link" href="#Data-processing-for-imputation-server">&#182;</a></h2><p>Imputation server requires VCF input, by chromosome, each with complete header info. Code chunk below prepares input VCF file for UMich Imputation Server.</p>
 </div>
 </div>
 </div>
@@ -1031,7 +1038,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Imputation">Imputation<a class="anchor-link" href="#Imputation">&#182;</a></h2><p>Imputation was done with <a href="https://imputationserver.sph.umich.edu">Michigan Imputation Server</a> (MIS) because it uses Haplotype Reference Consortium (32,914 samples) reference panel which is not publicly available otherwise. <a href="https://imputationserver.sph.umich.edu/start.html#!pages/help">Here is how to prepare data</a> for this service. The prepared files are uploaded to <a href="https://imputationserver.sph.umich.edu">Michigan imputation server</a>.</p>
-<h3 id="Configuration-&amp;-outcome">Configuration &amp; outcome<a class="anchor-link" href="#Configuration-&amp;-outcome">&#182;</a></h3><p>Configuration:</p>
+<h3 id="Configuration">Configuration<a class="anchor-link" href="#Configuration">&#182;</a></h3>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -1068,7 +1075,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Outcome:</p>
+<h3 id="Outcome">Outcome<a class="anchor-link" href="#Outcome">&#182;</a></h3>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -1147,7 +1154,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/53ef24c608d6571c8b8b69403af7b73148e603d5/analysis/20170518_Imputation.ipynb"><code>analysis/20170518_Imputation.ipynb</code></a> committed by Gao Wang on Mon Aug 28 10:07:27 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/53ef24c608d6571c8b8b69403af7b73148e603d5">revision 4, 53ef24c</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170518_Imputation.ipynb"><code>analysis/20170518_Imputation.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 5, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
