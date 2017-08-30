@@ -372,14 +372,16 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
-<span class="n">mash_snps</span> <span class="o">=</span> <span class="s1">&#39;~/GIT/github/gtexresults_mash/Data/maxz.txt&#39;</span>
-<span class="n">snp_list</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx/mash_revision/snp_eqtls.txt&#39;</span>
-<span class="n">genotype_data</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx/genotype_plink/GTEx7.Imputed.bed&#39;</span>
 <span class="n">cwd</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx&#39;</span>
+<span class="n">mash_snps</span> <span class="o">=</span> <span class="s1">&#39;~/GIT/github/gtexresults_mash/Data/maxz.txt&#39;</span>
+<span class="n">mash_snps_all</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/mash_revision/MatrixEQTLSumStats.Portable.h5&quot;</span>
+<span class="n">snp_list</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/mash_revision/snp_eqtls.txt&quot;</span>
+<span class="n">snp_list_random</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/mash_revision/snp_random.txt&quot;</span>
+<span class="n">genotype_data</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/genotype_plink/GTEx7.Imputed.bed&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -391,6 +393,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Prepare-SNP-ID-list-to-extract">Prepare SNP ID list to extract<a class="anchor-link" href="#Prepare-SNP-ID-list-to-extract">&#182;</a></h2><p>For example, codes below prepares SNPs using the eQTLs from <code>mash</code> paper.</p>
+<h3 id="From-text-file">From text file<a class="anchor-link" href="#From-text-file">&#182;</a></h3><p>In particular <a href="https://github.com/stephenslab/gtexresults_mash/blob/master/Data/maxz.txt">this file</a>.</p>
 </div>
 </div>
 </div>
@@ -490,6 +493,94 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="From-HDF5-table-row-names">From HDF5 table row names<a class="anchor-link" href="#From-HDF5-table-row-names">&#182;</a></h3><p>In particular my GTEx V6 sumstat database <code>MatrixEQTLSumStats.Portable.h5</code></p>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">get_all_list</span>
+<span class="p">[</span><span class="n">get_all_list</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">snp_list</span><span class="p">,</span> <span class="n">snp_list_random</span>
+<span class="kn">python:</span>
+    <span class="kn">import</span> <span class="nn">h5py</span><span class="o">,</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
+    <span class="n">f</span> <span class="o">=</span> <span class="n">h5py</span><span class="o">.</span><span class="n">File</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">mash_snps_all</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="n">max_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]]</span>
+    <span class="n">random_list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">f</span><span class="p">[</span><span class="s1">&#39;null&#39;</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]]</span>
+    <span class="n">f</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">snp_list</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="n">max_list</span><span class="p">,</span> <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">snp_list_random</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="n">random_list</span><span class="p">,</span> <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<div class="sos_hint">%preview /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt /home/gaow/Documents/GTEx/mash_revision/snp_random.txt</div>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<div class="sos_hint"> input: <br>output: <a target="_blank" href="/home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt">/home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt</a>, <a target="_blank" href="/home/gaow/Documents/GTEx/mash_revision/snp_random.txt">/home/gaow/Documents/GTEx/mash_revision/snp_random.txt</a>
+</div>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt (183.2 KiB):</div>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>20:49461813
+1:169695110
+1:169655079
+1:27888990
+1:196513323
+</pre>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_random.txt (549.6 KiB):</div>
+</div>
+</div>
+        </div><div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>20:49782767
+20:49654572
+20:49392478
+1:169117725
+1:170340311
+</pre>
+</div>
+</div>
+        </div>
+</div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Compute-LD-for-given-list-of-variants">Compute LD for given list of variants<a class="anchor-link" href="#Compute-LD-for-given-list-of-variants">&#182;</a></h2><p>Code chunk below extracts SNPs from GTEx genotype data and computes <code>r2</code> via PLINK.</p>
 <ul>
 <li>Steps 1 &amp; 2 extracts data and run PLINK to get a quick estimate for, for example, when a pruning cutoff of 0.2 is set.</li>
@@ -506,13 +597,14 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">get_ld</span><span class="p">:</span><span class="mi">1</span><span class="o">-</span><span class="mi">2</span> <span class="o">-</span><span class="n">b</span> <span class="o">~/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTEx</span><span class="o">/</span><span class="nb">bin</span>
 <span class="p">[</span><span class="n">get_ld_1</span><span class="p">]</span>
 <span class="c1"># extract SNPs for given list</span>
-<span class="kn">depends:</span> <span class="n">snp_list</span>
-<span class="kn">input:</span> <span class="n">genotype_data</span>
+<span class="kn">parameter:</span> <span class="n">input_list</span> <span class="o">=</span> <span class="n">snp_list</span>
+<span class="kn">depends:</span> <span class="n">genotype_data</span>
+<span class="kn">input:</span> <span class="n">input_list</span>
 <span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/mash_revision/${input!bn}.extracted.bed&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">run:</span>
-    <span class="n">plink</span> <span class="o">--</span><span class="n">bfile</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">n</span><span class="p">}</span> \
-      <span class="o">--</span><span class="n">extract</span> <span class="err">$</span><span class="p">{</span><span class="n">snp_list</span><span class="p">}</span> \
+    <span class="n">plink</span> <span class="o">--</span><span class="n">bfile</span> <span class="err">$</span><span class="p">{</span><span class="n">genotype_data</span><span class="err">!</span><span class="n">n</span><span class="p">}</span> \
+      <span class="o">--</span><span class="n">extract</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">}</span> \
       <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">sex</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pheno</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">parents</span> \
       <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">bed</span> \
       <span class="o">--</span><span class="n">out</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">n</span><span class="p">}</span>
@@ -936,7 +1028,7 @@ loaded via a namespace (and not attached):
 </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170828_Compute_LD.ipynb"><code>analysis/20170828_Compute_LD.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 2, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/8186d4337a3364d49ba3e5772f465c93300416c8/analysis/20170828_Compute_LD.ipynb"><code>analysis/20170828_Compute_LD.ipynb</code></a> committed by Gao Wang on Wed Aug 30 01:02:11 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/8186d4337a3364d49ba3e5772f465c93300416c8">revision 4, 8186d43</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

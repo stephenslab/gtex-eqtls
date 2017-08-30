@@ -199,7 +199,7 @@ div.cell {
 }
 .display_checkboxes {
     margin-top: 5pt;
-}.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
+}.lan_SoS {}.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_Python3 .input_prompt { background-color: #FFE771 !important }</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -365,7 +365,7 @@ body {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
@@ -407,7 +407,7 @@ body {
 <span class="kn">R:</span>
     <span class="n">z</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
     <span class="n">write</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">tmpfile</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">col</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="n">F</span><span class="p">,</span><span class="n">row</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="n">F</span><span class="p">)</span>
-    <span class="n">cmd</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s1">&#39;${sfa_exe} -gen ${tmpfile} -g&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39; -n &#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">2</span><span class="p">],</span> 
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s1">&#39;${sfa_exe} -gen ${tmpfile} -g &#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39; -n &#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">2</span><span class="p">],</span> 
                  <span class="s1">&#39; -k ${K} -iter 50 -rand 999 -o ${input!bn}&#39;</span><span class="p">)</span>
     <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
     <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">F</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}_F.out&quot;</span><span class="p">),</span>
@@ -415,7 +415,7 @@ body {
                 <span class="n">sigma2</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}_sigma2.out&quot;</span><span class="p">),</span>
                 <span class="n">alpha</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}_alpha.out&quot;</span><span class="p">)),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 <span class="kn">bash:</span>
-    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*.</span><span class="p">{</span><span class="n">_F</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_lambda</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_sigma2</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_alpha</span><span class="o">.</span><span class="n">out</span><span class="p">}</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*</span><span class="p">{</span><span class="n">_F</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_lambda</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_sigma2</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_alpha</span><span class="o">.</span><span class="n">out</span><span class="p">}</span>
 </pre></div>
 </div>
 </div>
@@ -438,7 +438,7 @@ body {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mashr_download</span><span class="p">:</span> <span class="kp">provides</span> <span class="o">=</span> <span class="n">mashr_src</span><span class="p">]</span>
@@ -480,31 +480,6 @@ body {
 </div>
 </div>
 </div>
-<div class="output_wrapper">
-<div class="output">
-<div class="hidden_output">
-<div class="output_area">
-<div class="prompt"></div>
-<div class="output_html rendered_html output_subarea ">
-<table id="table_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf" style="border: 0px"><tr style="border: 0px">
-                        <td style="border: 0px">
-                        <i id="status_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf"
-                            class="fa fa-2x fa-fw fa-square-o"
-                            onmouseover="$('#status_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf').addClass('fa-stop').removeClass('fa-square-o')"
-                            onmouseleave="$('#status_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf').addClass('fa-square-o').removeClass('fa-stop')"
-                            onclick="kill_task('e7fde8eb32813ffe5a1faa753c8a1ebf', 'localhost')"
-                        ></i> </td>
-                        <td style="border:0px"><a onclick="task_info('e7fde8eb32813ffe5a1faa753c8a1ebf', 'localhost')"><pre>e7fde8eb32813ffe5a1faa753c8a1ebf</pre></a></td>
-                        <td style="border:0px">&nbsp;</td>
-                        <td style="border:0px;text-align=right;">
-                        <pre><time id="duration_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf" datetime="1504047645851.2961">0 sec</time></pre></td>
-                        </tr>
-                        </table>
-</div>
-</div>
-        </div>
-</div>
-</div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -524,7 +499,7 @@ body {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_2</span><span class="p">]</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_2</span><span class="p">:</span> <span class="kp">shared</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;prior_matrices&#39;</span><span class="p">:</span> <span class="s1">&#39;output&#39;</span><span class="p">}]</span>
 <span class="kn">output:</span> <span class="s2">&quot;${input!n}.lite.single.expanded.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">R:</span>
@@ -567,7 +542,7 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_3</span><span class="p">]</span>
 <span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s2">&quot;SQUAREM&quot;</span><span class="p">)</span>
-<span class="kn">output:</span> <span class="s2">&quot;${input!n}.hm.rds&quot;</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input!n}.pihat.rds&quot;</span><span class="p">,</span> <span class="s2">&quot;${input!n}.loglik.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">R:</span>
     <span class="n">library</span><span class="p">(</span><span class="s2">&quot;SQUAREM&quot;</span><span class="p">)</span>
@@ -581,11 +556,14 @@ body {
     <span class="n">rownames</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
     <span class="n">colnames</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
     <span class="n">train</span><span class="o">.</span><span class="n">v</span><span class="o">=</span><span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="o">/</span><span class="n">train</span><span class="o">.</span><span class="n">z</span>
-    <span class="n">res</span> <span class="o">=</span> <span class="n">compute</span><span class="o">.</span><span class="n">hm</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">lik</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">vmat</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">,</span><span class="n">covmat</span> <span class="o">=</span> <span class="n">covmat</span><span class="p">,</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">compute</span><span class="o">.</span><span class="n">hm</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">lik</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">vmat</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">,</span>
+                                            <span class="n">covmat</span> <span class="o">=</span> <span class="n">covmat</span><span class="p">,</span>
                                             <span class="n">A</span> <span class="o">=</span> <span class="s1">&#39;.remove_before_rerun&#39;</span><span class="p">,</span> 
                                             <span class="n">pen</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
-                                            <span class="n">train</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">v</span><span class="p">,</span><span class="n">cormat</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">mat</span><span class="p">)</span>
-    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+                                            <span class="n">train</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">v</span><span class="p">,</span>
+                                            <span class="n">cormat</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">mat</span><span class="p">)</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="err">$</span><span class="n">pis</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="err">$</span><span class="n">lik</span><span class="o">.</span><span class="n">mat</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 <span class="kn">run:</span>
     <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*.</span><span class="n">remove_before_rerun</span><span class="o">.</span><span class="n">rds</span>
 </pre></div>
@@ -607,28 +585,30 @@ body {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_4</span><span class="p">]</span>
-<span class="kn">output:</span> <span class="s2">&quot;${input!n}.posterior.rds&quot;</span>
+<span class="kn">depends:</span> <span class="n">sos_variable</span><span class="p">(</span><span class="s1">&#39;prior_matrices&#39;</span><span class="p">)</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input[0]!nn}.posterior.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">R:</span>
     <span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;${mashr_src!da}&quot;</span><span class="p">)</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">sapply</span><span class="p">(</span><span class="nb">list</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="kp">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.R&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">,</span> <span class="o">.</span><span class="n">GlobalEnv</span><span class="p">)</span>
     <span class="n">setwd</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">cwd</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
     <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">data</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
-    <span class="n">zstat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">z</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
     <span class="n">v</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">vhat</span>
     <span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="o">=</span><span class="n">matrix</span><span class="p">(</span><span class="n">rep</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span><span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">))</span>
-    <span class="n">hyperparam</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">pis</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">pihat</span>
+    <span class="n">covmat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">prior_matrices</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">covmat</span>
     <span class="n">res</span> <span class="o">=</span> <span class="n">lapply</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span> <span class="n">function</span><span class="p">(</span><span class="n">j</span><span class="p">){</span>
-        <span class="n">total</span><span class="o">.</span><span class="n">quant</span><span class="o">.</span><span class="n">per</span><span class="o">.</span><span class="n">snp</span><span class="o">.</span><span class="k">with</span><span class="o">.</span><span class="n">vmat</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="p">,</span> <span class="n">covmat</span><span class="o">=</span><span class="n">hyperparam</span><span class="err">$</span><span class="n">covmat</span><span class="p">,</span> 
+        <span class="n">total</span><span class="o">.</span><span class="n">quant</span><span class="o">.</span><span class="n">per</span><span class="o">.</span><span class="n">snp</span><span class="o">.</span><span class="k">with</span><span class="o">.</span><span class="n">vmat</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="p">,</span> <span class="n">covmat</span><span class="o">=</span><span class="n">covmat</span><span class="p">,</span> 
                                       <span class="n">b</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span> 
                                       <span class="n">cormat</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">mat</span><span class="p">,</span> 
                                       <span class="n">se</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> 
-                                      <span class="n">pis</span><span class="o">=</span><span class="n">hyperparam</span><span class="err">$</span><span class="n">pis</span><span class="p">,</span> 
-                                      <span class="n">A</span><span class="o">=</span><span class="s1">&#39;remove_before_rerun.&#39;</span><span class="p">,</span> 
+                                      <span class="n">pis</span><span class="o">=</span><span class="n">pis</span><span class="p">,</span> 
+                                      <span class="n">A</span><span class="o">=</span><span class="s1">&#39;remove_before_rerun&#39;</span><span class="p">,</span> 
                                       <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">)})</span>
-    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
-<span class="kn">run:</span>
-    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="n">remove_before_rerun</span><span class="o">.*</span>
+    <span class="c1"># data formatting.</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">do</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">Map</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="n">f</span> <span class="o">=</span> <span class="n">rbind</span><span class="p">,</span> <span class="n">res</span><span class="p">))</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -647,14 +627,50 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Run-this-notebook">Run this notebook<a class="anchor-link" href="#Run-this-notebook">&#182;</a></h2><p>For repeated runs it might be easier to execute from commandline instead of in Jupyter:</p>
-<pre><code>sos run analysis/20170829_MASH_Paper.ipynb sfa
-sos run analysis/20170829_MASH_Paper.ipynb mash # --data ... --cwd ...</code></pre>
+<div class="highlight"><pre><span></span>sos run analysis/20170829_MASH_Paper.ipynb sfa <span class="c1"># --data</span>
+sos run analysis/20170829_MASH_Paper.ipynb mash <span class="c1"># --data ... --cwd ...</span>
+</pre></div>
+<p>The notebook runs default setting. Additionally I run it for dataset <a href="20170829_MASH_Input_Preparation.html">after LD pruning</a>:</p>
+<div class="highlight"><pre><span></span>sos run analysis/20170829_MASH_Paper.ipynb sfa <span class="se">\</span>
+    --data <span class="nv">$HOME</span>/Documents/GTEx/mash_revision/MatrixEQTLSumStats.Portable.ld2.Z.rds
+sos run analysis/20170829_MASH_Paper.ipynb mash <span class="se">\</span>
+    --data <span class="nv">$HOME</span>/Documents/GTEx/mash_revision/MatrixEQTLSumStats.Portable.ld2.Z.rds
+</pre></div>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
+</pre></div>
 </div>
 </div>
 </div>
+<div class="output_wrapper">
+<div class="output">
+<div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<p class="session_section">SoS</p>
+<table class="session_info">
+<tr>
+<th>SoS Version</th><td><pre>0.9.8.10</pre></td>
+</tr>
+</table>
+</div>
+</div>
+        </div>
+</div>
+</div>
+</div>
+    </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/23aeadeb69babdb32e521b7f4ed20963db662807/analysis/20170829_MASH_Paper.ipynb"><code>analysis/20170829_MASH_Paper.ipynb</code></a> committed by Gao Wang on Tue Aug 29 22:24:57 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/23aeadeb69babdb32e521b7f4ed20963db662807">revision 3, 23aeade</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/50c009491faa459c23af897ecc44929cbd4c7d98/analysis/20170829_MASH_Paper.ipynb"><code>analysis/20170829_MASH_Paper.ipynb</code></a> committed by Gao Wang on Wed Aug 30 11:56:16 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/50c009491faa459c23af897ecc44929cbd4c7d98">revision 7, 50c0094</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

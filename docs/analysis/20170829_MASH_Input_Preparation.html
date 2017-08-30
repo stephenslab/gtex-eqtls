@@ -375,7 +375,7 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
@@ -428,7 +428,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Extract-training-and-testing-data">Extract training and testing data<a class="anchor-link" href="#Extract-training-and-testing-data">&#182;</a></h2><p>The cell below loads the data, compute z-score, get a training set (and its correlation estimate $\hat{V}$) and save to an RDS file for use with <code>mash</code> analysis. Parameter <code>snp_list</code> specifies path to the file of rownames to keep while extracting: by default it uses all SNPs but if a list is provided (eg list after LD pruning) it will only extract results for those SNPs.</p>
+<h2 id="Extract-training-and-testing-data">Extract training and testing data<a class="anchor-link" href="#Extract-training-and-testing-data">&#182;</a></h2><p>The cell below loads the data, compute z-score, get a training set (and its correlation estimate $\hat{V}$) and save to an RDS file for use with <code>mash</code> analysis. Parameter <code>exclude_list</code> specifies path to the file of rownames to exclude while extracting: by default it uses all SNPs but if a list is provided (eg list after LD pruning) it will only extract results for those SNPs.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -439,11 +439,11 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">extract_zscore</span>
 <span class="p">[</span><span class="n">extract_zscore</span><span class="p">]</span>
-<span class="kn">parameter:</span> <span class="n">snp_list</span> <span class="o">=</span> <span class="s1">&#39;NULL&#39;</span>
+<span class="kn">parameter:</span> <span class="n">exclude_list</span> <span class="o">=</span> <span class="s1">&#39;NULL&#39;</span>
 <span class="kn">parameter:</span> <span class="n">num_train</span> <span class="o">=</span> <span class="mi">20000</span>
 <span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s2">&quot;rhdf5&quot;</span><span class="p">)</span>
 <span class="kn">input:</span> <span class="n">input_db</span>
-<span class="kn">output:</span> <span class="s2">&quot;${input_db!n}.Z.rds&quot;</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input_db!n}.Z.rds&quot;</span> <span class="k">if</span> <span class="n">exclude_list</span> <span class="o">==</span> <span class="s1">&#39;NULL&#39;</span> <span class="k">else</span> <span class="s2">&quot;${input_db!n}.${exclude_list!bn}.Z.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">R:</span>
     <span class="n">ConvertP2Z</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> <span class="p">{</span>
@@ -463,26 +463,35 @@ body {
       <span class="k">return</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
     <span class="p">}</span>
     <span class="c1"># load data</span>
-    <span class="n">mdat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
-    <span class="n">ndat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">mdat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">z</span>
+    <span class="n">ndat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">z</span>
     <span class="c1"># select rows to keep</span>
-    <span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">snp_list</span><span class="err">!</span><span class="n">r</span><span class="p">}</span> <span class="o">!=</span> <span class="s2">&quot;NULL&quot;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1"># FIXME: will subset mdat and ndat here</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="mi">1</span>
-    <span class="p">}</span>
     <span class="n">num_train</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">num_train</span><span class="p">}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">num_train</span> <span class="o">&gt;=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="err">$</span><span class="n">z</span><span class="p">))</span> <span class="p">{</span>
-        <span class="n">num_train</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="err">$</span><span class="n">z</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">num_train</span> <span class="o">&gt;=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">num_train</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">train</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">num_train</span><span class="p">,]</span>
+    <span class="n">validate</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[(</span><span class="n">num_train</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">),]</span>
+    <span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">exclude_list</span><span class="err">!</span><span class="n">r</span><span class="p">}</span> <span class="o">!=</span> <span class="s2">&quot;NULL&quot;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">pout</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">exclude_list</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">NULL</span><span class="p">)</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">mdat</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+        <span class="n">mdat</span> <span class="o">=</span> <span class="n">mdat</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">ndat</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+        <span class="n">ndat</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">train</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">validate</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+        <span class="n">validate</span> <span class="o">=</span> <span class="n">validate</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>                                              
     <span class="p">}</span>
     <span class="c1"># get vhat (SVS)</span>
-    <span class="n">max_absz</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ndat</span><span class="err">$</span><span class="n">z</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span>
+    <span class="n">max_absz</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ndat</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span>
     <span class="n">nullish</span> <span class="o">=</span> <span class="n">which</span><span class="p">(</span><span class="n">max_absz</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">nz</span> <span class="o">=</span> <span class="n">ndat</span><span class="err">$</span><span class="n">z</span><span class="p">[</span><span class="n">nullish</span><span class="p">,]</span>
+    <span class="n">nz</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="n">nullish</span><span class="p">,]</span>
     <span class="n">vhat</span> <span class="o">=</span> <span class="n">cor</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
     <span class="c1"># save output</span>
-    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ndat</span><span class="err">$</span><span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">num_train</span><span class="p">,],</span>
-                 <span class="n">validate</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ndat</span><span class="err">$</span><span class="n">z</span><span class="p">[(</span><span class="n">num_train</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="err">$</span><span class="n">z</span><span class="p">),],</span>
-                 <span class="n">test</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">mdat</span><span class="err">$</span><span class="n">z</span><span class="p">,</span> <span class="n">vhat</span> <span class="o">=</span> <span class="n">vhat</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">train</span><span class="p">,</span>
+                 <span class="n">validate</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">validate</span><span class="p">,</span>
+                 <span class="n">test</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">mdat</span><span class="p">,</span> <span class="n">vhat</span> <span class="o">=</span> <span class="n">vhat</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -491,7 +500,7 @@ body {
     </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[25]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">R:</span>
@@ -530,9 +539,165 @@ body {
 </div>
 </div>
     </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Extract-from-selected-list">Extract from selected list<a class="anchor-link" href="#Extract-from-selected-list">&#182;</a></h1><p>The default procedure above extracts all SNPs to RDS. Here running previously established workflows we create lists of LD pruned SNPs. To prune SNPs based on what we have in the database and the actual genotypes, first we extract SNP names the database (done previously) and feed them to LD pruning routine.</p>
+<p>For test SNPs</p>
+<div class="highlight"><pre><span></span>sos run analysis/20170828_Compute_LD.ipynb get_ld:1-2 -b ~/Documents/GTEx/bin <span class="se">\</span>
+    --input_list <span class="nv">$HOME</span>/Documents/GTEx/mash_revision/snp_eqtl.txt
+</pre></div>
+<pre><code>Pruning complete.  4204 of 13030 variants removed.</code></pre>
+<p>For train SNPs</p>
+<div class="highlight"><pre><span></span>sos run analysis/20170828_Compute_LD.ipynb get_ld:1-2 -b ~/Documents/GTEx/bin <span class="se">\</span>
+    --input_list <span class="nv">$HOME</span>/Documents/GTEx/mash_revision/snp_random.txt
+</pre></div>
+<pre><code>Pruning complete.  19405 of 41038 variants removed.</code></pre>
+<p>We end up with two lists: <code>snp_eqtls.extracted.prune.out</code> and <code>snp_random.extracted.prune.out</code>. We consolidate them to one list <code>ld2.out</code>.</p>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="err">!</span><span class="n">cat</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTEx</span><span class="o">/</span><span class="n">mash_revision</span><span class="o">/</span><span class="n">snp_eqtls</span><span class="o">.</span><span class="n">extracted</span><span class="o">.</span><span class="n">prune</span><span class="o">.</span><span class="n">out</span> \
+     <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTEx</span><span class="o">/</span><span class="n">mash_revision</span><span class="o">/</span><span class="n">snp_random</span><span class="o">.</span><span class="n">extracted</span><span class="o">.</span><span class="n">prune</span><span class="o">.</span><span class="n">out</span> <span class="o">&gt;</span> \
+     <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTEx</span><span class="o">/</span><span class="n">mash_revision</span><span class="o">/</span><span class="n">ld2</span><span class="o">.</span><span class="n">out</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>To extract data excluding <code>ld2.out</code> simply execute the workflow above with <code>exclude_list</code> set to <code>ld2.out</code>:</p>
+<pre><code>sos run analysis/20170829_MASH_Input_Preparation extract_zscore \
+    --exclude_list /home/gaow/Documents/GTEx/mash_revision/ld2.out</code></pre>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="kn">R:</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s2">&quot;${input_db!n}.ld2.Z.rds&quot;</span><span class="p">)</span>
+    <span class="nb">str</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>List of 4
+ $ train.z   : num [1:12143, 1:44] -0.184 0.161 -1.291 -1.628 0.778 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:12143] &#34;ENSG00000000419.8_20_49782767_C_G_b37&#34; &#34;ENSG00000000419.8_20_49654572_A_G_b37&#34; &#34;ENSG00000000419.8_20_49392478_A_G_b37&#34; &#34;ENSG00000000457.9_1_169117725_TG_T_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ validate.z: num [1:16316, 1:44] 1.167 1.099 3.371 0.293 -0.384 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:16316] &#34;ENSG00000151687.10_2_190118691_T_G_b37&#34; &#34;ENSG00000151689.8_2_191969341_C_T_b37&#34; &#34;ENSG00000151690.10_2_191471847_C_T_b37&#34; &#34;ENSG00000151690.10_2_191018883_G_A_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ test.z    : num [1:11619, 1:44] 0.14 0.955 0.32 -4.235 -3.829 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:11619] &#34;ENSG00000000419.8_20_49461813_G_C_b37&#34; &#34;ENSG00000000457.9_1_169695110_T_A_b37&#34; &#34;ENSG00000000460.12_1_169655079_G_A_b37&#34; &#34;ENSG00000000971.11_1_196513323_A_G_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ vhat      : num [1:44, 1:44] 1 0.0924 0.0127 0.0792 0.0415 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+</pre>
+</div>
+</div>
+</div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>As a result of pruning the training set dropped from 20K to 12K, the test set dropped from 16K to 11.6K.</p>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[27]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<p class="session_section">SoS</p>
+<table class="session_info">
+<tr>
+<th>SoS Version</th><td><pre>0.9.8.10</pre></td>
+</tr>
+</table>
+<p class="session_section">R</p>
+<table class="session_info">
+<tr>
+<th>Kernel</th><td><pre>ir</pre></td>
+</tr>
+<tr>
+<th>Language</th><td><pre>R</pre></td>
+</tr>
+<tr>
+<td colspan="2"><pre>R version 3.4.0 (2017-04-21)
+Platform: x86_64-pc-linux-gnu (64-bit)
+Running under: BunsenLabs GNU/Linux 8.7 (Hydrogen)
+Matrix products: default
+BLAS: /usr/lib64/microsoft-r/3.4/lib64/R/lib/libRblas.so
+LAPACK: /usr/lib64/microsoft-r/3.4/lib64/R/lib/libRlapack.so
+locale:
+ [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
+ [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
+ [5] LC_MONETARY=en_US.UTF-8    LC_MESSAGES=en_US.UTF-8   
+ [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
+ [9] LC_ADDRESS=C               LC_TELEPHONE=C            
+[11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods   base     
+other attached packages:
+[1] RevoUtilsMath_10.0.0
+loaded via a namespace (and not attached):
+ [1] compiler_3.4.0      R6_2.2.0            magrittr_1.5       
+ [4] RevoUtils_10.0.4    IRdisplay_0.4.4     pbdZMQ_0.2-5       
+ [7] tools_3.4.0         crayon_1.3.2        uuid_0.1-2         
+[10] stringi_1.1.5       IRkernel_0.8.7.9000 jsonlite_1.4       
+[13] stringr_1.2.0       digest_0.6.12       repr_0.12.0        
+[16] evaluate_0.10      </pre></td>
+</tr>
+</table>
+</div>
+</div>
+        </div>
+</div>
+</div>
+</div>
+    </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/5b80eded94c2fb3ca9af83660e7018e51f7a176d/analysis/20170829_MASH_Input_Preparation.ipynb"><code>analysis/20170829_MASH_Input_Preparation.ipynb</code></a> committed by Gao Wang on Tue Aug 29 19:32:24 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/5b80eded94c2fb3ca9af83660e7018e51f7a176d">revision 1, 5b80ede</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/8186d4337a3364d49ba3e5772f465c93300416c8/analysis/20170829_MASH_Input_Preparation.ipynb"><code>analysis/20170829_MASH_Input_Preparation.ipynb</code></a> committed by Gao Wang on Wed Aug 30 01:02:11 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/8186d4337a3364d49ba3e5772f465c93300416c8">revision 2, 8186d43</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
