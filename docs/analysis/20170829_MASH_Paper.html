@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="ipynb_website:version" content="0.9.2" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" type="text/css" href="../css/jt.css">
+<link rel="stylesheet" type="text/css" href="../css/toc2.css">
+<link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
+<link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link rel="stylesheet"
+      href="../site_libs/highlight/textmate.css"
+      type="text/css" />
+<script src="../site_libs/highlight/highlight.js"></script>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+<script src="../js/toc2.js"></script>
+<script src="../js/docs.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+<script>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+        },
+        "HTML-CSS": {
+            preferredFont: "TeX",
+            availableFonts: ["TeX"],
+            styles: {
+                scale: 110,
+                ".MathJax_Display": {
+                    "font-size": "110%",
+                }
+            }
+        }
+    });
+</script>
+<script>
+$( document ).ready(function(){
+            var cfg={'threshold':3,     // depth of toc (number of levels)
+             'number_sections': false,
+             'toc_cell': false,          // useless here
+             'toc_window_display': true, // display the toc window
+             "toc_section_display": "block", // display toc contents in the window
+             'sideBar':true,       // sidebar or floating window
+             'navigate_menu':false       // navigation menu (only in liveNotebook -- do not change)
+            }
+            var st={};                  // some variables used in the script
+            st.rendering_toc_cell = false;
+            st.config_loaded = false;
+            st.extension_initialized=false;
+            st.nbcontainer_marginleft = $('#notebook-container').css('margin-left')
+            st.nbcontainer_marginright = $('#notebook-container').css('margin-right')
+            st.nbcontainer_width = $('#notebook-container').css('width')
+            st.oldTocHeight = undefined
+            st.cell_toc = undefined;
+            st.toc_index=0;
+            // fire the main function with these parameters
+            table_of_contents(cfg, st);
+            var file=analysisDict[$("h1:first").attr("id")];
+            $("#toc-level0 a").css("color","#126dce");
+            $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
+            var docs=analysisArray;
+            var pos=analysisArray.indexOf(file);
+            for (var a=pos;a>=0;a--){
+                  var name=docs[a]
+                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+            }
+            $('a[href="'+file+'.html'+'"]').css("color","#126dce");
+            for (var a=pos+1;a<docs.length;a++){
+                  var name=docs[a]
+                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+            }
+            $("#toc-header").hide();
+    });
+</script>
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+  // mark it active
+  menuAnchor.parent().addClass('active');
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+<div class="container-fluid main-container">
+<!-- tabsets -->
+<script src="../site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script><style type="text/css">
+table {
+   padding: 0;
+   border-collapse: collapse; }
+thead {
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(0,0,0);
+    border-bottom-style: solid;
+}
+table tr {
+   border: none;
+   background-color: white;
+   margin: 0;
+   padding: 0; }
+table tr:nth-child(2n) {
+   background-color: #f8f8f8; }
+table tr th {
+   font-weight: bold;
+   border: none;
+   margin: 0;
+   padding: 6px 13px; }
+table tr td {
+   border: none;
+   margin: 0;
+   padding: 6px 13px; }
+table tr th :first-child, table tr td :first-child {
+   margin-top: 0; }
+table tr th :last-child, table tr td :last-child {
+   margin-bottom: 0; }
+.dataframe_container { max-height: 400px }
+.dataframe_input {
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+}
+.rendered_html table {
+  border: none;
+}
+.sos_hint {
+  color: rgba(0,0,0,.4);
+  font-family: monospace;
+  display: none;
+}
+.output_stderr {
+    display: none;
+}
+div.input {
+    display: none;
+}
+.hidden_output {
+    display: none;
+}
+.input_prompt {
+    display: none;
+}
+.output_area .prompt {
+    display: none;
+}
+.output_prompt {
+    display: none;
+}
+#nextsteps {
+   color: blue;
+}
+.scatterplot_by_rowname div.xAxis div.tickLabel {
+    transform: translateY(15px) translateX(15px) rotate(45deg);
+    -ms-transform: translateY(15px) translateX(15px) rotate(45deg);
+    -moz-transform: translateY(15px) translateX(15px) rotate(45deg);
+    -webkit-transform: translateY(15px) translateX(15px) rotate(45deg);
+    -o-transform: translateY(15px) translateX(15px) rotate(45deg);
+    /*rotation-point:50% 50%;*/
+    /*rotation:270deg;*/
+}
+div.cell {
+    padding: 0pt;
+    border-width: 0pt;
+}
+.sos_dataframe td, .sos_dataframe th, .sos_dataframe tr {
+    white-space: nowrap;
+    border: none;
+}
+.sos_dataframe tr:hover {
+    background-color: #e6f2ff;
+}
+.display_control_panel  {
+    padding: 10pt;
+    left: 5px;
+    top: 5px;
+    position: fixed;
+    z-index: 1000;
+}
+.display_control_panel:hover {
+    background: rgb(224, 234, 241);
+}
+.display_checkboxes {
+    margin-top: 5pt;
+}
+.display_control_panel:hover .display_control {
+    display: block;
+    opacity: 100;
+}
+.display_control_panel .display_control {
+    opacity: 0;
+}.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        } 
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+function toggle_source() {
+    var btn = document.getElementById("show_cells");
+    if (btn.checked) {
+        $('div.input').css('display', 'flex');
+        $('.hidden_output').show();
+        // this somehow does not work.
+        $('div.cell').css('padding', '5pt').css('border-width', '1pt');
+    } else {
+        $('div.input').hide();
+        $('.hidden_output').hide();
+        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
+    }
+}
+function toggle_prompt() {
+    var btn = document.getElementById("show_prompt");
+    if (btn.checked) {
+        $('.output_prompt').show();
+        $('.input_prompt').show();
+        $('.output_area .prompt').show();
+    } else {
+        $('.output_prompt').hide();
+        $('.input_prompt').hide();
+        $('.output_area .prompt').hide();
+    }
+}
+function toggle_messages() {
+    var btn = document.getElementById("show_messages");
+    if (btn.checked) {
+        $('.sos_hint').show();
+        $('.output_stderr').show();
+    } else {
+        $('.output_stderr').hide();
+        $('.sos_hint').hide();
+    }
+}
+</script>
+<div class='display_control_panel'>
+    <div class="display_control">
+Display content:<br>
+<div class="display_checkboxes">
+<input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
+<label for="show_cells">All cells</label>
+<br>
+<input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
+<label for="show_prompt">Prompt</label>
+<br>
+<input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
+<label for="show_messages">Messages</label>
+</div>
+   </div>
+</div>
+</script><title>GTEx eQTL</title>
+<style type = "text/css">
+body {
+  font-family: "Droid Sans";
+  padding-top: 66px;
+  padding-bottom: 40px;
+}
+</style>
+</head>
+<body>
+<div tabindex="-1" id="notebook" class="border-box-sizing">
+<div class="container" id="notebook-container">
+<!-- code folding -->
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="../index.html">GTEx eQTL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../index.html">Overview</a>
+</li>
+<li>
+  <a href="../analysis.html">Analysis</a>
+</li>
+<li>
+  <a href="../prototype.html">Prototype</a>
+</li>
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+      </ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+   <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
+</li>
+</ul>
+      </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="MASH-analysis-for-Urbut-2017">MASH analysis for Urbut 2017<a class="anchor-link" href="#MASH-analysis-for-Urbut-2017">&#182;</a></h1><p>Reproducing (using old <code>mashr</code> codes) the Urbut 2017 paper in response to reviewer requests.</p>
+<p>It largely follows from <a href="https://github.com/stephenslab/gtexresults_mash/blob/master/scripts/MidwayScripts.rmd">this vignette</a>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
+<span class="kn">parameter:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx/mash_revision&#39;</span>
+<span class="n">sfa_exe</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/sfa/bin/sfa_linux&quot;</span>
+<span class="n">mashr_src</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/mashr-paper-master/R/main.R&quot;</span>
+<span class="kn">parameter:</span> <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/MatrixEQTLSumStats.Portable.Z.rds&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Covariance-pattern-discovery">Covariance pattern discovery<a class="anchor-link" href="#Covariance-pattern-discovery">&#182;</a></h2><p>This is to prepare prior input for <code>mash</code> model</p>
+<h3 id="SFA">SFA<a class="anchor-link" href="#SFA">&#182;</a></h3><p>We analyze data with SFA download SFA software (cell below) and run it on data.</p>
+</div>
+</div>
+</div><div class="rendered lan_SoS">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">sfa</span>
+<span class="p">[</span><span class="n">sfa_download</span><span class="p">:</span> <span class="kp">provides</span> <span class="o">=</span> <span class="n">sfa_exe</span><span class="p">]</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">download:</span> <span class="n">decompress</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">stephenslab</span><span class="o">.</span><span class="n">uchicago</span><span class="o">.</span><span class="n">edu</span><span class="o">/</span><span class="n">assets</span><span class="o">/</span><span class="n">software</span><span class="o">/</span><span class="n">sfa</span><span class="o">/</span><span class="n">sfa1</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
+<span class="p">[</span><span class="n">sfa</span><span class="p">]</span>
+<span class="kn">depends:</span> <span class="n">sfa_exe</span>
+<span class="n">K</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">tmpfile</span> <span class="o">=</span> <span class="s2">&quot;/tmp/${data!bn}.max.txt&quot;</span>
+<span class="kn">input:</span> <span class="n">data</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input!n}.sfa.rds&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">R:</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">write</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">tmpfile</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">col</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="n">F</span><span class="p">,</span><span class="n">row</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="n">F</span><span class="p">)</span>
+    <span class="n">cmd</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s1">&#39;${sfa_exe} -gen ${tmpfile} -g&#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39; -n &#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">2</span><span class="p">],</span> 
+                 <span class="s1">&#39; -k ${K} -iter 50 -rand 999 -o ${input!bn}&#39;</span><span class="p">)</span>
+    <span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">F</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}_F.out&quot;</span><span class="p">),</span>
+                <span class="k">lambda</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}_lambda.out&quot;</span><span class="p">),</span>
+                <span class="n">sigma2</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}_sigma2.out&quot;</span><span class="p">),</span>
+                <span class="n">alpha</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="s2">&quot;${input!n}_alpha.out&quot;</span><span class="p">)),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+<span class="kn">bash:</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*.</span><span class="p">{</span><span class="n">_F</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_lambda</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_sigma2</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_alpha</span><span class="o">.</span><span class="n">out</span><span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Create-and-refine-multi-rank-covariance-matrices">Create and refine multi-rank covariance matrices<a class="anchor-link" href="#Create-and-refine-multi-rank-covariance-matrices">&#182;</a></h3><p>Here we create 3 covariance matrices:</p>
+<ul>
+<li>SFA (rank 5, previously computed)</li>
+<li>SVD (rank 3, to be computed)</li>
+<li>Empirical covariance</li>
+</ul>
+<p>and apply and apply <a href="https://github.com/jobovy/extreme-deconvolution">Extreme Deconvolution</a> to refine the covariance pattern (we observed that Extreme Deconvolution perserves rank).</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mashr_download</span><span class="p">:</span> <span class="kp">provides</span> <span class="o">=</span> <span class="n">mashr_src</span><span class="p">]</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">download:</span> <span class="n">decompress</span> <span class="o">=</span> <span class="bp">True</span>
+    <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">stephenslab</span><span class="o">/</span><span class="n">mashr</span><span class="o">-</span><span class="n">paper</span><span class="o">/</span><span class="n">archive</span><span class="o">/</span><span class="n">master</span><span class="o">.</span><span class="n">zip</span>
+<span class="p">[</span><span class="n">mash_1</span><span class="p">]</span>
+<span class="c1"># Perform SVD + ED</span>
+<span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s2">&quot;ExtremeDeconvolution&quot;</span><span class="p">),</span> <span class="n">mashr_src</span>
+<span class="n">K</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="n">P</span> <span class="o">=</span> <span class="mi">3</span>
+<span class="kn">input:</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;${data!n}.sfa.rds&quot;</span>
+<span class="kn">output:</span> <span class="s2">&quot;${data!n}.coved.${K}.${P}.rds&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">R:</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;${mashr_src!da}&quot;</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">sapply</span><span class="p">(</span><span class="nb">list</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="kp">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.R&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">,</span> <span class="o">.</span><span class="n">GlobalEnv</span><span class="p">)</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">cwd</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;${data}&#39;</span><span class="p">)</span>
+    <span class="n">t</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">mean</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">rep</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span><span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">rep</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span><span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">))</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">vhat</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">j</span><span class="o">=</span><span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">)){</span><span class="n">v</span><span class="o">.</span><span class="n">j</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">mat</span><span class="p">}</span>
+    <span class="n">K</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">K</span><span class="p">}</span>
+    <span class="n">P</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">P</span><span class="p">}</span>
+    <span class="n">R</span> <span class="o">=</span> <span class="n">ncol</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span>
+    <span class="n">sfa</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s2">&quot;${data!n}.sfa.rds&quot;</span><span class="p">)</span>
+    <span class="n">init</span><span class="o">.</span><span class="n">cov</span> <span class="o">=</span> <span class="n">init</span><span class="o">.</span><span class="n">covmat</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span> <span class="n">factor</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sfa</span><span class="err">$</span><span class="n">F</span><span class="p">),</span><span class="k">lambda</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sfa</span><span class="err">$</span><span class="k">lambda</span><span class="p">),</span> <span class="n">K</span><span class="o">=</span><span class="n">K</span><span class="p">,</span><span class="n">P</span><span class="o">=</span><span class="n">P</span><span class="p">)</span>
+    <span class="n">init</span><span class="o">.</span><span class="n">cov</span><span class="o">.</span><span class="n">list</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">K</span><span class="p">){</span><span class="n">init</span><span class="o">.</span><span class="n">cov</span><span class="o">.</span><span class="n">list</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="o">=</span><span class="n">init</span><span class="o">.</span><span class="n">cov</span><span class="p">[</span><span class="n">i</span><span class="p">,,]}</span>
+    <span class="n">projection</span> <span class="o">=</span> <span class="nb">list</span><span class="p">();</span><span class="k">for</span><span class="p">(</span><span class="n">l</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">)){</span><span class="n">projection</span><span class="p">[[</span><span class="n">l</span><span class="p">]]</span><span class="o">=</span><span class="n">diag</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">R</span><span class="p">)}</span>
+    <span class="n">e</span> <span class="o">=</span> <span class="n">ExtremeDeconvolution</span><span class="p">::</span><span class="n">extreme_deconvolution</span><span class="p">(</span><span class="n">ydata</span><span class="o">=</span><span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span><span class="n">ycovar</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">j</span><span class="p">,</span><span class="n">xamp</span><span class="o">=</span><span class="n">rep</span><span class="p">(</span><span class="mi">1</span><span class="o">/</span><span class="n">K</span><span class="p">,</span><span class="n">K</span><span class="p">),</span><span class="n">xmean</span><span class="o">=</span><span class="n">mean</span><span class="o">.</span><span class="n">mat</span><span class="p">,</span><span class="n">xcovar</span><span class="o">=</span><span class="n">init</span><span class="o">.</span><span class="n">cov</span><span class="o">.</span><span class="n">list</span><span class="p">,</span><span class="n">fixmean</span><span class="o">=</span><span class="n">T</span><span class="p">,</span><span class="n">projection</span><span class="o">=</span><span class="n">projection</span><span class="p">)</span>
+    <span class="n">true</span><span class="o">.</span><span class="n">covs</span> <span class="o">=</span> <span class="n">array</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="n">c</span><span class="p">(</span><span class="n">K</span><span class="p">,</span><span class="n">R</span><span class="p">,</span><span class="n">R</span><span class="p">))</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">K</span><span class="p">){</span><span class="n">true</span><span class="o">.</span><span class="n">covs</span><span class="p">[</span><span class="n">i</span><span class="p">,,]</span><span class="o">=</span><span class="n">e</span><span class="err">$</span><span class="n">xcovar</span><span class="p">[[</span><span class="n">i</span><span class="p">]]}</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">true</span><span class="o">.</span><span class="n">covs</span><span class="o">=</span><span class="n">true</span><span class="o">.</span><span class="n">covs</span><span class="p">,</span><span class="n">pi</span><span class="o">=</span><span class="n">e</span><span class="err">$</span><span class="n">xamp</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="hidden_output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<table id="table_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf" style="border: 0px"><tr style="border: 0px">
+                        <td style="border: 0px">
+                        <i id="status_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf"
+                            class="fa fa-2x fa-fw fa-square-o"
+                            onmouseover="$('#status_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf').addClass('fa-stop').removeClass('fa-square-o')"
+                            onmouseleave="$('#status_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf').addClass('fa-square-o').removeClass('fa-stop')"
+                            onclick="kill_task('e7fde8eb32813ffe5a1faa753c8a1ebf', 'localhost')"
+                        ></i> </td>
+                        <td style="border:0px"><a onclick="task_info('e7fde8eb32813ffe5a1faa753c8a1ebf', 'localhost')"><pre>e7fde8eb32813ffe5a1faa753c8a1ebf</pre></a></td>
+                        <td style="border:0px">&nbsp;</td>
+                        <td style="border:0px;text-align=right;">
+                        <pre><time id="duration_localhost_e7fde8eb32813ffe5a1faa753c8a1ebf" datetime="1504047645851.2961">0 sec</time></pre></td>
+                        </tr>
+                        </table>
+</div>
+</div>
+        </div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Add-in-single-rank-covariance-matrices">Add in single-rank covariance matrices<a class="anchor-link" href="#Add-in-single-rank-covariance-matrices">&#182;</a></h3><p>Now additionally we include 2 other types of covariance matrices:</p>
+<ul>
+<li>canonical configurations (aka bmalite)</li>
+<li>single rank SFA</li>
+</ul>
+<p>We also expand the list of matrices by grid -- after running the cell below we are ready to fit the mash model.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_2</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input!n}.lite.single.expanded.rds&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">R:</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;${mashr_src!da}&quot;</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">sapply</span><span class="p">(</span><span class="nb">list</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="kp">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.R&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">,</span> <span class="o">.</span><span class="n">GlobalEnv</span><span class="p">)</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">cwd</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;${data}&#39;</span><span class="p">)</span>
+    <span class="n">z</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">rownames</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
+    <span class="n">colnames</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">vhat</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="o">=</span><span class="n">matrix</span><span class="p">(</span><span class="n">rep</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span><span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">))</span>
+    <span class="n">sfa</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s2">&quot;${data!n}.sfa.rds&quot;</span><span class="p">)</span>
+    <span class="n">res</span><span class="o">=</span><span class="n">compute</span><span class="o">.</span><span class="n">hm</span><span class="o">.</span><span class="n">covmat</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span><span class="n">se</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="p">,</span>
+                                          <span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span><span class="n">Q</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
+                                          <span class="k">lambda</span><span class="o">.</span><span class="n">mat</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sfa</span><span class="err">$</span><span class="k">lambda</span><span class="p">),</span>
+                                          <span class="n">A</span><span class="o">=</span><span class="s1">&#39;.remove_before_rerun&#39;</span><span class="p">,</span><span class="n">factor</span><span class="o">.</span><span class="n">mat</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sfa</span><span class="err">$</span><span class="n">F</span><span class="p">),</span>
+                                          <span class="nb">max</span><span class="o">.</span><span class="n">step</span><span class="o">=</span><span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">}),</span>
+                                          <span class="n">zero</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+<span class="kn">run:</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*.</span><span class="n">remove_before_rerun</span><span class="o">.</span><span class="n">rds</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Fit-MASH-mixture-model">Fit MASH mixture model<a class="anchor-link" href="#Fit-MASH-mixture-model">&#182;</a></h2><p>Using a training set, the cell below computes the weights for input covariance matrices (priors) in the MASH mixture model. The output contains matrix of log-likelihoods as well as weights learned from the hierarchical model.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_3</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input!n}.hm.rds&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">R:</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;${mashr_src!da}&quot;</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">sapply</span><span class="p">(</span><span class="nb">list</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="kp">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.R&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">,</span> <span class="o">.</span><span class="n">GlobalEnv</span><span class="p">)</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">cwd</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;${data}&#39;</span><span class="p">)</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">vhat</span>
+    <span class="n">covmat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">covmat</span>
+    <span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">)</span>
+    <span class="n">rownames</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
+    <span class="n">colnames</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
+    <span class="n">train</span><span class="o">.</span><span class="n">v</span><span class="o">=</span><span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="o">/</span><span class="n">train</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">compute</span><span class="o">.</span><span class="n">hm</span><span class="o">.</span><span class="n">train</span><span class="o">.</span><span class="n">log</span><span class="o">.</span><span class="n">lik</span><span class="o">.</span><span class="n">pen</span><span class="o">.</span><span class="n">vmat</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">z</span><span class="p">,</span><span class="n">covmat</span> <span class="o">=</span> <span class="n">covmat</span><span class="p">,</span>
+                                            <span class="n">A</span> <span class="o">=</span> <span class="s1">&#39;.remove_before_rerun&#39;</span><span class="p">,</span> 
+                                            <span class="n">pen</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                                            <span class="n">train</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">v</span><span class="p">,</span><span class="n">cormat</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">mat</span><span class="p">)</span>
+    <span class="n">savRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+<span class="kn">run:</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*.</span><span class="n">remove_before_rerun</span><span class="o">.</span><span class="n">rds</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Posterior-inference">Posterior inference<a class="anchor-link" href="#Posterior-inference">&#182;</a></h2><p>Applying hyperparameters learned from the training set to the test set, the cell below computes posterior quantities.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_4</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input!n}.posterior.rds&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">R:</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;${mashr_src!da}&quot;</span><span class="p">)</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">sapply</span><span class="p">(</span><span class="nb">list</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="kp">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.R&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">,</span> <span class="o">.</span><span class="n">GlobalEnv</span><span class="p">)</span>
+    <span class="n">setwd</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">cwd</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">data</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">zstat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">v</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">vhat</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="o">=</span><span class="n">matrix</span><span class="p">(</span><span class="n">rep</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span><span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">))</span>
+    <span class="n">hyperparam</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">lapply</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span> <span class="n">function</span><span class="p">(</span><span class="n">j</span><span class="p">){</span>
+        <span class="n">total</span><span class="o">.</span><span class="n">quant</span><span class="o">.</span><span class="n">per</span><span class="o">.</span><span class="n">snp</span><span class="o">.</span><span class="k">with</span><span class="o">.</span><span class="n">vmat</span><span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="n">j</span><span class="p">,</span> <span class="n">covmat</span><span class="o">=</span><span class="n">hyperparam</span><span class="err">$</span><span class="n">covmat</span><span class="p">,</span> 
+                                      <span class="n">b</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span> 
+                                      <span class="n">cormat</span><span class="o">=</span><span class="n">v</span><span class="o">.</span><span class="n">mat</span><span class="p">,</span> 
+                                      <span class="n">se</span><span class="o">.</span><span class="n">gp</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="p">,</span> 
+                                      <span class="n">pis</span><span class="o">=</span><span class="n">hyperparam</span><span class="err">$</span><span class="n">pis</span><span class="p">,</span> 
+                                      <span class="n">A</span><span class="o">=</span><span class="s1">&#39;remove_before_rerun.&#39;</span><span class="p">,</span> 
+                                      <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">)})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+<span class="kn">run:</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="n">remove_before_rerun</span><span class="o">.*</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>I will use a separate notebook to summarize, plot and visualize the result of analysis.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Run-this-notebook">Run this notebook<a class="anchor-link" href="#Run-this-notebook">&#182;</a></h2><p>For repeated runs it might be easier to execute from commandline instead of in Jupyter:</p>
+<pre><code>sos run analysis/20170829_MASH_Paper.ipynb sfa
+sos run analysis/20170829_MASH_Paper.ipynb mash # --data ... --cwd ...</code></pre>
+</div>
+</div>
+</div>
+<hr>
+&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/5b80eded94c2fb3ca9af83660e7018e51f7a176d/analysis/20170829_MASH_Paper.ipynb"><code>analysis/20170829_MASH_Paper.ipynb</code></a> committed by Gao Wang on Tue Aug 29 19:32:24 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/5b80eded94c2fb3ca9af83660e7018e51f7a176d">revision 1, 5b80ede</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+</div>
+</div>
+</body>
+</html>
