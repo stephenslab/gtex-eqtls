@@ -178,12 +178,12 @@ table tr th :last-child, table tr td :last-child {
 .output_stderr {
     display: none;
 }
-
-div.input {
-    display: none;
-}
-
-.hidden_output {
+/*
+ div.input {
+     display: none;
+ }
+*/
+.hidden_content {
     display: none;
 }
 
@@ -323,12 +323,12 @@ function toggle_source() {
     var btn = document.getElementById("show_cells");
     if (btn.checked) {
         $('div.input').css('display', 'flex');
-        $('.hidden_output').show();
+        $('.hidden_content').show();
         // this somehow does not work.
         $('div.cell').css('padding', '0pt').css('border-width', '0pt');
     } else {
         $('div.input').hide();
-        $('.hidden_output').hide();
+        $('.hidden_content').hide();
         $('div.cell').css('padding', '0pt').css('border-width', '0pt');
     }
 }
@@ -440,17 +440,23 @@ body {
 {%- block input -%}
 
     {%- if 'scratch' in cell.metadata.tags -%}
-    {%- else -%}
+	{%- elif 'report_cell' in cell.metadata.tags -%}
         {{ super() }}
+    {%- else -%}
+        <div class="hidden_content">
+        {{ super() }}
+        </div>
    {%- endif -%}
 {%- endblock input -%}
 
 {% block output %}
     {%- if 'report_output' in cell.metadata.tags -%}
         {{ super() }}
+    {%- elif 'report_cell' in cell.metadata.tags -%}
+        {{ super() }}
     {%- elif 'scratch' in cell.metadata.tags -%}
     {%- else -%}
-        <div class="hidden_output">
+        <div class="hidden_content">
         {{ super() }}
         </div>
    {%- endif -%}
@@ -458,7 +464,7 @@ body {
 
 {% block markdowncell %}
     {%- if 'hide_output' in cell.metadata.tags -%}
-		<div class="hidden_output">
+		<div class="hidden_content">
         {{ super() }}
 		</div>
     {%- elif 'scratch' in cell.metadata.tags -%}
@@ -466,6 +472,7 @@ body {
         {{ super() }}
    {%- endif -%}
 {%- endblock markdowncell -%}
+
 
 {% block codecell %}
 

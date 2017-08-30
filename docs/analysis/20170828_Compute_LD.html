@@ -155,10 +155,12 @@ table tr th :last-child, table tr td :last-child {
 .output_stderr {
     display: none;
 }
-div.input {
-    display: none;
-}
-.hidden_output {
+/*
+ div.input {
+     display: none;
+ }
+*/
+.hidden_content {
     display: none;
 }
 .input_prompt {
@@ -263,12 +265,12 @@ function toggle_source() {
     var btn = document.getElementById("show_cells");
     if (btn.checked) {
         $('div.input').css('display', 'flex');
-        $('.hidden_output').show();
+        $('.hidden_content').show();
         // this somehow does not work.
         $('div.cell').css('padding', '0pt').css('border-width', '0pt');
     } else {
         $('div.input').hide();
-        $('.hidden_output').hide();
+        $('.hidden_content').hide();
         $('div.cell').css('padding', '0pt').css('border-width', '0pt');
     }
 }
@@ -372,7 +374,7 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="prompt input_prompt">In&nbsp;[6]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
@@ -385,6 +387,7 @@ body {
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 </div>
     </div>
@@ -399,24 +402,25 @@ body {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="prompt input_prompt">In&nbsp;[3]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">preview</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">GIT</span><span class="o">/</span><span class="n">github</span><span class="o">/</span><span class="n">gtexresults_mash</span><span class="o">/</span><span class="n">Data</span><span class="o">/</span><span class="n">maxz</span><span class="o">.</span><span class="n">txt</span> <span class="o">--</span><span class="n">limit</span> <span class="mi">2</span>
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/GIT/github/gtexresults_mash/Data/maxz.txt (12.7 MiB):</div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -434,7 +438,7 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="prompt input_prompt">In&nbsp;[8]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">get_list</span>
@@ -447,17 +451,18 @@ body {
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">%preview /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt</div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -465,14 +470,14 @@ body {
 </div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt (183.2 KiB):</div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -499,7 +504,7 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[17]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">get_all_list</span>
@@ -516,17 +521,18 @@ body {
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">%preview /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt /home/gaow/Documents/GTEx/mash_revision/snp_random.txt</div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -534,14 +540,14 @@ body {
 </div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt (183.2 KiB):</div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -553,14 +559,14 @@ body {
 </pre>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_random.txt (549.6 KiB):</div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -591,7 +597,7 @@ body {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div>
+<div class="prompt input_prompt">In&nbsp;[24]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">get_ld</span><span class="p">:</span><span class="mi">1</span><span class="o">-</span><span class="mi">2</span> <span class="o">-</span><span class="n">b</span> <span class="o">~/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTEx</span><span class="o">/</span><span class="nb">bin</span>
@@ -640,17 +646,18 @@ body {
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">1 task completed: <a onclick="task_info('5b8b72200e012d39f40eca525b4bf6ea', 'localhost')">5b8b</a></div>
 </div>
 </div>
-        </div><div class="hidden_output">
+        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -727,7 +734,7 @@ Marker lists written to
 </div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">setwd</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTEx/mash_revision/&#39;</span><span class="p">)</span>
@@ -752,6 +759,7 @@ Marker lists written to
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 </div>
     </div>
@@ -765,7 +773,7 @@ Marker lists written to
 </div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[20]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">prop</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">prop</span><span class="p">))</span>
@@ -776,6 +784,7 @@ Marker lists written to
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
@@ -854,7 +863,7 @@ Marker lists written to
 </div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[21]:</div>
+<div class="prompt input_prompt">In&nbsp;[21]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">snps</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">frame</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">snps</span><span class="p">))</span>
@@ -864,6 +873,7 @@ Marker lists written to
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
@@ -902,7 +912,7 @@ Marker lists written to
 </div>
 </div>
 </div>
-    </div><div class="hidden_output">
+    </div><div class="hidden_content">
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -914,17 +924,18 @@ Marker lists written to
 		</div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div>
+<div class="prompt input_prompt">In&nbsp;[22]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="nb">apply</span><span class="p">(</span><span class="n">snps</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">sum</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_snps</span>
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -961,17 +972,18 @@ Marker lists written to
     </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div>
+<div class="prompt input_prompt">In&nbsp;[23]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
 </pre></div>
 </div>
 </div>
+        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">

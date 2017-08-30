@@ -71,11 +71,11 @@ $( document ).ready(function(){
             st.toc_index=0;
             // fire the main function with these parameters
             table_of_contents(cfg, st);
-            var file=prototypeDict[$("h1:first").attr("id")];
+            var file=analysisDict[$("h1:first").attr("id")];
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
-            var docs=prototypeArray;
-            var pos=prototypeArray.indexOf(file);
+            var docs=analysisArray;
+            var pos=analysisArray.indexOf(file);
             for (var a=pos;a>=0;a--){
                   var name=docs[a]
                   $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
@@ -201,7 +201,7 @@ div.cell {
 }
 .display_checkboxes {
     margin-top: 5pt;
-}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_SoS {}.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
+}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -360,140 +360,39 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="PEER-analysis-result-not-orthogonal">PEER analysis result not orthogonal<a class="anchor-link" href="#PEER-analysis-result-not-orthogonal">&#182;</a></h1>
+<h1 id="Compare-MASH-results-with-/-without-SNPs-in-LD">Compare MASH results with / without SNPs in LD<a class="anchor-link" href="#Compare-MASH-results-with-/-without-SNPs-in-LD">&#182;</a></h1><p>We performed MASH on both original list of SNPs and SNPs filtered by LD &gt; 0.2. Here we compare the results.</p>
+<p>Input data are posterior quantites results from <a href="20170829_MASH_Paper.html">this workflow</a>.</p>
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Here is the original data dimension:</p>
-</div>
-</div>
-</div>
+</div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[1]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="n">pfile</span> <span class="o">=</span> <span class="s1">&#39;/home/gaow/Documents/GTEx/peer_analysis/Heart_Atrial_Appendage_PEER_covariates.txt&#39;</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="n">full</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTEx/mash_revision/MatrixEQTLSumStats.Portable.Z.coved.3.3.lite.single.expanded.posterior.rds&#39;</span><span class="p">)</span>
+<span class="n">pruned</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTEx/mash_revision/MatrixEQTLSumStats.Portable.ld2.Z.coved.3.3.lite.single.expanded.posterior.rds&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
         </div>
 </div>
-</div><div class="rendered lan_Python3">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="n">peer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-<span class="n">peer</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="output_wrapper">
-<div class="output">
-<div class="output_area">
-<div class="prompt output_prompt">Out[1]:</div>
-<div class="output_text output_subarea output_execute_result">
-<pre>(264, 35)</pre>
-</div>
-</div>
-</div>
-</div>
 </div>
     </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>So there are 264 samples in this tissue and 35 PEER factors has been computed from expression data (see <a href="http://stephenslab.github.io/gtex-eqtls/writeup/GTEx7_Analysis_Plan.html#Covariates">why 35 PEER factors are generated</a>).</p>
-<h2 id="Orthonormal-basis-via-SVD">Orthonormal basis via SVD<a class="anchor-link" href="#Orthonormal-basis-via-SVD">&#182;</a></h2><p>After <code>orth</code>:</p>
+<h2 id="Compare-lfsr">Compare lfsr<a class="anchor-link" href="#Compare-lfsr">&#182;</a></h2>
 </div>
 </div>
-</div><div class="rendered lan_Python3">
+</div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.linalg</span>
-<span class="n">bmat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">orth</span><span class="p">(</span><span class="n">peer</span><span class="p">)</span>
-<span class="n">bmat</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="output_wrapper">
-<div class="output">
-<div class="output_area">
-<div class="prompt output_prompt">Out[2]:</div>
-<div class="output_text output_subarea output_execute_result">
-<pre>(264, 31)</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-    </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>So there should in fact be only 31 independent factors.</p>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Orthonormal-basis-via-QR">Orthonormal basis via QR<a class="anchor-link" href="#Orthonormal-basis-via-QR">&#182;</a></h2><p>The first output is the Q matrix (original dimension ...) and the 2nd is the row sum of the R matrix. Note that R matrix has a few zeros particularly at larger index. Maybe setting PEER = 35 is bad idea to start with -- but I was only following the guideline!</p>
-</div>
-</div>
-</div><div class="rendered lan_Python3">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">formatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;float&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;{0:0.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)})</span>
-<span class="n">qmat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;reduced&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="k">print</span><span class="p">(</span><span class="n">qmat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">rmat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;reduced&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">rmat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
-</pre></div>
-</div>
-</div>
-</div>
-<div class="output_wrapper">
-<div class="output">
-<div class="output_area">
-<div class="prompt"></div>
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>(264, 35)
-[1.00 -1.00 2.00 3.00 -4.00 -5.00 -10.00 -12.00 13.00 -15.00 -16.00 -15.00
- 15.00 -16.00 16.00 -16.00 -17.00 14.00 15.00 15.00 15.00 14.00 -15.00
- 15.00 15.00 13.00 14.00 -10.00 0.00 10.00 -0.00 -0.00 -0.00 0.00 0.00]
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-    </div><div class="rendered lan_SoS">
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="n">dim</span><span class="p">(</span><span class="n">full</span><span class="err">$</span><span class="n">lfsr</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -503,34 +402,87 @@ body {
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
-<p class="session_section">SoS</p>
-<table class="session_info">
-<tr>
-<th>SoS Version</th><td><pre>0.9.8.10</pre></td>
-</tr>
-</table>
-<p class="session_section">Python3</p>
-<table class="session_info">
-<tr>
-<th>Kernel</th><td><pre>python3</pre></td>
-</tr>
-<tr>
-<th>Language</th><td><pre>Python3</pre></td>
-</tr>
-<tr>
-<th>Version</th><td><pre>3.6.1 |Continuum Analytics, Inc.| (default, May 11 2017, 13:09:58) 
-[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]</pre></td>
-</tr>
-<tr>
-<th>pandas</th><td><pre>0.20.2</pre></td>
-</tr>
-<tr>
-<th>scipy</th><td><pre>0.19.1</pre></td>
-</tr>
-<tr>
-<th>numpy</th><td><pre>1.13.1</pre></td>
-</tr>
-</table>
+<ol class=list-inline>
+	<li>16069</li>
+	<li>44</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+    </div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">dim</span><span class="p">(</span><span class="n">pruned</span><span class="err">$</span><span class="n">lfsr</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<ol class=list-inline>
+	<li>11619</li>
+	<li>44</li>
+</ol>
+</div>
+</div>
+</div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here I look at tissue specific lfsr: for each tissue I get the top $N$ hits in terms of lfsr from pruned set and check the values in the complete dataset. Here is <code>N = 500</code></p>
+</div>
+</div>
+</div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">N</span> <span class="o">=</span> <span class="mi">500</span>
+<span class="n">dat</span> <span class="o">=</span> <span class="nb">list</span><span class="p">()</span>
+<span class="n">sdiff</span> <span class="o">=</span> <span class="n">vector</span><span class="p">()</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">full</span><span class="err">$</span><span class="n">lfsr</span><span class="p">))</span> <span class="p">{</span>
+    <span class="n">ipruned</span> <span class="o">=</span> <span class="n">head</span><span class="p">(</span><span class="n">pruned</span><span class="err">$</span><span class="n">lfsr</span><span class="p">[</span><span class="n">order</span><span class="p">(</span><span class="n">pruned</span><span class="err">$</span><span class="n">lfsr</span><span class="p">[,</span><span class="n">i</span><span class="p">],</span> <span class="n">decreasing</span> <span class="o">=</span> <span class="n">F</span><span class="p">),</span><span class="n">i</span><span class="p">],</span> <span class="n">n</span> <span class="o">=</span> <span class="n">N</span><span class="p">)</span>
+    <span class="n">ifull</span> <span class="o">=</span> <span class="n">full</span><span class="err">$</span><span class="n">lfsr</span><span class="p">[</span><span class="n">names</span><span class="p">(</span><span class="n">ipruned</span><span class="p">),</span> <span class="n">i</span><span class="p">]</span>
+    <span class="n">dat</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span> <span class="o">=</span> <span class="n">merge</span><span class="p">(</span><span class="n">ifull</span><span class="p">,</span> <span class="n">ipruned</span><span class="p">,</span> <span class="n">by</span> <span class="o">=</span> <span class="s1">&#39;row.names&#39;</span><span class="p">,</span> <span class="nb">all</span> <span class="o">=</span> <span class="n">T</span><span class="p">)</span>
+    <span class="n">dat</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="err">$</span><span class="n">diff</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">dat</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="err">$</span><span class="n">x</span> <span class="o">-</span> <span class="n">dat</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="err">$</span><span class="n">y</span><span class="p">)</span>
+    <span class="n">sdiff</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">dat</span><span class="p">[[</span><span class="n">i</span><span class="p">]]</span><span class="err">$</span><span class="n">diff</span><span class="p">)</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+    </div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">summary</span><span class="p">(</span><span class="n">sdiff</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_text output_subarea ">
+<pre>     Min.   1st Qu.    Median      Mean   3rd Qu.      Max. 
+0.000e+00 0.000e+00 0.000e+00 2.561e-07 1.000e-11 1.096e-05 </pre>
 </div>
 </div>
 </div>
@@ -539,7 +491,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/e74fb18d223dd478a39545c686bb4f5400e5e51a/prototype/20170828_PEER_Not_Orthogonal.ipynb"><code>prototype/20170828_PEER_Not_Orthogonal.ipynb</code></a> committed by Gao Wang on Wed Aug 30 13:16:30 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/e74fb18d223dd478a39545c686bb4f5400e5e51a">revision 6, e74fb18</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/e74fb18d223dd478a39545c686bb4f5400e5e51a/analysis/20170830_Compare_MASH_No_LD.ipynb"><code>analysis/20170830_Compare_MASH_No_LD.ipynb</code></a> committed by Gao Wang on Wed Aug 30 13:16:30 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/e74fb18d223dd478a39545c686bb4f5400e5e51a">revision 1, e74fb18</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
