@@ -194,24 +194,11 @@ div.cell {
     background-color: #e6f2ff;
 }
 .display_control_panel  {
-    padding: 10pt;
-    left: 5px;
-    top: 5px;
-    position: fixed;
+    position: inherit;
     z-index: 1000;
-}
-.display_control_panel:hover {
-    background: rgb(224, 234, 241);
 }
 .display_checkboxes {
     margin-top: 5pt;
-}
-.display_control_panel:hover .display_control {
-    display: block;
-    opacity: 100;
-}
-.display_control_panel .display_control {
-    opacity: 0;
 }.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_SoS {}.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
 <script>
 function filterDataFrame(id) {
@@ -278,7 +265,7 @@ function toggle_source() {
         $('div.input').css('display', 'flex');
         $('.hidden_output').show();
         // this somehow does not work.
-        $('div.cell').css('padding', '5pt').css('border-width', '1pt');
+        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
     } else {
         $('div.input').hide();
         $('.hidden_output').hide();
@@ -307,22 +294,6 @@ function toggle_messages() {
         $('.sos_hint').hide();
     }
 }
-</script>
-<div class='display_control_panel'>
-    <div class="display_control">
-Display content:<br>
-<div class="display_checkboxes">
-<input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
-<label for="show_cells">All cells</label>
-<br>
-<input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
-<label for="show_prompt">Prompt</label>
-<br>
-<input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
-<label for="show_messages">Messages</label>
-</div>
-   </div>
-</div>
 </script><title>GTEx eQTL</title>
 <style type = "text/css">
 body {
@@ -369,6 +340,20 @@ body {
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
+<div class='display_control_panel'>
+        <div class="display_checkboxes">
+        Show:
+            &nbsp;
+            <input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
+            <label for="show_cells">All cells</label>
+            &nbsp;
+            <input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
+            <label for="show_prompt">Prompt</label>
+            &nbsp;
+            <input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
+            <label for="show_messages">Messages</label>
+    </div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -455,7 +440,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Orthonormal-basis-via-QR">Orthonormal basis via QR<a class="anchor-link" href="#Orthonormal-basis-via-QR">&#182;</a></h2><p>Note that R matrix has a few zeros particularly at larger index. Maybe setting PEER = 35 is bad idea to start with -- but I was only following the guideline!</p>
+<h2 id="Orthonormal-basis-via-QR">Orthonormal basis via QR<a class="anchor-link" href="#Orthonormal-basis-via-QR">&#182;</a></h2><p>The first output is the Q matrix (original dimension ...) and the 2nd is the row sum of the R matrix. Note that R matrix has a few zeros particularly at larger index. Maybe setting PEER = 35 is bad idea to start with -- but I was only following the guideline!</p>
 </div>
 </div>
 </div><div class="rendered lan_Python3">
@@ -502,6 +487,7 @@ body {
 </div>
 <div class="output_wrapper">
 <div class="output">
+<div class="hidden_output">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -535,13 +521,14 @@ body {
 </table>
 </div>
 </div>
+        </div>
 </div>
 </div>
 </div>
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/c508d756da0a0e1fda27b493e25173fe1cf21619/prototype/20170828_PEER_Not_Orthogonal.ipynb"><code>prototype/20170828_PEER_Not_Orthogonal.ipynb</code></a> committed by Gao Wang on Mon Aug 28 17:43:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/c508d756da0a0e1fda27b493e25173fe1cf21619">revision 4, c508d75</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/2408e90ef7d81211d2dedd17a6422251c29a2056/prototype/20170828_PEER_Not_Orthogonal.ipynb"><code>prototype/20170828_PEER_Not_Orthogonal.ipynb</code></a> committed by Gao Wang on Tue Aug 29 19:53:58 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/2408e90ef7d81211d2dedd17a6422251c29a2056">revision 5, 2408e90</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

@@ -194,24 +194,11 @@ div.cell {
     background-color: #e6f2ff;
 }
 .display_control_panel  {
-    padding: 10pt;
-    left: 5px;
-    top: 5px;
-    position: fixed;
+    position: inherit;
     z-index: 1000;
-}
-.display_control_panel:hover {
-    background: rgb(224, 234, 241);
 }
 .display_checkboxes {
     margin-top: 5pt;
-}
-.display_control_panel:hover .display_control {
-    display: block;
-    opacity: 100;
-}
-.display_control_panel .display_control {
-    opacity: 0;
 }.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
 <script>
 function filterDataFrame(id) {
@@ -278,7 +265,7 @@ function toggle_source() {
         $('div.input').css('display', 'flex');
         $('.hidden_output').show();
         // this somehow does not work.
-        $('div.cell').css('padding', '5pt').css('border-width', '1pt');
+        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
     } else {
         $('div.input').hide();
         $('.hidden_output').hide();
@@ -307,22 +294,6 @@ function toggle_messages() {
         $('.sos_hint').hide();
     }
 }
-</script>
-<div class='display_control_panel'>
-    <div class="display_control">
-Display content:<br>
-<div class="display_checkboxes">
-<input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
-<label for="show_cells">All cells</label>
-<br>
-<input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
-<label for="show_prompt">Prompt</label>
-<br>
-<input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
-<label for="show_messages">Messages</label>
-</div>
-   </div>
-</div>
 </script><title>GTEx eQTL</title>
 <style type = "text/css">
 body {
@@ -369,6 +340,20 @@ body {
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
+<div class='display_control_panel'>
+        <div class="display_checkboxes">
+        Show:
+            &nbsp;
+            <input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
+            <label for="show_cells">All cells</label>
+            &nbsp;
+            <input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
+            <label for="show_prompt">Prompt</label>
+            &nbsp;
+            <input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
+            <label for="show_messages">Messages</label>
+    </div>
+</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -397,8 +382,8 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Covariance-pattern-discovery">Covariance pattern discovery<a class="anchor-link" href="#Covariance-pattern-discovery">&#182;</a></h2><p>This is to prepare prior input for <code>mash</code> model</p>
-<h3 id="SFA">SFA<a class="anchor-link" href="#SFA">&#182;</a></h3><p>We analyze data with SFA download SFA software (cell below) and run it on data.</p>
+<h2 id="Covariance-pattern-discovery">Covariance pattern discovery<a class="anchor-link" href="#Covariance-pattern-discovery">&#182;</a></h2><p>This obtains covariance matrices, ie, the priors, for <code>mash</code> model.</p>
+<h3 id="SFA">SFA<a class="anchor-link" href="#SFA">&#182;</a></h3><p>We analyze data with SFA. The cell below downloads SFA software and run it on data with rank <code>K = 5</code>.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -447,7 +432,7 @@ body {
 <li>SVD (rank 3, to be computed)</li>
 <li>Empirical covariance</li>
 </ul>
-<p>and apply and apply <a href="https://github.com/jobovy/extreme-deconvolution">Extreme Deconvolution</a> to refine the covariance pattern (we observed that Extreme Deconvolution perserves rank).</p>
+<p>and apply <a href="https://github.com/jobovy/extreme-deconvolution">Extreme Deconvolution</a> to refine the matrices. We observed that Extreme Deconvolution perserves rank.</p>
 </div>
 </div>
 </div>
@@ -527,10 +512,10 @@ body {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Add-in-single-rank-covariance-matrices">Add in single-rank covariance matrices<a class="anchor-link" href="#Add-in-single-rank-covariance-matrices">&#182;</a></h3><p>Now additionally we include 2 other types of covariance matrices:</p>
 <ul>
-<li>canonical configurations (aka bmalite)</li>
+<li>canonical configurations (aka <code>bmalite</code>)</li>
 <li>single rank SFA</li>
 </ul>
-<p>We also expand the list of matrices by grid -- after running the cell below we are ready to fit the mash model.</p>
+<p>We also expand the list of matrices by grid. At the end of this step (cell below) we are ready to fit the mash model.</p>
 </div>
 </div>
 </div>
@@ -548,12 +533,12 @@ body {
     <span class="n">setwd</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">cwd</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
     <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;${data}&#39;</span><span class="p">)</span>
     <span class="n">z</span><span class="o">.</span><span class="n">stat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
-    <span class="n">rownames</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
-    <span class="n">colnames</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">=</span><span class="n">NULL</span>
+    <span class="n">rownames</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span> <span class="o">=</span> <span class="n">NULL</span>
+    <span class="n">colnames</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span> <span class="o">=</span> <span class="n">NULL</span>
     <span class="n">v</span><span class="o">.</span><span class="n">mat</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">vhat</span>
-    <span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="o">=</span><span class="n">matrix</span><span class="p">(</span><span class="n">rep</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span><span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">))</span>
+    <span class="n">s</span><span class="o">.</span><span class="n">j</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="n">rep</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)</span><span class="o">*</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">)),</span><span class="n">ncol</span><span class="o">=</span><span class="n">ncol</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">),</span><span class="n">nrow</span><span class="o">=</span><span class="n">nrow</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">))</span>
     <span class="n">sfa</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s2">&quot;${data!n}.sfa.rds&quot;</span><span class="p">)</span>
-    <span class="n">res</span><span class="o">=</span><span class="n">compute</span><span class="o">.</span><span class="n">hm</span><span class="o">.</span><span class="n">covmat</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span><span class="n">se</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="p">,</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">compute</span><span class="o">.</span><span class="n">hm</span><span class="o">.</span><span class="n">covmat</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">max</span><span class="o">.</span><span class="n">step</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span><span class="n">se</span><span class="o">.</span><span class="n">hat</span><span class="o">=</span><span class="n">s</span><span class="o">.</span><span class="n">j</span><span class="p">,</span>
                                           <span class="n">t</span><span class="o">.</span><span class="n">stat</span><span class="o">=</span><span class="n">z</span><span class="o">.</span><span class="n">stat</span><span class="p">,</span><span class="n">Q</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span>
                                           <span class="k">lambda</span><span class="o">.</span><span class="n">mat</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sfa</span><span class="err">$</span><span class="k">lambda</span><span class="p">),</span>
                                           <span class="n">A</span><span class="o">=</span><span class="s1">&#39;.remove_before_rerun&#39;</span><span class="p">,</span><span class="n">factor</span><span class="o">.</span><span class="n">mat</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">sfa</span><span class="err">$</span><span class="n">F</span><span class="p">),</span>
@@ -571,7 +556,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Fit-MASH-mixture-model">Fit MASH mixture model<a class="anchor-link" href="#Fit-MASH-mixture-model">&#182;</a></h2><p>Using a training set, the cell below computes the weights for input covariance matrices (priors) in the MASH mixture model. The output contains matrix of log-likelihoods as well as weights learned from the hierarchical model.</p>
+<h2 id="Fit-MASH-mixture-model">Fit MASH mixture model<a class="anchor-link" href="#Fit-MASH-mixture-model">&#182;</a></h2><p>Using a training set, the cell below computes the weights for input covariance matrices (priors) in MASH mixture. The output contains matrix of log-likelihoods as well as weights learned from the hierarchical model.</p>
 </div>
 </div>
 </div>
@@ -581,9 +566,11 @@ body {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_3</span><span class="p">]</span>
+<span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s2">&quot;SQUAREM&quot;</span><span class="p">)</span>
 <span class="kn">output:</span> <span class="s2">&quot;${input!n}.hm.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">R:</span>
+    <span class="n">library</span><span class="p">(</span><span class="s2">&quot;SQUAREM&quot;</span><span class="p">)</span>
     <span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;${mashr_src!da}&quot;</span><span class="p">)</span>
     <span class="n">ret</span> <span class="o">=</span> <span class="n">sapply</span><span class="p">(</span><span class="nb">list</span><span class="o">.</span><span class="n">files</span><span class="p">(</span><span class="kp">pattern</span> <span class="o">=</span> <span class="s2">&quot;*.R&quot;</span><span class="p">),</span> <span class="n">source</span><span class="p">,</span> <span class="o">.</span><span class="n">GlobalEnv</span><span class="p">)</span>
     <span class="n">setwd</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">cwd</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
@@ -598,7 +585,7 @@ body {
                                             <span class="n">A</span> <span class="o">=</span> <span class="s1">&#39;.remove_before_rerun&#39;</span><span class="p">,</span> 
                                             <span class="n">pen</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                                             <span class="n">train</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">v</span><span class="p">,</span><span class="n">cormat</span> <span class="o">=</span> <span class="n">v</span><span class="o">.</span><span class="n">mat</span><span class="p">)</span>
-    <span class="n">savRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 <span class="kn">run:</span>
     <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*.</span><span class="n">remove_before_rerun</span><span class="o">.</span><span class="n">rds</span>
 </pre></div>
@@ -651,7 +638,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>I will use a separate notebook to summarize, plot and visualize the result of analysis.</p>
+<p>Now MASH analysis is complete. I will use a separate notebook to summarize, plot and visualize the result of analysis.</p>
 </div>
 </div>
 </div>
@@ -667,7 +654,7 @@ sos run analysis/20170829_MASH_Paper.ipynb mash # --data ... --cwd ...</code></p
 </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/5b80eded94c2fb3ca9af83660e7018e51f7a176d/analysis/20170829_MASH_Paper.ipynb"><code>analysis/20170829_MASH_Paper.ipynb</code></a> committed by Gao Wang on Tue Aug 29 19:32:24 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/5b80eded94c2fb3ca9af83660e7018e51f7a176d">revision 1, 5b80ede</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/23aeadeb69babdb32e521b7f4ed20963db662807/analysis/20170829_MASH_Paper.ipynb"><code>analysis/20170829_MASH_Paper.ipynb</code></a> committed by Gao Wang on Tue Aug 29 22:24:57 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/23aeadeb69babdb32e521b7f4ed20963db662807">revision 3, 23aeade</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
