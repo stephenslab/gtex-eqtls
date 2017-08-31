@@ -377,7 +377,7 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[3]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
@@ -462,36 +462,50 @@ body {
       <span class="n">dat</span><span class="err">$</span><span class="n">colnames</span> <span class="o">&lt;-</span> <span class="n">dat</span><span class="err">$</span><span class="n">rownames</span> <span class="o">&lt;-</span> <span class="n">NULL</span>
       <span class="k">return</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
     <span class="p">}</span>
-    <span class="c1"># load data</span>
-    <span class="n">mdat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">z</span>
-    <span class="n">ndat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">z</span>
-    <span class="c1"># select rows to keep</span>
-    <span class="n">num_train</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">num_train</span><span class="p">}</span>
-    <span class="k">if</span> <span class="p">(</span><span class="n">num_train</span> <span class="o">&gt;=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">))</span> <span class="p">{</span>
-        <span class="n">num_train</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">load_data</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">table</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1"># load data</span>
+        <span class="n">mdat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;max&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})[[</span><span class="n">table</span><span class="p">]]</span>
+        <span class="n">ndat</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;null&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})[[</span><span class="n">table</span><span class="p">]]</span>
+        <span class="c1"># select rows to keep</span>
+        <span class="n">num_train</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">num_train</span><span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_train</span> <span class="o">&gt;=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">num_train</span> <span class="o">=</span> <span class="n">floor</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">num_train</span><span class="p">,]</span>
+        <span class="n">validate</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[(</span><span class="n">num_train</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">),]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">exclude_list</span><span class="err">!</span><span class="n">r</span><span class="p">}</span> <span class="o">!=</span> <span class="s2">&quot;NULL&quot;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">pout</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">exclude_list</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">NULL</span><span class="p">)</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">mdat</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+            <span class="n">mdat</span> <span class="o">=</span> <span class="n">mdat</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">ndat</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+            <span class="n">ndat</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">train</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+            <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+            <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">validate</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
+            <span class="n">validate</span> <span class="o">=</span> <span class="n">validate</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>                                              
+        <span class="p">}</span>
+        <span class="c1"># get vhat (SVS)</span>
+        <span class="n">vhat</span> <span class="o">=</span> <span class="n">NULL</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">table</span> <span class="o">==</span> <span class="s1">&#39;z-score&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">max_absz</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ndat</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span>
+            <span class="n">nullish</span> <span class="o">=</span> <span class="n">which</span><span class="p">(</span><span class="n">max_absz</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
+            <span class="n">nz</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="n">nullish</span><span class="p">,]</span>
+            <span class="n">vhat</span> <span class="o">=</span> <span class="n">cor</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="k">return</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">,</span>
+               <span class="n">validate</span> <span class="o">=</span> <span class="n">validate</span><span class="p">,</span> 
+               <span class="n">test</span> <span class="o">=</span> <span class="n">mdat</span><span class="p">,</span> <span class="n">vhat</span> <span class="o">=</span> <span class="n">vhat</span><span class="p">))</span>
     <span class="p">}</span>
-    <span class="n">train</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">num_train</span><span class="p">,]</span>
-    <span class="n">validate</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[(</span><span class="n">num_train</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span><span class="n">nrow</span><span class="p">(</span><span class="n">ndat</span><span class="p">),]</span>
-    <span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">exclude_list</span><span class="err">!</span><span class="n">r</span><span class="p">}</span> <span class="o">!=</span> <span class="s2">&quot;NULL&quot;</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">pout</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">exclude_list</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">NULL</span><span class="p">)</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">mdat</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
-        <span class="n">mdat</span> <span class="o">=</span> <span class="n">mdat</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">ndat</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
-        <span class="n">ndat</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">train</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
-        <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
-        <span class="n">names</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">sapply</span><span class="p">(</span><span class="n">strsplit</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">validate</span><span class="p">),</span> <span class="s2">&quot;_&quot;</span><span class="p">),</span> <span class="sb">`[`</span><span class="p">,</span> <span class="n">c</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">)),</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">paste</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">collapse</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="p">))</span>
-        <span class="n">validate</span> <span class="o">=</span> <span class="n">validate</span><span class="p">[</span><span class="err">!</span><span class="p">(</span><span class="n">names</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>                                              
-    <span class="p">}</span>
-    <span class="c1"># get vhat (SVS)</span>
-    <span class="n">max_absz</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">ndat</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span> <span class="nb">max</span><span class="p">)</span>
-    <span class="n">nullish</span> <span class="o">=</span> <span class="n">which</span><span class="p">(</span><span class="n">max_absz</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span>
-    <span class="n">nz</span> <span class="o">=</span> <span class="n">ndat</span><span class="p">[</span><span class="n">nullish</span><span class="p">,]</span>
-    <span class="n">vhat</span> <span class="o">=</span> <span class="n">cor</span><span class="p">(</span><span class="n">nz</span><span class="p">)</span>
+    <span class="n">ztable</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">&quot;z-score&quot;</span><span class="p">)</span>
+    <span class="n">btable</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
     <span class="c1"># save output</span>
-    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">train</span><span class="p">,</span>
-                 <span class="n">validate</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">validate</span><span class="p">,</span>
-                 <span class="n">test</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">mdat</span><span class="p">,</span> <span class="n">vhat</span> <span class="o">=</span> <span class="n">vhat</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ztable</span><span class="err">$</span><span class="n">train</span><span class="p">,</span>
+                 <span class="n">validate</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ztable</span><span class="err">$</span><span class="n">validate</span><span class="p">,</span>
+                 <span class="n">test</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ztable</span><span class="err">$</span><span class="n">test</span><span class="p">,</span>
+                 <span class="n">train</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">btable</span><span class="err">$</span><span class="n">train</span><span class="p">,</span>
+                 <span class="n">validate</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">btable</span><span class="err">$</span><span class="n">validate</span><span class="p">,</span>
+                 <span class="n">test</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">btable</span><span class="err">$</span><span class="n">test</span><span class="p">,</span>
+                 <span class="n">vhat</span> <span class="o">=</span> <span class="n">ztable</span><span class="err">$</span><span class="n">vhat</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -500,7 +514,7 @@ body {
     </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[25]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[7]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">R:</span>
@@ -513,10 +527,11 @@ body {
 </div>
 <div class="output_wrapper">
 <div class="output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>List of 4
+<pre>List of 7
  $ train.z   : num [1:20000, 1:44] -0.184 0.161 -1.291 -1.628 0.778 ...
   ..- attr(*, &#34;dimnames&#34;)=List of 2
   .. ..$ : chr [1:20000] &#34;ENSG00000000419.8_20_49782767_C_G_b37&#34; &#34;ENSG00000000419.8_20_49654572_A_G_b37&#34; &#34;ENSG00000000419.8_20_49392478_A_G_b37&#34; &#34;ENSG00000000457.9_1_169117725_TG_T_b37&#34; ...
@@ -529,6 +544,18 @@ body {
   ..- attr(*, &#34;dimnames&#34;)=List of 2
   .. ..$ : chr [1:16069(1d)] &#34;ENSG00000000419.8_20_49461813_G_C_b37&#34; &#34;ENSG00000000457.9_1_169695110_T_A_b37&#34; &#34;ENSG00000000460.12_1_169655079_G_A_b37&#34; &#34;ENSG00000000938.8_1_27888990_T_C_b37&#34; ...
   .. ..$ : chr [1:44(1d)] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ train.b   : num [1:20000, 1:44] -0.01192 0.00986 -0.11973 -0.09686 0.05309 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:20000] &#34;ENSG00000000419.8_20_49782767_C_G_b37&#34; &#34;ENSG00000000419.8_20_49654572_A_G_b37&#34; &#34;ENSG00000000419.8_20_49392478_A_G_b37&#34; &#34;ENSG00000000457.9_1_169117725_TG_T_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ validate.b: num [1:28198, 1:44] 0.00967 0.08876 0.0131 0.02502 -0.00229 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:28198] &#34;ENSG00000151665.8_2_47601407_A_G_b37&#34; &#34;ENSG00000151687.10_2_190118691_T_G_b37&#34; &#34;ENSG00000151687.10_2_191462133_C_T_b37&#34; &#34;ENSG00000151687.10_2_190620957_G_A_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ test.b    : num [1:16069, 1:44] 0.0105 0.1067 0.0168 0.0853 -0.2458 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:16069(1d)] &#34;ENSG00000000419.8_20_49461813_G_C_b37&#34; &#34;ENSG00000000457.9_1_169695110_T_A_b37&#34; &#34;ENSG00000000460.12_1_169655079_G_A_b37&#34; &#34;ENSG00000000938.8_1_27888990_T_C_b37&#34; ...
+  .. ..$ : chr [1:44(1d)] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
  $ vhat      : num [1:44, 1:44] 1 0.0674 0.0142 0.0686 0.03 ...
   ..- attr(*, &#34;dimnames&#34;)=List of 2
   .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
@@ -536,6 +563,7 @@ body {
 </pre>
 </div>
 </div>
+        </div>
 </div>
 </div>
 </div>
@@ -586,7 +614,7 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[6]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">R:</span>
@@ -599,10 +627,11 @@ body {
 </div>
 <div class="output_wrapper">
 <div class="output">
+<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>List of 4
+<pre>List of 7
  $ train.z   : num [1:12143, 1:44] -0.184 0.161 -1.291 -1.628 0.778 ...
   ..- attr(*, &#34;dimnames&#34;)=List of 2
   .. ..$ : chr [1:12143] &#34;ENSG00000000419.8_20_49782767_C_G_b37&#34; &#34;ENSG00000000419.8_20_49654572_A_G_b37&#34; &#34;ENSG00000000419.8_20_49392478_A_G_b37&#34; &#34;ENSG00000000457.9_1_169117725_TG_T_b37&#34; ...
@@ -615,6 +644,18 @@ body {
   ..- attr(*, &#34;dimnames&#34;)=List of 2
   .. ..$ : chr [1:11619] &#34;ENSG00000000419.8_20_49461813_G_C_b37&#34; &#34;ENSG00000000457.9_1_169695110_T_A_b37&#34; &#34;ENSG00000000460.12_1_169655079_G_A_b37&#34; &#34;ENSG00000000971.11_1_196513323_A_G_b37&#34; ...
   .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ train.b   : num [1:12143, 1:44] -0.01192 0.00986 -0.11973 -0.09686 0.05309 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:12143] &#34;ENSG00000000419.8_20_49782767_C_G_b37&#34; &#34;ENSG00000000419.8_20_49654572_A_G_b37&#34; &#34;ENSG00000000419.8_20_49392478_A_G_b37&#34; &#34;ENSG00000000457.9_1_169117725_TG_T_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ validate.b: num [1:16316, 1:44] 0.0888 0.064 0.1382 0.0142 -0.0199 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:16316] &#34;ENSG00000151687.10_2_190118691_T_G_b37&#34; &#34;ENSG00000151689.8_2_191969341_C_T_b37&#34; &#34;ENSG00000151690.10_2_191471847_C_T_b37&#34; &#34;ENSG00000151690.10_2_191018883_G_A_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
+ $ test.b    : num [1:11619, 1:44] 0.0105 0.1067 0.0168 -0.2458 -0.1605 ...
+  ..- attr(*, &#34;dimnames&#34;)=List of 2
+  .. ..$ : chr [1:11619] &#34;ENSG00000000419.8_20_49461813_G_C_b37&#34; &#34;ENSG00000000457.9_1_169695110_T_A_b37&#34; &#34;ENSG00000000460.12_1_169655079_G_A_b37&#34; &#34;ENSG00000000971.11_1_196513323_A_G_b37&#34; ...
+  .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
  $ vhat      : num [1:44, 1:44] 1 0.0924 0.0127 0.0792 0.0415 ...
   ..- attr(*, &#34;dimnames&#34;)=List of 2
   .. ..$ : chr [1:44] &#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; ...
@@ -622,6 +663,7 @@ body {
 </pre>
 </div>
 </div>
+        </div>
 </div>
 </div>
 </div>
@@ -701,7 +743,7 @@ loaded via a namespace (and not attached):
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/6afc11ba4aa0f24f34536ec77c932f1411e8e06e/analysis/20170829_MASH_Input_Preparation.ipynb"><code>analysis/20170829_MASH_Input_Preparation.ipynb</code></a> committed by Gao Wang on Wed Aug 30 13:34:51 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/6afc11ba4aa0f24f34536ec77c932f1411e8e06e">revision 3, 6afc11b</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/a8cdab72b790123330f4864e68c6e5b8c033b132/analysis/20170829_MASH_Input_Preparation.ipynb"><code>analysis/20170829_MASH_Input_Preparation.ipynb</code></a> committed by Gao Wang on Wed Aug 30 21:13:31 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/a8cdab72b790123330f4864e68c6e5b8c033b132">revision 4, a8cdab7</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
