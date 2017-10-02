@@ -360,8 +360,8 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="MASH-analysis-for-Urbut-2017">MASH analysis for Urbut 2017<a class="anchor-link" href="#MASH-analysis-for-Urbut-2017">&#182;</a></h1><p>Reproducing (using old <code>mashr</code> codes) the Urbut 2017 paper in response to reviewer requests.</p>
-<p>It largely follows from <a href="https://github.com/stephenslab/gtexresults_mash/blob/master/scripts/MidwayScripts.rmd">this vignette</a>.</p>
+<h1 id="MASH-analysis-for-GTEx-V8-data">MASH analysis for GTEx V8 data<a class="anchor-link" href="#MASH-analysis-for-GTEx-V8-data">&#182;</a></h1><p>This is the new <code>mashr</code> version of analysis.</p>
+<p>It follows in structure from <a href="20170829_MASH_Paper.html">this notebook</a> though not implementation.</p>
 </div>
 </div>
 </div>
@@ -371,10 +371,9 @@ body {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
-<span class="kn">parameter:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTEx/mash_revision&#39;</span>
-<span class="n">sfa_exe</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/sfa/bin/sfa_linux&quot;</span>
-<span class="n">mashr_src</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/mashr-paper-master/R/main.R&quot;</span>
-<span class="kn">parameter:</span> <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/MatrixEQTLSumStats.Portable.Z.rds&quot;</span>
+<span class="kn">parameter:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTExV8/MASH&#39;</span>
+<span class="n">sfa_exe</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTExV8/utils/sfa/bin/sfa_linux&quot;</span>
+<span class="kn">parameter:</span> <span class="n">data</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/GTExV8.ciseQTL.4MASH.rds&quot;</span>
 </pre></div>
 </div>
 </div>
@@ -391,12 +390,12 @@ body {
 </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">sfa</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="kp">run</span> <span class="n">sfa</span>
 <span class="p">[</span><span class="n">sfa_download</span><span class="p">:</span> <span class="kp">provides</span> <span class="o">=</span> <span class="n">sfa_exe</span><span class="p">]</span>
-<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTExV8/utils&quot;</span>
 <span class="kn">download:</span> <span class="n">decompress</span> <span class="o">=</span> <span class="bp">True</span>
     <span class="n">http</span><span class="p">:</span><span class="o">//</span><span class="n">stephenslab</span><span class="o">.</span><span class="n">uchicago</span><span class="o">.</span><span class="n">edu</span><span class="o">/</span><span class="n">assets</span><span class="o">/</span><span class="n">software</span><span class="o">/</span><span class="n">sfa</span><span class="o">/</span><span class="n">sfa1</span><span class="o">.</span><span class="mf">0.</span><span class="n">tar</span><span class="o">.</span><span class="n">gz</span>
 <span class="p">[</span><span class="n">sfa</span><span class="p">]</span>
@@ -407,7 +406,7 @@ body {
 <span class="kn">output:</span> <span class="s2">&quot;${input!n}.sfa.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">R:</span>
-    <span class="n">z</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span><span class="err">$</span><span class="n">test</span><span class="o">.</span><span class="n">z</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span><span class="err">$</span><span class="nb">max</span><span class="err">$</span><span class="n">z</span>
     <span class="n">write</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">tmpfile</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">col</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="n">F</span><span class="p">,</span><span class="n">row</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="n">F</span><span class="p">)</span>
     <span class="n">cmd</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s1">&#39;${sfa_exe} -gen ${tmpfile} -g &#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39; -n &#39;</span><span class="p">,</span> <span class="n">dim</span><span class="p">(</span><span class="n">z</span><span class="p">)[</span><span class="mi">2</span><span class="p">],</span> 
                  <span class="s1">&#39; -k ${K} -iter 50 -rand 999 -o ${input!bn}&#39;</span><span class="p">)</span>
@@ -419,6 +418,30 @@ body {
 <span class="kn">bash:</span>
     <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="o">*</span><span class="p">{</span><span class="n">_F</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_lambda</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_sigma2</span><span class="o">.</span><span class="n">out</span><span class="p">,</span><span class="n">_alpha</span><span class="o">.</span><span class="n">out</span><span class="p">}</span>
 </pre></div>
+</div>
+</div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stderr output_text">
+<pre>INFO: <span class="ansi-green-fg">sfa_download</span> (index=0) is <span class="ansi-green-fg">ignored</span> due to saved signature
+</pre>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_html rendered_html output_subarea ">
+<div class="sos_hint">1 task completed: <a onclick="task_info('d79367f99767ea57de686c0c96877bbd', 'localhost')">d793</a></div>
+</div>
+</div>
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+</pre>
+</div>
 </div>
 </div>
 </div>
@@ -443,13 +466,9 @@ body {
 <div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mashr_download</span><span class="p">:</span> <span class="kp">provides</span> <span class="o">=</span> <span class="n">mashr_src</span><span class="p">]</span>
-<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
-<span class="kn">download:</span> <span class="n">decompress</span> <span class="o">=</span> <span class="bp">True</span>
-    <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">stephenslab</span><span class="o">/</span><span class="n">mashr</span><span class="o">-</span><span class="n">paper</span><span class="o">/</span><span class="n">archive</span><span class="o">/</span><span class="n">master</span><span class="o">.</span><span class="n">zip</span>
-<span class="p">[</span><span class="n">mash_1</span><span class="p">]</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_1</span><span class="p">]</span>
 <span class="c1"># Perform SVD + ED</span>
-<span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s2">&quot;ExtremeDeconvolution&quot;</span><span class="p">),</span> <span class="n">mashr_src</span>
+<span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s2">&quot;ExtremeDeconvolution&quot;</span><span class="p">),</span> <span class="n">R_library</span><span class="p">(</span><span class="s2">&quot;stephenslab/mashr&quot;</span><span class="p">)</span>
 <span class="n">K</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="n">P</span> <span class="o">=</span> <span class="mi">3</span>
 <span class="kn">input:</span> <span class="n">data</span><span class="p">,</span> <span class="s2">&quot;${data!n}.sfa.rds&quot;</span>
@@ -673,7 +692,7 @@ sos run analysis/20170829_MASH_Paper.ipynb mash <span class="se">\</span>
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/a356bbab487f1f9b09b036bd97c9ba946b6fc756/analysis/20170829_MASH_Paper.ipynb"><code>analysis/20170829_MASH_Paper.ipynb</code></a> committed by Gao Wang on Fri Sep 29 08:37:58 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/a356bbab487f1f9b09b036bd97c9ba946b6fc756">revision 9, a356bba</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/d72508978b90d0884f3f8e71b2316d80412da676/analysis/20171002_MASH_V8.ipynb"><code>analysis/20171002_MASH_V8.ipynb</code></a> committed by Gao Wang on Mon Oct 2 11:03:21 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/d72508978b90d0884f3f8e71b2316d80412da676">revision 1, d725089</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

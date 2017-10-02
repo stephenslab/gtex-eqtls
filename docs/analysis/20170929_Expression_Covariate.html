@@ -360,38 +360,98 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Download-data-from-dbGaP">Download data from dbGaP<a class="anchor-link" href="#Download-data-from-dbGaP">&#182;</a></h1><p>A brief documentation to how dbGaP website is accessed &amp; how to download data.</p>
+<h1 id="GTEx-V8-expression-and-covariate-data">GTEx V8 expression and covariate data<a class="anchor-link" href="#GTEx-V8-expression-and-covariate-data">&#182;</a></h1><p>Save V8 expression and covariates to HDF5 format, for use with association analysis.</p>
 </div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
+<span class="n">cwd</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTExV8&quot;</span>
+</pre></div>
+</div>
+</div>
+        </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="dbGaP-access">dbGaP access<a class="anchor-link" href="#dbGaP-access">&#182;</a></h2><p>Visit <a href="https://www.ncbi.nlm.nih.gov/gap">dbGaP</a>, click on <code>Controlled Access Data</code>, then login with your eRA Commons account. You'll see the dataset previously applied for and approved under the tab <code>Authorized Access -&gt; My Requests</code>. In the column <code>Actions</code> click <code>Request Files</code> for the dataset you want to download, then click / select data file names. After all is done, create the data request and wait for an email.</p>
-<h3 id="GTEx-data">GTEx data<a class="anchor-link" href="#GTEx-data">&#182;</a></h3><p>In my case, I'd use the Request for <code>Exchange Area</code> data, and go to <code>Provisional files</code>. Currently version 7 (V7) is more or less ready for analysis (QC completed). The manifest of dataset I requested can be <a href="https://github.com/stephenslab/gtex-eqtls/tree/master/data/confidential">found here</a>.</p>
-<p><strong>Update: Sept 24, 2017 there is V8 eQTL release</strong>.</p>
-<pre><code>gtex/exchange/GTEx_phs000424/exchange/analysis_releases/GTEx_Analysis_2017-06-05_v8/eqtl</code></pre>
+<h2 id="Covariates-format-and-computation">Covariates format and computation<a class="anchor-link" href="#Covariates-format-and-computation">&#182;</a></h2><p>For covariate data we also compute a version of its orthonormal basis to be used for <code>mr-ash</code> analysis.</p>
 </div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">format_covar</span>
+<span class="p">[</span><span class="n">format_covar</span><span class="p">]</span>
+<span class="c1"># Consolidate covariates to HDF5 format</span>
+<span class="kn">input:</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;${cwd!a}/GTEx_Analysis_v8_eQTL_covariates/*.v8.covariates.txt&quot;</span><span class="p">)</span>
+<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/GTExV8.covariates.h5&quot;</span><span class="p">,</span> <span class="s2">&quot;${cwd!a}/GTExV8.covariates.orth.h5&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">python:</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <span class="kn">import</span> <span class="nn">scipy.linalg</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">}):</span>
+       <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">}):</span>
+       <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="k">for</span> <span class="n">fn</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">ar</span><span class="p">,}],</span> <span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">bnnnr</span><span class="p">,}]):</span>
+        <span class="n">samples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
+        <span class="n">samples</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="s1">&#39;/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table</span><span class="p">),</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
+        <span class="n">samples_orth</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">orth</span><span class="p">(</span><span class="n">samples</span><span class="p">),</span> <span class="n">index</span> <span class="o">=</span> <span class="n">samples</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="n">samples_orth</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="s1">&#39;/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table</span><span class="p">),</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+        </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Download-and-decypt-the-data">Download and decypt the data<a class="anchor-link" href="#Download-and-decypt-the-data">&#182;</a></h2><p>Email received from dbGaP should contain a link to download instruction page. It requires <code>ascp</code> command tool to download and <code>sra toolkit</code> to decode the data.</p>
-<pre><code>ascp -QTr -l 500M -k 1 -i `pwd`/.asperaweb_id_dsa.openssh -W ... dbtest@gap-upload.ncbi.nlm.nih.gov:data/instant/... .
-vdb-decrypt --decrypt-sra-files variant_calls/* -v
-vdb-decrypt --decrypt-sra-files sample_annotations/* -v
-vdb-decrypt --decrypt-sra-files rna-seq/* -v
-...</code></pre>
-<p>Where a file <code>.asperaweb_id_dsa.openssh</code> is required (this file can be found on <code>midway</code> where I store the downloaded data).</p>
+<h2 id="Expression-data-format">Expression data format<a class="anchor-link" href="#Expression-data-format">&#182;</a></h2>
 </div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">format_expr</span>
+<span class="p">[</span><span class="n">format_expr</span><span class="p">]</span>
+<span class="c1"># Consolidate expression data to HDF5 format</span>
+<span class="kn">input:</span> <span class="n">glob</span><span class="o">.</span><span class="n">glob</span><span class="p">(</span><span class="s2">&quot;${cwd!a}/GTEx_Analysis_v8_eQTL_expression_matrices/*.v8.normalized_expression.bed.gz&quot;</span><span class="p">)</span>
+<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/GTExV8.expression.h5&quot;</span>
+<span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+<span class="kn">python:</span>
+    <span class="kn">import</span> <span class="nn">os</span>
+    <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">ar</span><span class="p">}):</span>
+       <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">ar</span><span class="p">})</span>
+    <span class="k">for</span> <span class="n">fn</span><span class="p">,</span> <span class="n">table</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">([</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">ar</span><span class="p">,}],</span> <span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">bnnnnr</span><span class="p">,}]):</span>
+        <span class="n">dat</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fn</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">3</span><span class="p">)</span>
+        <span class="n">dat</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">dat</span><span class="o">.</span><span class="n">columns</span><span class="p">[[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]],</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+        <span class="n">dat</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="s1">&#39;/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">table</span><span class="p">),</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+        </div>
 </div>
 </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/2315f806fd9d8f64fcfd06b434ffd615b3a05084/analysis/20170424_dbGaP_Download.ipynb"><code>analysis/20170424_dbGaP_Download.ipynb</code></a> committed by Gao Wang on Thu Sep 28 11:08:46 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/2315f806fd9d8f64fcfd06b434ffd615b3a05084">revision 5, 2315f80</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/68cc1c87387d382b3dd47dacf91444b4b581f285/analysis/20170929_Expression_Covariate.ipynb"><code>analysis/20170929_Expression_Covariate.ipynb</code></a> committed by Gao Wang on Fri Sep 29 17:34:57 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/68cc1c87387d382b3dd47dacf91444b4b581f285">revision 3, 68cc1c8</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

@@ -71,11 +71,11 @@ $( document ).ready(function(){
             st.toc_index=0;
             // fire the main function with these parameters
             table_of_contents(cfg, st);
-            var file=analysisDict[$("h1:first").attr("id")];
+            var file=writeupDict[$("h1:first").attr("id")];
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
-            var docs=analysisArray;
-            var pos=analysisArray.indexOf(file);
+            var docs=writeupArray;
+            var pos=writeupArray.indexOf(file);
             for (var a=pos;a>=0;a--){
                   var name=docs[a]
                   $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
@@ -360,7 +360,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Download-data-from-dbGaP">Download data from dbGaP<a class="anchor-link" href="#Download-data-from-dbGaP">&#182;</a></h1><p>A brief documentation to how dbGaP website is accessed &amp; how to download data.</p>
+<h1 id="Meetings">Meetings<a class="anchor-link" href="#Meetings">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -368,30 +368,65 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="dbGaP-access">dbGaP access<a class="anchor-link" href="#dbGaP-access">&#182;</a></h2><p>Visit <a href="https://www.ncbi.nlm.nih.gov/gap">dbGaP</a>, click on <code>Controlled Access Data</code>, then login with your eRA Commons account. You'll see the dataset previously applied for and approved under the tab <code>Authorized Access -&gt; My Requests</code>. In the column <code>Actions</code> click <code>Request Files</code> for the dataset you want to download, then click / select data file names. After all is done, create the data request and wait for an email.</p>
-<h3 id="GTEx-data">GTEx data<a class="anchor-link" href="#GTEx-data">&#182;</a></h3><p>In my case, I'd use the Request for <code>Exchange Area</code> data, and go to <code>Provisional files</code>. Currently version 7 (V7) is more or less ready for analysis (QC completed). The manifest of dataset I requested can be <a href="https://github.com/stephenslab/gtex-eqtls/tree/master/data/confidential">found here</a>.</p>
-<p><strong>Update: Sept 24, 2017 there is V8 eQTL release</strong>.</p>
-<pre><code>gtex/exchange/GTEx_phs000424/exchange/analysis_releases/GTEx_Analysis_2017-06-05_v8/eqtl</code></pre>
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Download-and-decypt-the-data">Download and decypt the data<a class="anchor-link" href="#Download-and-decypt-the-data">&#182;</a></h2><p>Email received from dbGaP should contain a link to download instruction page. It requires <code>ascp</code> command tool to download and <code>sra toolkit</code> to decode the data.</p>
-<pre><code>ascp -QTr -l 500M -k 1 -i `pwd`/.asperaweb_id_dsa.openssh -W ... dbtest@gap-upload.ncbi.nlm.nih.gov:data/instant/... .
-vdb-decrypt --decrypt-sra-files variant_calls/* -v
-vdb-decrypt --decrypt-sra-files sample_annotations/* -v
-vdb-decrypt --decrypt-sra-files rna-seq/* -v
-...</code></pre>
-<p>Where a file <code>.asperaweb_id_dsa.openssh</code> is required (this file can be found on <code>midway</code> where I store the downloaded data).</p>
+<h2 id="20171002-GTEx-fine-mapping-meeting">20171002 GTEx fine mapping meeting<a class="anchor-link" href="#20171002-GTEx-fine-mapping-meeting">&#182;</a></h2><p>Goal: methods do not repeat each-other; should build on each other.</p>
+<h3 id="What-is-fine-mapping">What is fine-mapping<a class="anchor-link" href="#What-is-fine-mapping">&#182;</a></h3><ul>
+<li>probability estimates of each variant being causal<ul>
+<li>how to verify it? experimentally?</li>
+</ul>
+</li>
+<li>Should use 1MB region?<ul>
+<li>100KB should not lose a lot.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Fine-mapping-methods">Fine-mapping methods<a class="anchor-link" href="#Fine-mapping-methods">&#182;</a></h3><p>Analyse/benchmark one data-set using all methods. The best tissue might be Thyroid to test it out.</p>
+<ul>
+<li>people are interested in it.</li>
+<li>we can report results in a few weeks</li>
+</ul>
+<p>Methods out there (in the conference call):</p>
+<ul>
+<li>CaVEMaN, DAP, CAVIAR</li>
+<li>Can provide these results in a few weeks<ul>
+<li>2MB radius</li>
+<li>on Thyroid data</li>
+<li>channel in Slack for this topic</li>
+</ul>
+</li>
+</ul>
+<p>General flavors</p>
+<ul>
+<li>Enrichment of eQTLs giving annotations: <ul>
+<li>@william: Same model but various ways to estimate priors. Open to different prior options. Also see concensus results from different methods is also important.</li>
+<li>But measuring consensus is difficult. Correlation is high but individual level there are problems.</li>
+</ul>
+</li>
+<li>Conditional analysis: soon to be uploaded to <code>exchange</code></li>
+<li>Additional type of integrated analysis<ul>
+<li>@eric</li>
+</ul>
+</li>
+</ul>
+<p>Provide fine-mapping results for the community</p>
+<h3 id="cell-specific-QTL">cell-specific QTL<a class="anchor-link" href="#cell-specific-QTL">&#182;</a></h3><ul>
+<li>Fine-mapping for <strong>cell-specific</strong> QTL: cell-type deconvolution to get proportion of cells.<ul>
+<li>interaction terms / interaction testing?</li>
+</ul>
+</li>
+</ul>
+<p>Provide fine-mapping results for the community</p>
+<h3 id="Splicing-QTLs">Splicing QTLs<a class="anchor-link" href="#Splicing-QTLs">&#182;</a></h3><p>Can we fine-map splice QTLs?</p>
+<h3 id="Interest-in-fine-mapping-companion-paper?">Interest in fine-mapping companion paper?<a class="anchor-link" href="#Interest-in-fine-mapping-companion-paper?">&#182;</a></h3><p>People are interested. There is also co-localization working group, but not progressing much.</p>
+<h3 id="Interest-in-multi-tissue-fine-mapping?">Interest in multi-tissue fine-mapping?<a class="anchor-link" href="#Interest-in-multi-tissue-fine-mapping?">&#182;</a></h3><p>It is important but computationally hard. William is the only one who positively responed, but he only agree to do a few tissues.</p>
+<h3 id="Other-related-stuff">Other related stuff<a class="anchor-link" href="#Other-related-stuff">&#182;</a></h3><ul>
+<li>Sharing of results</li>
+</ul>
 </div>
 </div>
 </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/2315f806fd9d8f64fcfd06b434ffd615b3a05084/analysis/20170424_dbGaP_Download.ipynb"><code>analysis/20170424_dbGaP_Download.ipynb</code></a> committed by Gao Wang on Thu Sep 28 11:08:46 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/2315f806fd9d8f64fcfd06b434ffd615b3a05084">revision 5, 2315f80</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/d72508978b90d0884f3f8e71b2316d80412da676/writeup/Meetings.ipynb"><code>writeup/Meetings.ipynb</code></a> committed by Gao Wang on Mon Oct 2 11:03:21 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/d72508978b90d0884f3f8e71b2316d80412da676">revision 1, d725089</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

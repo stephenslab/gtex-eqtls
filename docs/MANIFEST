@@ -13,6 +13,10 @@ docs/analysis/20170828_Compute_LD.html
 docs/analysis/20170829_MASH_Input_Preparation.html
 docs/analysis/20170829_MASH_Paper.html
 docs/analysis/20170830_Compare_MASH_No_LD.html
+docs/analysis/20170926_eQTLSummary_HDF5.html
+docs/analysis/20170929_Expression_Covariate.html
+docs/analysis/20170929_Genotype.html
+docs/analysis/20171002_MASH_V8.html
 docs/index.html
 docs/index.tpl
 docs/js/docs.js
@@ -22,3 +26,4 @@ docs/prototype/20170828_PEER_Not_Orthogonal.html
 docs/writeup.html
 docs/writeup.tpl
 docs/writeup/GTEx7_Analysis_Plan.html
+docs/writeup/Meetings.html
