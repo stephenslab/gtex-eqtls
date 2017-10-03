@@ -384,8 +384,8 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Covariance-pattern-discovery">Covariance pattern discovery<a class="anchor-link" href="#Covariance-pattern-discovery">&#182;</a></h2><p>This obtains covariance matrices, ie, the priors, for <code>mash</code> model.</p>
-<h3 id="SFA">SFA<a class="anchor-link" href="#SFA">&#182;</a></h3><p>We analyze data with SFA. The cell below downloads SFA software and run it on data with rank <code>K = 5</code>.</p>
+<h2 id="Covariance-pattern-discovery">Covariance pattern discovery<a class="anchor-link" href="#Covariance-pattern-discovery">&#182;</a></h2><p>This section obtains covariance matrices, ie, the priors, for <code>mash</code> model.</p>
+<h3 id="SFA">SFA<a class="anchor-link" href="#SFA">&#182;</a></h3><p>We analyze data with SFA, which will be used to provide part of the prior matrices list. The cell below downloads SFA software and run it on data with rank <code>K = 5</code>.</p>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -561,7 +561,7 @@ body {
     <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">data</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
     <span class="n">mash_data</span> <span class="o">=</span> <span class="n">mashr</span><span class="p">::</span><span class="n">set_mash_data</span><span class="p">(</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="n">null</span><span class="err">$</span><span class="n">z</span><span class="p">),</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nrow</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="n">null</span><span class="err">$</span><span class="n">se</span><span class="p">),</span> <span class="n">ncol</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="n">null</span><span class="err">$</span><span class="n">se</span><span class="p">)))</span>
     <span class="n">U</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
-    <span class="n">saveRDS</span><span class="p">(</span><span class="n">mashr</span><span class="p">::</span><span class="n">mash</span><span class="p">(</span><span class="n">mash_data</span><span class="p">,</span> <span class="n">Ulist</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">outputlevel</span> <span class="o">=</span> <span class="mi">0</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">mashr</span><span class="p">::</span><span class="n">mash</span><span class="p">(</span><span class="n">mash_data</span><span class="p">,</span> <span class="n">Ulist</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">outputlevel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -581,13 +581,13 @@ body {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_3</span><span class="p">]</span>
-<span class="kn">output:</span> <span class="s2">&quot;${input!n}.mash_posterior.rds&quot;</span>
+<span class="kn">output:</span> <span class="s2">&quot;${input!nn}.mash_posterior.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
 <span class="kn">R:</span>
     <span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">data</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
     <span class="n">mash_data</span> <span class="o">=</span> <span class="n">mashr</span><span class="p">::</span><span class="n">set_mash_data</span><span class="p">(</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="nb">max</span><span class="err">$</span><span class="n">z</span><span class="p">),</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">nrow</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="nb">max</span><span class="err">$</span><span class="n">se</span><span class="p">),</span> <span class="n">ncol</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="nb">max</span><span class="err">$</span><span class="n">se</span><span class="p">)))</span>
     <span class="n">g</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">fitted_g</span>
-    <span class="n">saveRDS</span><span class="p">(</span><span class="n">mashr</span><span class="p">::</span><span class="n">mash</span><span class="p">(</span><span class="n">mash_data</span><span class="p">,</span> <span class="n">g</span> <span class="o">=</span> <span class="n">g</span><span class="p">,</span> <span class="n">fixg</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">mashr</span><span class="p">::</span><span class="n">mash_compute_posterior_matrices</span><span class="p">(</span><span class="n">g</span><span class="p">,</span> <span class="n">mash_data</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">})</span>
 </pre></div>
 </div>
 </div>
@@ -645,7 +645,7 @@ sos run analysis/20171002_MASH_V8.ipynb mash <span class="c1"># --data ... --cwd
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/5f746209bdec45ecc7c775ea5a9791e0403d6ca9/analysis/20171002_MASH_V8.ipynb"><code>analysis/20171002_MASH_V8.ipynb</code></a> committed by Gao Wang on Mon Oct 2 14:48:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/5f746209bdec45ecc7c775ea5a9791e0403d6ca9">revision 2, 5f74620</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/288ca850e8904d5f5324aad2e963a30592f8a82b/analysis/20171002_MASH_V8.ipynb"><code>analysis/20171002_MASH_V8.ipynb</code></a> committed by Gao Wang on Tue Oct 3 13:56:00 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/288ca850e8904d5f5324aad2e963a30592f8a82b">revision 4, 288ca85</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
