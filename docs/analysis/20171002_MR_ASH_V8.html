@@ -201,7 +201,7 @@ div.cell {
 }
 .display_checkboxes {
     margin-top: 5pt;
-}.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
+}.lan_SoS {}.lan_ir {}.lan_python3 {}</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -417,7 +417,7 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">default</span><span class="p">]</span>
 <span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s1">&#39;rhdf5&#39;</span><span class="p">),</span> <span class="n">R_library</span><span class="p">(</span><span class="s1">&#39;tools&#39;</span><span class="p">),</span> <span class="n">R_library</span><span class="p">(</span><span class="s1">&#39;glmnet&#39;</span><span class="p">)</span>
 <span class="kn">input:</span> <span class="kp">for_each</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;genes&#39;</span><span class="p">,</span> <span class="s1">&#39;tissues&#39;</span><span class="p">]</span>
-<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/MR_ASH/${geno!bnn}/${_tissues}_${_genes!b}.rds&quot;</span>
+<span class="kn">output:</span> <span class="s2">&quot;${cwd!a}/MR_ASH/${geno!bnnn}/${_tissues}_${_genes!b}.rds&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s1">&#39;10m&#39;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s2">&quot;2G&quot;</span><span class="p">,</span> 
         <span class="kp">trunk_size</span> <span class="o">=</span> <span class="mi">200</span><span class="p">,</span> <span class="kp">trunk_workers</span> <span class="o">=</span> <span class="mi">1</span>
 <span class="kn">R:</span>
@@ -544,7 +544,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Run-workflow-on-remote-computer">Run workflow on remote computer<a class="anchor-link" href="#Run-workflow-on-remote-computer">&#182;</a></h2><p>For starters I'll focus on one tissue, Thyroid:</p>
-<pre><code>sos run analysis/20171002_MR_ASH_V8.ipynb -q midway2 \
+<pre><code>sos run analysis/20171002_MR_ASH_V8.ipynb -r midway2 \
     --geno /home/gaow/Documents/GTExV8/GTExV8.genotype.cis.h5 \
     --expr /home/gaow/Documents/GTExV8/GTExV8.expression.h5 \
     --covar /home/gaow/Documents/GTExV8/GTExV8.covariates.orth.h5 \
@@ -585,7 +585,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/288ca850e8904d5f5324aad2e963a30592f8a82b/analysis/20171002_MR_ASH_V8.ipynb"><code>analysis/20171002_MR_ASH_V8.ipynb</code></a> committed by Gao Wang on Tue Oct 3 13:56:00 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/288ca850e8904d5f5324aad2e963a30592f8a82b">revision 3, 288ca85</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/666e36f9719a3f985ead151c0d9b8741a50d1803/analysis/20171002_MR_ASH_V8.ipynb"><code>analysis/20171002_MR_ASH_V8.ipynb</code></a> committed by Gao Wang on Thu Oct 5 10:26:34 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/666e36f9719a3f985ead151c0d9b8741a50d1803">revision 4, 666e36f</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="ipynb_website:version" content="0.9.2" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="stylesheet" type="text/css" href="../css/jt.css">
+<link rel="stylesheet" type="text/css" href="../css/toc2.css">
+<link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
+<link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+<link rel="stylesheet"
+      href="../site_libs/highlight/textmate.css"
+      type="text/css" />
+<script src="../site_libs/highlight/highlight.js"></script>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+<script src="../js/toc2.js"></script>
+<script src="../js/docs.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+<script>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+        },
+        "HTML-CSS": {
+            preferredFont: "TeX",
+            availableFonts: ["TeX"],
+            styles: {
+                scale: 110,
+                ".MathJax_Display": {
+                    "font-size": "110%",
+                }
+            }
+        }
+    });
+</script>
+<script>
+$( document ).ready(function(){
+            var cfg={'threshold':3,     // depth of toc (number of levels)
+             'number_sections': false,
+             'toc_cell': false,          // useless here
+             'toc_window_display': true, // display the toc window
+             "toc_section_display": "block", // display toc contents in the window
+             'sideBar':true,       // sidebar or floating window
+             'navigate_menu':false       // navigation menu (only in liveNotebook -- do not change)
+            }
+            var st={};                  // some variables used in the script
+            st.rendering_toc_cell = false;
+            st.config_loaded = false;
+            st.extension_initialized=false;
+            st.nbcontainer_marginleft = $('#notebook-container').css('margin-left')
+            st.nbcontainer_marginright = $('#notebook-container').css('margin-right')
+            st.nbcontainer_width = $('#notebook-container').css('width')
+            st.oldTocHeight = undefined
+            st.cell_toc = undefined;
+            st.toc_index=0;
+            // fire the main function with these parameters
+            table_of_contents(cfg, st);
+            var file=analysisDict[$("h1:first").attr("id")];
+            $("#toc-level0 a").css("color","#126dce");
+            $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
+            var docs=analysisArray;
+            var pos=analysisArray.indexOf(file);
+            for (var a=pos;a>=0;a--){
+                  var name=docs[a]
+                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+            }
+            $('a[href="'+file+'.html'+'"]').css("color","#126dce");
+            for (var a=pos+1;a<docs.length;a++){
+                  var name=docs[a]
+                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+            }
+            $("#toc-header").hide();
+    });
+</script>
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+  // mark it active
+  menuAnchor.parent().addClass('active');
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+<div class="container-fluid main-container">
+<!-- tabsets -->
+<script src="../site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script><style type="text/css">
+table {
+   padding: 0;
+   border-collapse: collapse; }
+thead {
+    border-bottom-width: 1px;
+    border-bottom-color: rgb(0,0,0);
+    border-bottom-style: solid;
+}
+table tr {
+   border: none;
+   background-color: white;
+   margin: 0;
+   padding: 0; }
+table tr:nth-child(2n) {
+   background-color: #f8f8f8; }
+table tr th {
+   font-weight: bold;
+   border: none;
+   margin: 0;
+   padding: 6px 13px; }
+table tr td {
+   border: none;
+   margin: 0;
+   padding: 6px 13px; }
+table tr th :first-child, table tr td :first-child {
+   margin-top: 0; }
+table tr th :last-child, table tr td :last-child {
+   margin-bottom: 0; }
+.dataframe_container { max-height: 400px }
+.dataframe_input {
+    border: 1px solid #ddd;
+    margin-bottom: 5px;
+}
+.rendered_html table {
+  border: none;
+}
+.sos_hint {
+  color: rgba(0,0,0,.4);
+  font-family: monospace;
+  display: none;
+}
+.output_stderr {
+    display: none;
+}
+/*
+ div.input {
+     display: none;
+ }
+*/
+.hidden_content {
+    display: none;
+}
+.input_prompt {
+    display: none;
+}
+.output_area .prompt {
+    display: none;
+}
+.output_prompt {
+    display: none;
+}
+#nextsteps {
+   color: blue;
+}
+.scatterplot_by_rowname div.xAxis div.tickLabel {
+    transform: translateY(15px) translateX(15px) rotate(45deg);
+    -ms-transform: translateY(15px) translateX(15px) rotate(45deg);
+    -moz-transform: translateY(15px) translateX(15px) rotate(45deg);
+    -webkit-transform: translateY(15px) translateX(15px) rotate(45deg);
+    -o-transform: translateY(15px) translateX(15px) rotate(45deg);
+    /*rotation-point:50% 50%;*/
+    /*rotation:270deg;*/
+}
+div.cell {
+    padding: 0pt;
+    border-width: 0pt;
+}
+.sos_dataframe td, .sos_dataframe th, .sos_dataframe tr {
+    white-space: nowrap;
+    border: none;
+}
+.sos_dataframe tr:hover {
+    background-color: #e6f2ff;
+}
+.display_control_panel  {
+    position: inherit;
+    z-index: 1000;
+}
+.display_checkboxes {
+    margin-top: 5pt;
+}.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_SoS {}</style>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        } 
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+function toggle_source() {
+    var btn = document.getElementById("show_cells");
+    if (btn.checked) {
+        $('div.input').css('display', 'flex');
+        $('.hidden_content').show();
+        // this somehow does not work.
+        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
+    } else {
+        $('div.input').hide();
+        $('.hidden_content').hide();
+        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
+    }
+}
+function toggle_prompt() {
+    var btn = document.getElementById("show_prompt");
+    if (btn.checked) {
+        $('.output_prompt').show();
+        $('.input_prompt').show();
+        $('.output_area .prompt').show();
+    } else {
+        $('.output_prompt').hide();
+        $('.input_prompt').hide();
+        $('.output_area .prompt').hide();
+    }
+}
+function toggle_messages() {
+    var btn = document.getElementById("show_messages");
+    if (btn.checked) {
+        $('.sos_hint').show();
+        $('.output_stderr').show();
+    } else {
+        $('.output_stderr').hide();
+        $('.sos_hint').hide();
+    }
+}
+</script><title>GTEx eQTL</title>
+<style type = "text/css">
+body {
+  font-family: "Droid Sans";
+  padding-top: 66px;
+  padding-bottom: 40px;
+}
+</style>
+</head>
+<body>
+<div tabindex="-1" id="notebook" class="border-box-sizing">
+<div class="container" id="notebook-container">
+<!-- code folding -->
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="../index.html">GTEx eQTL</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+<li>
+  <a href="../index.html">Overview</a>
+</li>
+<li>
+  <a href="../analysis.html">Analysis</a>
+</li>
+<li>
+  <a href="../prototype.html">Prototype</a>
+</li>
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+      </ul>
+<ul class="nav navbar-nav navbar-right">
+<li>
+   <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
+</li>
+</ul>
+      </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+<div class='display_control_panel'>
+        <div class="display_checkboxes">
+        Show:
+            &nbsp;
+            <input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
+            <label for="show_cells">All cells</label>
+            &nbsp;
+            <input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
+            <label for="show_prompt">Prompt</label>
+            &nbsp;
+            <input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
+            <label for="show_messages">Messages</label>
+    </div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="MASH-results-on-V6-data">MASH results on V6 data<a class="anchor-link" href="#MASH-results-on-V6-data">&#182;</a></h1><p>With X'X matrix in prior, and $\hat{V} = cor(Z_{null})$</p>
+<p>Input data is generated by procedures <a href="20171002_MASH_V8.html">documented here</a>:</p>
+<pre><code>sos run analysis/20171002_MASH_V8.ipynb sfa \
+    --data ~/Documents/GTEx/mash_revision/GTExV6.Z.rds
+sos run analysis/20171002_MASH_V8.ipynb mash \
+    --data ~/Documents/GTEx/mash_revision/GTExV6.Z.rds  \
+    --cov cov --vhat 1</code></pre>
+</div>
+</div>
+</div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">library</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
+<span class="n">library</span><span class="p">(</span><span class="n">ggplot2</span><span class="p">)</span>
+<span class="n">library</span><span class="p">(</span><span class="n">colorRamps</span><span class="p">)</span>
+<span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
+<span class="n">library</span><span class="p">(</span><span class="nb">repr</span><span class="p">)</span>
+<span class="n">thresh_inconsistent</span><span class="o">=</span><span class="n">function</span><span class="p">(</span><span class="n">effectsize</span><span class="p">,</span><span class="n">thresh</span><span class="p">,</span><span class="n">sigs</span><span class="p">){</span>
+  <span class="n">z</span><span class="o">=</span> <span class="n">sapply</span><span class="p">(</span><span class="n">seq</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">effectsize</span><span class="p">)),</span><span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+    <span class="n">l</span><span class="o">=</span><span class="n">sigs</span><span class="p">[</span><span class="n">x</span><span class="p">,];</span><span class="n">p</span><span class="o">=</span><span class="n">effectsize</span><span class="p">[</span><span class="n">x</span><span class="p">,];</span><span class="n">plow</span><span class="o">=</span><span class="n">p</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="n">l</span><span class="o">&lt;</span><span class="n">thresh</span><span class="p">)];</span><span class="c1">##grab only those posterior means that are &#39;significant&#39;</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">plow</span><span class="p">)</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span><span class="k">return</span><span class="p">(</span><span class="s2">&quot;FALSE&quot;</span><span class="p">)}</span><span class="c1">##for ones who show no significants, they can&#39;t be heterogenous</span>
+    <span class="k">else</span><span class="p">{</span><span class="n">pos</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="n">plow</span><span class="o">&gt;</span><span class="mi">0</span><span class="p">);</span><span class="n">neg</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="n">plow</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">);</span><span class="n">pos</span><span class="o">*</span><span class="n">neg</span><span class="o">!=</span><span class="mi">0</span><span class="p">}</span>
+  <span class="p">})</span>
+  <span class="k">return</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="n">z</span><span class="o">==</span><span class="n">TRUE</span><span class="p">))}</span>
+<span class="n">het</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">effectsize</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">t</span><span class="p">(</span><span class="nb">apply</span><span class="p">(</span><span class="n">effectsize</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+    <span class="n">x</span><span class="o">/</span><span class="n">x</span><span class="p">[</span><span class="n">which</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span>
+  <span class="p">}))</span>
+<span class="p">}</span>
+<span class="n">sign</span><span class="o">.</span><span class="n">norm</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">effectsize</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">t</span><span class="p">(</span><span class="nb">apply</span><span class="p">(</span><span class="n">effectsize</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+    <span class="n">x</span><span class="o">/</span><span class="n">sign</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">which</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))])</span>
+  <span class="p">}))}</span>
+<span class="n">sign</span><span class="o">.</span><span class="n">tissue</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">normdat</span><span class="p">){</span>
+  <span class="nb">apply</span><span class="p">(</span><span class="n">normdat</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+    <span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="o">&lt;</span><span class="mi">0</span><span class="p">)})}</span>
+<span class="n">het</span><span class="o">.</span><span class="n">func</span> <span class="o">=</span> <span class="n">function</span> <span class="p">(</span><span class="n">normdat</span><span class="p">,</span> <span class="n">threshold</span><span class="p">)</span> <span class="p">{</span>
+    <span class="nb">apply</span><span class="p">((</span><span class="n">normdat</span><span class="p">),</span><span class="mi">1</span><span class="p">,</span><span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">threshold</span><span class="p">)})</span>
+<span class="p">}</span>
+<span class="n">hlindex</span><span class="o">=</span><span class="n">function</span><span class="p">(</span><span class="n">normdat</span><span class="p">,</span><span class="n">sigdat</span><span class="p">,</span><span class="n">thresh1</span><span class="p">,</span><span class="n">thresh2</span><span class="p">){</span>
+    <span class="n">hl</span><span class="o">=</span><span class="n">NULL</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">nrow</span><span class="p">(</span><span class="n">normdat</span><span class="p">)){</span>
+        <span class="n">hl</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="n">normdat</span><span class="p">[</span><span class="n">j</span><span class="p">,]</span><span class="o">&gt;</span><span class="n">thresh1</span><span class="o">&amp;</span><span class="n">sigdat</span><span class="p">[</span><span class="n">j</span><span class="p">,]</span><span class="o">&lt;</span><span class="n">thresh2</span><span class="p">)}</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">hl</span><span class="p">)}</span>
+<span class="n">het</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">two</span><span class="o">=</span><span class="n">function</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="n">thresh</span><span class="p">){</span>
+    <span class="n">t</span><span class="p">(</span><span class="nb">apply</span><span class="p">(</span><span class="n">data</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span>
+        <span class="n">maxx</span><span class="o">=</span><span class="n">x</span><span class="p">[</span><span class="n">which</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span>
+        <span class="k">if</span><span class="p">(</span><span class="n">maxx</span><span class="o">==</span><span class="mi">0</span><span class="p">){</span><span class="n">h</span><span class="o">=</span><span class="mi">0</span><span class="p">}</span>
+        <span class="k">else</span><span class="p">{</span>
+            <span class="n">normx</span><span class="o">=</span><span class="n">x</span><span class="o">/</span><span class="n">x</span><span class="p">[</span><span class="n">which</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span>
+            <span class="n">h</span><span class="o">=</span><span class="nb">sum</span><span class="p">(</span><span class="n">normx</span><span class="o">&gt;</span><span class="n">thresh</span><span class="p">)}</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">h</span><span class="p">)</span>
+    <span class="p">}))}</span>
+<span class="c1"># Compute RMSE.</span>
+<span class="n">rmse</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">truth</span><span class="p">,</span> <span class="n">estimate</span><span class="p">)</span>
+  <span class="n">sqrt</span><span class="p">(</span><span class="n">mean</span><span class="p">((</span><span class="n">truth</span> <span class="o">-</span> <span class="n">estimate</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+    </div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTEx/mash_revision/GTExV6.Z.cov.R1.K5.P3.mash_model.rds&#39;</span><span class="p">)</span>
+<span class="n">res</span><span class="err">$</span><span class="n">result</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTEx/mash_revision/GTExV6.Z.cov.R1.K5.P3.mash_posterior.rds&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="MASH-model-fit">MASH model fit<a class="anchor-link" href="#MASH-model-fit">&#182;</a></h2><p>The log-likelihood of fit is:</p>
+</div>
+</div>
+</div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">get_loglik</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>vs. in V6 mash paper the loglik was -1268999</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Here is a plot of weights learned.</p>
+</div>
+</div>
+</div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">options</span><span class="p">(</span><span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">width</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
+<span class="n">barplot</span><span class="p">(</span><span class="n">get_estimated_pi</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="n">las</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cex</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>The rank 3 PCA component accounts for ~40% of all weights in the GTEx data. But unlike in <a href="https://stephenslab.github.io/gtexresults_mash/Fig.Uk3.html">mash paper analysis</a> <strong>I do not see very hight weights on singleton matrices</strong>. Here is a visualization for it (via correlation heatmap):</p>
+</div>
+</div>
+</div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">x</span>           <span class="o">&lt;-</span> <span class="n">cov2cor</span><span class="p">(</span><span class="n">res</span><span class="err">$</span><span class="n">fitted_g</span><span class="err">$</span><span class="n">Ulist</span><span class="p">[[</span><span class="s2">&quot;ED_tPCA&quot;</span><span class="p">]])</span>
+<span class="n">x</span><span class="p">[</span><span class="n">x</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">]</span>    <span class="o">&lt;-</span> <span class="mi">0</span>
+<span class="n">colnames</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="n">colnames</span><span class="p">(</span><span class="n">get_lfsr</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+<span class="n">rownames</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="n">colnames</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">x</span> <span class="o">&lt;-</span> <span class="n">x</span><span class="p">[</span><span class="n">rev</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">x</span><span class="p">)),</span><span class="n">rev</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">x</span><span class="p">))]</span>
+<span class="n">x</span><span class="p">[</span><span class="n">lower</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="n">x</span><span class="p">)]</span> <span class="o">&lt;-</span> <span class="n">NA</span>
+<span class="n">clrs</span> <span class="o">&lt;-</span> <span class="n">colorRampPalette</span><span class="p">(</span><span class="n">rev</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="s2">&quot;#D73027&quot;</span><span class="p">,</span><span class="s2">&quot;#FC8D59&quot;</span><span class="p">,</span><span class="s2">&quot;#FEE090&quot;</span><span class="p">,</span><span class="s2">&quot;#FFFFBF&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;#E0F3F8&quot;</span><span class="p">,</span><span class="s2">&quot;#91BFDB&quot;</span><span class="p">,</span><span class="s2">&quot;#4575B4&quot;</span><span class="p">)))(</span><span class="mi">64</span><span class="p">)</span>
+<span class="n">n</span> <span class="o">&lt;-</span> <span class="n">nrow</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="n">options</span><span class="p">(</span><span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">width</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">height</span><span class="o">=</span><span class="mi">9</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="n">levelplot</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">n</span><span class="p">:</span><span class="mi">1</span><span class="p">,],</span><span class="n">col</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">clrs</span><span class="p">,</span><span class="n">xlab</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">ylab</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+                <span class="n">colorkey</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">,</span> <span class="n">at</span> <span class="o">=</span> <span class="n">seq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">length</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="mi">64</span><span class="p">),</span>
+                <span class="n">scales</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cex</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rot</span> <span class="o">=</span> <span class="mi">45</span><span class="p">))))</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This roughly reproduces <a href="https://stephenslab.github.io/gtexresults_mash/Fig.Uk3.html">mash paper analysis</a>.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Next we perform SVD on the rank 3 PCA based covariance matrix, and plot the top eigen vectors.</p>
+</div>
+</div>
+</div><div class="rendered lan_R">
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">svd</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="n">svd</span><span class="p">(</span><span class="n">res</span><span class="err">$</span><span class="n">fitted_g</span><span class="err">$</span><span class="n">Ulist</span><span class="p">[[</span><span class="s2">&quot;ED_tPCA&quot;</span><span class="p">]])</span>
+<span class="n">v</span> <span class="o">=</span> <span class="n">svd</span><span class="o">.</span><span class="n">out</span><span class="err">$</span><span class="n">v</span>
+<span class="n">colnames</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">colnames</span><span class="p">(</span><span class="n">get_lfsr</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+<span class="n">rownames</span><span class="p">(</span><span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">colnames</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+<span class="n">options</span><span class="p">(</span><span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">height</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">)</span>
+  <span class="n">barplot</span><span class="p">(</span><span class="n">v</span><span class="p">[,</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">v</span><span class="p">[,</span><span class="n">j</span><span class="p">][</span><span class="n">which</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">[,</span><span class="n">j</span><span class="p">]))],</span> <span class="n">cex</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
+          <span class="n">las</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s2">&quot;EigenVector &quot;</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="s2">&quot; for PCA-based covariance matrix&quot;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+    </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>This also roughly reproduces <a href="https://stephenslab.github.io/gtexresults_mash/Fig.Uk3.html">mash paper analysis</a>.</p>
+</div>
+</div>
+</div>
+<hr>
+&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/53a14d963472791355c1483d18897683526b88a4/analysis/20171005_MASH_Results_V6.ipynb"><code>analysis/20171005_MASH_Results_V6.ipynb</code></a> committed by Gao Wang on Thu Oct 5 17:49:53 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/53a14d963472791355c1483d18897683526b88a4">revision 2, 53a14d9</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+</div>
+</div>
+</body>
+</html>
