@@ -360,7 +360,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="MASH-results-on-V8-data">MASH results on V8 data<a class="anchor-link" href="#MASH-results-on-V8-data">&#182;</a></h1><p>Same parameter setting as MASH paper</p>
+<h1 id="MASH-results-on-V8-data">MASH results on V8 data<a class="anchor-link" href="#MASH-results-on-V8-data">&#182;</a></h1><p>Basically same parameter setting as MASH paper.</p>
 </div>
 </div>
 </div>
@@ -368,12 +368,22 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here I explore results from a later run on V8 data using the refactored <code>mashr</code>, and compare results with analysis in mash paper on V6 data. The data was analyzed by procedures <a href="20171002_MASH_V8.html">documented here</a>, with parameters used in MASH paper:</p>
-<ul>
-<li>X'X is included as part of the prior matrices list</li>
-<li>rank 3 PCA is used, as in the MASH paper</li>
-</ul>
+<p>Here I explore results from a later run on V8 data using the refactored <code>mashr</code>, and compare results with analysis in mash paper on V6 data. The data was analyzed by procedures <a href="20171002_MASH_V8.html">documented here</a>, with parameters used in MASH paper.</p>
+<p>Note: this workflow includes $X^TX$ in the prior, thus is slower than without.</p>
 </div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># To reproduce:</span>
+<span class="err">!</span><span class="n">sos</span> <span class="kp">run</span> <span class="n">analysis</span><span class="o">/</span><span class="mi">20171002</span><span class="n">_MASH_V8</span><span class="o">.</span><span class="n">ipynb</span> <span class="n">mash</span>
+</pre></div>
+</div>
+</div>
+        </div>
 </div>
 </div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
@@ -450,8 +460,8 @@ body {
 <div class="prompt input_prompt">In&nbsp;[2]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTExV8/MASH/GTExV8.ciseQTL.4MASH.cov.K5.P3.mash_model.rds&#39;</span><span class="p">)</span>
-<span class="n">res</span><span class="err">$</span><span class="n">result</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTExV8/MASH/GTExV8.ciseQTL.4MASH.cov.K5.P3.mash_posterior.rds&#39;</span><span class="p">)</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTExV8/MASH/GTExV8.ciseQTL.4MASH.xtx.K5.P3.V1.mash_model.rds&#39;</span><span class="p">)</span>
+<span class="n">res</span><span class="err">$</span><span class="n">result</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTExV8/MASH/GTExV8.ciseQTL.4MASH.xtx.K5.P3.V1.mash_posterior.rds&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -1491,7 +1501,7 @@ PuUIBwcBwS/O/wE8nQXg1TIiUQAAAABJRU5ErkJggg=="
 </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/dc526847bb9cb95a9eeca6d1eb40b7e14a71346a/analysis/20171004_MASH_Results.ipynb"><code>analysis/20171004_MASH_Results.ipynb</code></a> committed by Gao Wang on Wed Oct 4 15:35:01 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/dc526847bb9cb95a9eeca6d1eb40b7e14a71346a">revision 1, dc52684</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/57c82733e0532158e56eff83424b6a819e3e5599/analysis/20171004_MASH_Results.ipynb"><code>analysis/20171004_MASH_Results.ipynb</code></a> committed by Gao Wang on Thu Oct 5 21:58:46 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/57c82733e0532158e56eff83424b6a819e3e5599">revision 3, 57c8273</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
