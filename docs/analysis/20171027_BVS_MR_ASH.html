@@ -640,9 +640,38 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Compare-~1K-vs-~100-SNPs">Compare ~1K vs ~100 SNPs<a class="anchor-link" href="#Compare-~1K-vs-~100-SNPs">&#182;</a></h3><h4 id="varbvs">varbvs<a class="anchor-link" href="#varbvs">&#182;</a></h4><p>With 1K SNPs it identifies:</p>
+<pre><code>chr1_171172098_C_T_b38
+chr1_171133158_A_G_b38
+chr1_171199984_T_C_b38</code></pre>
+<p>and it missed one from <code>varbvsmix</code>:</p>
+<pre><code>chr1_171122735_A_G_b38</code></pre>
+<p>With 100 SNPs it now picks up the one previously missed according to <code>varbvsmix</code>:</p>
+<pre><code>chr1_171172098_C_T_b38  
+chr1_171199984_T_C_b38  
+chr1_171122735_A_G_b38</code></pre>
+<p>But dropped</p>
+<pre><code>chr1_171133158_A_G_b38</code></pre>
+<h4 id="varbvsmix">varbvsmix<a class="anchor-link" href="#varbvsmix">&#182;</a></h4><p>With 1K SNPs it identifies</p>
+<pre><code>chr1_171172098_C_T_b38
+chr1_171122735_A_G_b38</code></pre>
+<p>which overlaps with <code>varbvs</code> on only <code>chr1_171172098_C_T_b38</code>.</p>
+<p>With 100 SNPs it now picks up 4 SNPs</p>
+<pre><code>chr1_171172098_C_T_b38  
+chr1_171199984_T_C_b38  
+chr1_171122735_A_G_b38
+chr1_171133158_A_G_b38</code></pre>
+<p><strong>Which is in fact the union of hits identified by both <code>varbvsmix</code> and <code>varbvs</code> when input is 1K SNPs</strong></p>
+</div>
+</div>
+</div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/2551bb3b0b4f6ba00758d84f29dadcaef262fd8f/analysis/20171027_BVS_MR_ASH.ipynb"><code>analysis/20171027_BVS_MR_ASH.ipynb</code></a> committed by Gao Wang on Fri Oct 27 11:13:35 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/2551bb3b0b4f6ba00758d84f29dadcaef262fd8f">revision 3, 2551bb3</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/9be80fb7c780ae39b02962049ffae6d1e48a2ed0/analysis/20171027_BVS_MR_ASH.ipynb"><code>analysis/20171027_BVS_MR_ASH.ipynb</code></a> committed by Gao Wang on Fri Oct 27 11:21:53 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/9be80fb7c780ae39b02962049ffae6d1e48a2ed0">revision 4, 9be80fb</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
