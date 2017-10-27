@@ -644,7 +644,7 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Compare-~7.5K-vs-~100-SNPs">Compare ~7.5K vs ~100 SNPs<a class="anchor-link" href="#Compare-~7.5K-vs-~100-SNPs">&#182;</a></h3><h4 id="varbvs">varbvs<a class="anchor-link" href="#varbvs">&#182;</a></h4><p>With 7.5K SNPs it identifies:</p>
+<h3 id="Compare-~1K-vs-~100-SNPs">Compare ~1K vs ~100 SNPs<a class="anchor-link" href="#Compare-~1K-vs-~100-SNPs">&#182;</a></h3><h4 id="varbvs">varbvs<a class="anchor-link" href="#varbvs">&#182;</a></h4><p>With 1K SNPs it identifies:</p>
 <pre><code>chr1_171172098_C_T_b38
 chr1_171133158_A_G_b38
 chr1_171199984_T_C_b38</code></pre>
@@ -656,7 +656,7 @@ chr1_171199984_T_C_b38
 chr1_171122735_A_G_b38</code></pre>
 <p>But dropped</p>
 <pre><code>chr1_171133158_A_G_b38</code></pre>
-<h4 id="varbvsmix">varbvsmix<a class="anchor-link" href="#varbvsmix">&#182;</a></h4><p>With 7.5K SNPs it identifies</p>
+<h4 id="varbvsmix">varbvsmix<a class="anchor-link" href="#varbvsmix">&#182;</a></h4><p>With 1K SNPs it identifies</p>
 <pre><code>chr1_171172098_C_T_b38
 chr1_171122735_A_G_b38</code></pre>
 <p>which overlaps with <code>varbvs</code> on only <code>chr1_171172098_C_T_b38</code>.</p>
@@ -665,7 +665,7 @@ chr1_171122735_A_G_b38</code></pre>
 chr1_171199984_T_C_b38  
 chr1_171122735_A_G_b38
 chr1_171133158_A_G_b38</code></pre>
-<p><strong>Which is in fact the union of hits identified by both <code>varbvsmix</code> and <code>varbvs</code> when input is 7.5K SNPs</strong></p>
+<p><strong>Which is in fact the union of hits identified by both <code>varbvsmix</code> and <code>varbvs</code> when input is 1K SNPs</strong></p>
 </div>
 </div>
 </div>
@@ -709,46 +709,9 @@ chr1_171133158_A_G_b38</code></pre>
 </div>
 </div>
 </div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div><div class="hidden_content">
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-r"><pre><span></span><span class="c1"># This is the top 4 markers identified with random varbvs init</span>
-markers3 <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(</span><span class="s">&quot;chr1_171168633_C_A_b38&quot;</span><span class="p">,</span>
-              <span class="s">&quot;chr1_171147265_C_A_b38&quot;</span><span class="p">,</span>
-              <span class="s">&quot;chr1_171164750_C_A_b38&quot;</span><span class="p">,</span>
-              <span class="s">&quot;chr1_171178589_C_T_b38&quot;</span><span class="p">)</span>
-R<span class="p">[</span>markers3<span class="p">,</span> markers3<span class="p">]</span>
-</pre></div>
-</div>
-</div>
-        </div>
-</div>
-<div class="output_wrapper">
-<div class="output">
-<div class="hidden_content">
-<div class="output_area">
-<div class="prompt"></div>
-<div class="output_html rendered_html output_subarea ">
-<table>
-<thead><tr><th></th><th scope=col>chr1_171168633_C_A_b38</th><th scope=col>chr1_171147265_C_A_b38</th><th scope=col>chr1_171164750_C_A_b38</th><th scope=col>chr1_171178589_C_T_b38</th></tr></thead>
-<tbody>
-	<tr><th scope=row>chr1_171168633_C_A_b38</th><td> 1.00000000</td><td>0.08365715 </td><td>-0.1100207 </td><td>-0.09399136</td></tr>
-	<tr><th scope=row>chr1_171147265_C_A_b38</th><td> 0.08365715</td><td>1.00000000 </td><td> 0.1357039 </td><td> 0.25503481</td></tr>
-	<tr><th scope=row>chr1_171164750_C_A_b38</th><td>-0.11002067</td><td>0.13570387 </td><td> 1.0000000 </td><td>-0.11299131</td></tr>
-	<tr><th scope=row>chr1_171178589_C_T_b38</th><td>-0.09399136</td><td>0.25503481 </td><td>-0.1129913 </td><td> 1.00000000</td></tr>
-</tbody>
-</table>
-</div>
-</div>
-        </div>
-</div>
-</div>
-</div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/fbad0caa76e67aa339958705374783f4f02bbfc7/analysis/20171027_BVS_MR_ASH.ipynb"><code>analysis/20171027_BVS_MR_ASH.ipynb</code></a> committed by Gao Wang on Fri Oct 27 12:26:40 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/fbad0caa76e67aa339958705374783f4f02bbfc7">revision 5, fbad0ca</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob//analysis/20171027_BVS_MR_ASH2.ipynb"><code>analysis/20171027_BVS_MR_ASH2.ipynb</code></a> committed by Gao Wang on Fri Oct 27 12:26:40 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/">revision 0, </a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
