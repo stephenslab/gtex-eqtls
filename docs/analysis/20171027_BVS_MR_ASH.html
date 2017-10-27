@@ -271,7 +271,7 @@ fitfv <span class="o">=</span> <span class="kr">function</span><span class="p">(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[2]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>input_file <span class="o">=</span> <span class="s">&quot;../data/Thyroid.FMO2.1Mb.RDS&quot;</span>
@@ -296,11 +296,9 @@ fit11 <span class="o">=</span> varbvs<span class="o">::</span>varbvsmix<span cla
                          verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 fit12 <span class="o">=</span> varbvs<span class="o">::</span>varbvsmix<span class="p">(</span>X<span class="p">,</span> 
                          Z<span class="p">,</span> y<span class="p">,</span> sa <span class="o">=</span> <span class="kt">c</span><span class="p">(</span><span class="m">0</span><span class="p">,</span>mixsd<span class="o">^</span><span class="m">2</span><span class="p">),</span>
-                         mu <span class="o">=</span> mu_zero<span class="p">,</span>
-                         alpha <span class="o">=</span> alpha_zero<span class="p">,</span>
                          verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 <span class="c1"># bvsmix with lasso init vs random init</span>
-fit21 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class="p">(</span>X<span class="p">[,</span> index_order<span class="p">],</span> Z<span class="p">,</span> y<span class="p">,</span> verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
+fit21 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class="p">(</span>X<span class="p">[,</span> index_order<span class="p">],</span> Z<span class="p">,</span> y<span class="p">,</span> mu <span class="o">=</span> mu_zero<span class="p">,</span> alpha <span class="o">=</span> alpha_zero<span class="p">,</span> verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class="p">(</span>X<span class="p">,</span> Z<span class="p">,</span> y<span class="p">,</span> verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -318,7 +316,7 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[10]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[3]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>mix.top <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit11<span class="o">$</span>lfsr<span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
@@ -337,10 +335,10 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 <table>
 <tbody>
 	<tr><th scope=row>chr1_171172098_C_T_b38</th><td>1.0000000   </td><td>1.000000e+00</td></tr>
-	<tr><th scope=row>chr1_171122735_A_G_b38</th><td>1.0000000   </td><td>5.487233e-03</td></tr>
-	<tr><th scope=row>chr1_171190872_G_A_b38</th><td>0.4840977   </td><td>1.914644e-05</td></tr>
-	<tr><th scope=row>chr1_171219393_T_A_b38</th><td>0.4827524   </td><td>2.446686e-05</td></tr>
-	<tr><th scope=row>chr1_171178705_A_G_b38</th><td>0.4825416   </td><td>2.025885e-05</td></tr>
+	<tr><th scope=row>chr1_171122735_A_G_b38</th><td>1.0000000   </td><td>5.495719e-03</td></tr>
+	<tr><th scope=row>chr1_171190872_G_A_b38</th><td>0.4840977   </td><td>1.914625e-05</td></tr>
+	<tr><th scope=row>chr1_171219393_T_A_b38</th><td>0.4827524   </td><td>2.446432e-05</td></tr>
+	<tr><th scope=row>chr1_171178705_A_G_b38</th><td>0.4825416   </td><td>2.025857e-05</td></tr>
 </tbody>
 </table>
 </div>
@@ -351,7 +349,7 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[4]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>bvs.top <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit21<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">],</span> decreasing<span class="o">=</span><span class="bp">T</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
@@ -371,9 +369,9 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 <tbody>
 	<tr><th scope=row>chr1_171172098_C_T_b38</th><td>1.0000000 </td><td>0.99999999</td></tr>
 	<tr><th scope=row>chr1_171133158_A_G_b38</th><td>0.4573966 </td><td>0.99999951</td></tr>
-	<tr><th scope=row>chr1_171199984_T_C_b38</th><td>0.4605322 </td><td>0.99843224</td></tr>
-	<tr><th scope=row>chr1_171252314_G_C_b38</th><td>0.4608848 </td><td>0.03124062</td></tr>
-	<tr><th scope=row>chr1_171150061_G_C_b38</th><td>0.4147678 </td><td>0.01524914</td></tr>
+	<tr><th scope=row>chr1_171199984_T_C_b38</th><td>0.4605322 </td><td>0.99843195</td></tr>
+	<tr><th scope=row>chr1_171252314_G_C_b38</th><td>0.4608848 </td><td>0.03125060</td></tr>
+	<tr><th scope=row>chr1_171150061_G_C_b38</th><td>0.4147678 </td><td>0.01523159</td></tr>
 </tbody>
 </table>
 </div>
@@ -382,9 +380,119 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </div>
 </div>
 </div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Check-if--chr1_171122735_A_G_b38-is-in-credible-set-of-varbvs-result">Check if  <code>chr1_171122735_A_G_b38</code> is in credible set of <code>varbvs</code> result<a class="anchor-link" href="#Check-if--chr1_171122735_A_G_b38-is-in-credible-set-of-varbvs-result">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span>get.credible.set <span class="o">&lt;-</span> <span class="kr">function</span> <span class="p">(</span>bf<span class="p">,</span> pr<span class="p">)</span> <span class="p">{</span>
+  pp      <span class="o">&lt;-</span> bf<span class="o">/</span><span class="kp">sum</span><span class="p">(</span>bf<span class="p">)</span>
+  markers <span class="o">&lt;-</span> <span class="kp">order</span><span class="p">(</span>bf<span class="p">,</span>decreasing <span class="o">=</span> <span class="kc">TRUE</span><span class="p">)</span>
+  n       <span class="o">&lt;-</span> <span class="kp">min</span><span class="p">(</span><span class="kp">which</span><span class="p">(</span><span class="kp">cumsum</span><span class="p">(</span>pp<span class="p">[</span>markers<span class="p">])</span> <span class="o">&gt;</span> credint.prob<span class="p">))</span>
+  <span class="kr">return</span><span class="p">(</span>markers<span class="p">[</span><span class="m">1</span><span class="o">:</span>n<span class="p">])</span>
+<span class="p">}</span>
+top.markers <span class="o">&lt;-</span> <span class="kp">summary</span><span class="p">(</span>fit21<span class="p">,</span>nv <span class="o">=</span> <span class="m">20</span><span class="p">)</span><span class="o">$</span>top.vars
+top.markers <span class="o">&lt;-</span> <span class="kp">subset</span><span class="p">(</span>top.markers<span class="p">,</span>prob <span class="o">&gt;</span> <span class="m">0.95</span><span class="p">)</span><span class="o">$</span>variable
+m           <span class="o">&lt;-</span> <span class="kp">length</span><span class="p">(</span>top.markers<span class="p">)</span>
+R <span class="o">&lt;-</span> cor<span class="p">(</span>X<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span>credint.prob <span class="o">&lt;-</span> <span class="m">0.95</span>
+ld.threshold <span class="o">&lt;-</span> <span class="m">0.2</span>
+cr           <span class="o">&lt;-</span> <span class="kt">vector</span><span class="p">(</span><span class="s">&quot;list&quot;</span><span class="p">,</span>m<span class="p">)</span>
+plots        <span class="o">&lt;-</span> <span class="kt">vector</span><span class="p">(</span><span class="s">&quot;list&quot;</span><span class="p">,</span>m<span class="p">)</span>
+<span class="kp">names</span><span class="p">(</span>cr<span class="p">)</span>    <span class="o">&lt;-</span> top.markers
+<span class="kp">names</span><span class="p">(</span>plots<span class="p">)</span> <span class="o">&lt;-</span> top.markers
+<span class="kr">for</span> <span class="p">(</span>i <span class="kr">in</span> top.markers<span class="p">)</span> <span class="p">{</span>
+  idx        <span class="o">&lt;-</span> <span class="kp">which</span><span class="p">(</span><span class="kp">colnames</span><span class="p">(</span>X<span class="p">)</span> <span class="o">==</span> i<span class="p">)</span>
+  vars       <span class="o">&lt;-</span> <span class="kp">which</span><span class="p">(</span>R<span class="p">[,</span>i<span class="p">]</span><span class="o">^</span><span class="m">2</span> <span class="o">&gt;=</span> ld.threshold<span class="p">)</span>
+  out        <span class="o">&lt;-</span> varbvs<span class="o">::</span>varbvsproxybf<span class="p">(</span>X<span class="p">,</span>Z<span class="p">,</span>y<span class="p">,</span>fit21<span class="p">,</span>idx<span class="p">,</span>vars<span class="p">)</span>
+  cr<span class="p">[[</span>i<span class="p">]]</span>    <span class="o">&lt;-</span> vars<span class="p">[</span>get.credible.set<span class="p">(</span>out<span class="o">$</span>BF<span class="p">[,</span><span class="m">1</span><span class="p">],</span>credint.prob<span class="p">)]</span>
+  j          <span class="o">&lt;-</span> <span class="kp">names</span><span class="p">(</span><span class="kp">which.max</span><span class="p">(</span>out<span class="o">$</span>BF<span class="p">[,</span><span class="m">1</span><span class="p">]))</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div><div class="hidden_content">
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span>cr<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+        </div>
+</div>
+<div class="output_wrapper">
+<div class="output">
+<div class="hidden_content">
+<div class="output_area">
+<div class="prompt"></div>
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>$chr1_171172098_C_T_b38
+ chr1_171169344_G_A_b38  chr1_171168633_C_A_b38 chr1_171185504_AG_A_b38 
+                   3824                    3821                    3903 
+ chr1_171184438_A_G_b38  chr1_171172098_C_T_b38  chr1_171179725_T_A_b38 
+                   3899                    3841                    3877 
+ chr1_171176942_T_C_b38  chr1_171165549_G_C_b38 
+                   3864                    3800 
+$chr1_171133158_A_G_b38
+ chr1_171115021_G_A_b38  chr1_171134102_T_C_b38  chr1_171133158_A_G_b38 
+                   3576                    3650                    3646 
+ chr1_171133705_G_A_b38  chr1_171132358_C_A_b38  chr1_171139697_C_T_b38 
+                   3649                    3643                    3680 
+ chr1_171114034_C_T_b38  chr1_171136655_G_A_b38  chr1_171135001_G_A_b38 
+                   3568                    3664                    3655 
+ chr1_171134913_G_A_b38  chr1_171127868_C_G_b38  chr1_171128489_C_A_b38 
+                   3654                    3626                    3631 
+chr1_171128484_A_AG_b38  chr1_171128486_A_G_b38 chr1_171116174_A_AT_b38 
+                   3629                    3630                    3582 
+ chr1_171135804_C_T_b38 
+                   3659 
+$chr1_171199984_T_C_b38
+   chr1_171190872_G_A_b38    chr1_171164750_C_A_b38    chr1_171178705_A_G_b38 
+                     3938                      3798                      3871 
+   chr1_171198564_G_A_b38    chr1_171193299_C_T_b38 chr1_171198249_T_TACA_b38 
+                     3998                      3963                      3994 
+   chr1_171199984_T_C_b38   chr1_171196663_TG_T_b38    chr1_171193596_T_A_b38 
+                     4012                      3987                      3967 
+   chr1_171191559_T_C_b38   chr1_171190729_AT_A_b38    chr1_171189360_T_C_b38 
+                     3946                      3937                      3930 
+chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38 
+                     3965                      3953                      3945 
+   chr1_171190982_C_T_b38    chr1_171193444_T_C_b38    chr1_171174538_G_C_b38 
+                     3940                      3966                      3852 
+</pre>
+</div>
+</div>
+        </div>
+</div>
+</div>
+</div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/1b81e25eceabbcdf891ea25069e8fd784409f086/analysis/20171027_BVS_MR_ASH.ipynb"><code>analysis/20171027_BVS_MR_ASH.ipynb</code></a> committed by Gao Wang on Fri Oct 27 10:06:28 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/1b81e25eceabbcdf891ea25069e8fd784409f086">revision 1, 1b81e25</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/c0c011e989b7f175ec8a4d44d4a8b9e081dfd51e/analysis/20171027_BVS_MR_ASH.ipynb"><code>analysis/20171027_BVS_MR_ASH.ipynb</code></a> committed by Gao Wang on Fri Oct 27 10:43:51 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/c0c011e989b7f175ec8a4d44d4a8b9e081dfd51e">revision 2, c0c011e</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
