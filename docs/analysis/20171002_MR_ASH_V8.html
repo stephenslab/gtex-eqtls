@@ -566,8 +566,10 @@ body {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Run-workflow-on-remote-computer">Run workflow on remote computer<a class="anchor-link" href="#Run-workflow-on-remote-computer">&#182;</a></h2><p>For given tissue:</p>
 <pre><code>sos run analysis/20171002_MR_ASH_V8.ipynb -r midway2 \
-    --tissue Thyroid 
-    --gene_list /tmp/toy_genes.txt</code></pre>
+    --tissue Thyroid \
+    --gene_list optional_gene_list.txt</code></pre>
+<p>Note that the remote computer (login node) as already been configured with</p>
+<pre><code>sos config --global --set localhost midway2</code></pre>
 </div>
 </div>
 </div><div class="rendered lan_SoS">
@@ -603,7 +605,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/42b620b0a2bf73fefed80fa34132d26465c08304/analysis/20171002_MR_ASH_V8.ipynb"><code>analysis/20171002_MR_ASH_V8.ipynb</code></a> committed by Gao Wang on Sun Oct 29 20:12:48 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/42b620b0a2bf73fefed80fa34132d26465c08304">revision 9, 42b620b</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/09fd2cfbfba0cea43b1b0d69aa1f6cd7394f0786/analysis/20171002_MR_ASH_V8.ipynb"><code>analysis/20171002_MR_ASH_V8.ipynb</code></a> committed by Gao Wang on Sun Oct 29 23:57:23 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/09fd2cfbfba0cea43b1b0d69aa1f6cd7394f0786">revision 11, 09fd2cf</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
