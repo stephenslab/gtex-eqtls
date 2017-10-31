@@ -363,13 +363,13 @@ body {
 <h1 id="Extract-per-gene-per-tissue-data">Extract per-gene per tissue data<a class="anchor-link" href="#Extract-per-gene-per-tissue-data">&#182;</a></h1><p>For fine mapping demos.</p>
 </div>
 </div>
-</div>
+</div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[2]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">cd</span> <span class="o">~/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTExV8</span>
+<div class=" highlight hl-sos"><pre><span></span><span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;~/Documents/GTExV8&quot;</span><span class="p">)</span>
 <span class="n">load_data</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">genotype_file</span><span class="p">,</span> <span class="n">expr_file</span><span class="p">,</span> <span class="n">cov_file</span><span class="p">,</span> <span class="n">geno_table</span><span class="p">,</span> <span class="n">expr_table</span><span class="p">,</span> <span class="n">cov_table</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">library</span><span class="p">(</span><span class="n">rhdf5</span><span class="p">)</span>
         <span class="n">geno</span> <span class="o">=</span> <span class="n">h5read</span><span class="p">(</span><span class="n">genotype_file</span><span class="p">,</span> <span class="n">geno_table</span><span class="p">)</span>
@@ -397,20 +397,28 @@ body {
 <span class="n">genotype_file</span> <span class="o">=</span> <span class="s2">&quot;GTExV8.genotype.cis.h5&quot;</span>
 <span class="n">expr_file</span> <span class="o">=</span> <span class="s2">&quot;GTExV8.expression.h5&quot;</span>
 <span class="n">cov_file</span> <span class="o">=</span> <span class="s2">&quot;GTExV8.covariates.h5&quot;</span>
+<span class="c1">## </span>
 <span class="n">geno_table</span> <span class="o">=</span> <span class="s2">&quot;/chr9/ENSG00000237846&quot;</span>
 <span class="n">expr_table</span> <span class="o">=</span> <span class="s2">&quot;/Thyroid&quot;</span>
 <span class="n">cov_table</span> <span class="o">=</span> <span class="s2">&quot;/Thyroid&quot;</span>
 <span class="n">dat</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">genotype_file</span><span class="p">,</span> <span class="n">expr_file</span><span class="p">,</span> <span class="n">cov_file</span><span class="p">,</span> <span class="n">geno_table</span><span class="p">,</span> <span class="n">expr_table</span><span class="p">,</span> <span class="n">cov_table</span><span class="p">)</span>
-<span class="n">saveRDS</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s1">&#39;Thyroid.ENSG00000237846.1Mb.RDS&#39;</span><span class="p">)</span>
+<span class="n">saveRDS</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s1">&#39;Thyroid.ENSG00000237846.pm1Mb.RDS&#39;</span><span class="p">)</span>
+<span class="c1">## </span>
+<span class="n">geno_table</span> <span class="o">=</span> <span class="s2">&quot;/chr11/ENSG00000248746&quot;</span>
+<span class="n">expr_table</span> <span class="o">=</span> <span class="s2">&quot;/Muscle_Skeletal&quot;</span>
+<span class="n">cov_table</span> <span class="o">=</span> <span class="s2">&quot;/Muscle_Skeletal&quot;</span>
+<span class="n">dat</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">genotype_file</span><span class="p">,</span> <span class="n">expr_file</span><span class="p">,</span> <span class="n">cov_file</span><span class="p">,</span> <span class="n">geno_table</span><span class="p">,</span> <span class="n">expr_table</span><span class="p">,</span> <span class="n">cov_table</span><span class="p">)</span>
+<span class="n">saveRDS</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s1">&#39;Muscle_Skeletal.ENSG00000248746.pm1Mb.RDS&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
         </div>
 </div>
 </div>
+    </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/c0c011e989b7f175ec8a4d44d4a8b9e081dfd51e/analysis/20171017_Extract_Full_Tissue_Data.ipynb"><code>analysis/20171017_Extract_Full_Tissue_Data.ipynb</code></a> committed by Gao Wang on Fri Oct 27 10:43:51 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/c0c011e989b7f175ec8a4d44d4a8b9e081dfd51e">revision 5, c0c011e</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/da367f5dcbc4183ecd0449cbd3d203826a7f6ebc/analysis/20171017_Extract_Full_Tissue_Data.ipynb"><code>analysis/20171017_Extract_Full_Tissue_Data.ipynb</code></a> committed by Gao Wang on Tue Oct 31 13:45:12 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/da367f5dcbc4183ecd0449cbd3d203826a7f6ebc">revision 7, da367f5</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
