@@ -620,6 +620,16 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
+<p>The issue with liftover is more complicated than I imagined:</p>
+<p><a href="https://www.biostars.org/p/266001/">https://www.biostars.org/p/266001/</a></p>
+<p>Basically I see variants on one chromesome, after liftover, get moved to multiple chromesomes. An immediate issue is that it messes up the imputation pipeline that requires per-chromosome file (which can be fixed); a longer term concern is that hg19 is not good to use after all.</p>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div>
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Imputation">Imputation<a class="anchor-link" href="#Imputation">&#182;</a></h2><p>Imputation was done with <a href="https://imputationserver.sph.umich.edu">Michigan Imputation Server</a> (MIS) because it uses Haplotype Reference Consortium (32,914 samples) reference panel which is not publicly available otherwise. <a href="https://imputationserver.sph.umich.edu/start.html#!pages/help">Here is how to prepare data</a> for this service. The prepared files are uploaded to <a href="https://imputationserver.sph.umich.edu">Michigan imputation server</a>.</p>
 <h3 id="Configuration">Configuration<a class="anchor-link" href="#Configuration">&#182;</a></h3>
 </div>
@@ -740,7 +750,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/beef3c4e8da594ae12cc43a3ae7d403277f28c3b/analysis/20171023_Imputation.ipynb"><code>analysis/20171023_Imputation.ipynb</code></a> committed by Gao Wang on Mon Oct 23 23:33:06 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/beef3c4e8da594ae12cc43a3ae7d403277f28c3b">revision 2, beef3c4</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/28ab266d1be290151aa1e1401c8dc3862097f888/analysis/20171023_Imputation.ipynb"><code>analysis/20171023_Imputation.ipynb</code></a> committed by Gao Wang on Wed Oct 25 09:25:01 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/28ab266d1be290151aa1e1401c8dc3862097f888">revision 3, 28ab266</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
