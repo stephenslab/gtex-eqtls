@@ -201,7 +201,7 @@ div.cell {
 }
 .display_checkboxes {
     margin-top: 5pt;
-}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}</style>
+}.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_SoS {}</style>
 <script>
 function filterDataFrame(id) {
     var input = document.getElementById("search_" + id);
@@ -366,7 +366,7 @@ body {
 </div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[3]:</div><div class="hidden_content">
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">setwd</span><span class="p">(</span><span class="s2">&quot;~/Documents/GTExV8&quot;</span><span class="p">)</span>
@@ -392,23 +392,24 @@ body {
         <span class="c1"># reorder</span>
         <span class="n">edata</span> <span class="o">=</span> <span class="n">edata</span><span class="p">[</span><span class="n">match</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">cdata</span><span class="p">),</span> <span class="n">rownames</span><span class="p">(</span><span class="n">edata</span><span class="p">)),]</span>
         <span class="n">gdata</span> <span class="o">=</span> <span class="n">gdata</span><span class="p">[</span><span class="n">rownames</span><span class="p">(</span><span class="n">cdata</span><span class="p">),]</span>
-        <span class="k">return</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">gdata</span><span class="p">),</span> <span class="n">y</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">vector</span><span class="p">(</span><span class="n">edata</span><span class="p">),</span> <span class="n">Z</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">cdata</span><span class="p">)))</span>
+        <span class="k">return</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">X</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">gdata</span><span class="p">),</span> <span class="n">y</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">vector</span><span class="p">(</span><span class="n">edata</span><span class="p">),</span> <span class="n">Z</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">cdata</span><span class="p">),</span> <span class="n">chrom</span> <span class="o">=</span> <span class="n">strsplit</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">gdata</span><span class="p">)[</span><span class="mi">1</span><span class="p">],</span> <span class="s1">&#39;_&#39;</span><span class="p">)[[</span><span class="mi">1</span><span class="p">]][</span><span class="mi">1</span><span class="p">],</span> 
+                    <span class="n">pos</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">integer</span><span class="p">(</span><span class="n">do</span><span class="o">.</span><span class="n">call</span><span class="p">(</span><span class="n">rbind</span><span class="p">,</span> <span class="n">strsplit</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">gdata</span><span class="p">),</span> <span class="s1">&#39;_&#39;</span><span class="p">))[,</span><span class="mi">2</span><span class="p">])))</span>
     <span class="p">}</span>
 <span class="n">genotype_file</span> <span class="o">=</span> <span class="s2">&quot;GTExV8.genotype.cis.h5&quot;</span>
 <span class="n">expr_file</span> <span class="o">=</span> <span class="s2">&quot;GTExV8.expression.h5&quot;</span>
 <span class="n">cov_file</span> <span class="o">=</span> <span class="s2">&quot;GTExV8.covariates.h5&quot;</span>
 <span class="c1">## </span>
-<span class="n">geno_table</span> <span class="o">=</span> <span class="s2">&quot;/chr9/ENSG00000237846&quot;</span>
+<span class="n">geno_table</span> <span class="o">=</span> <span class="s2">&quot;/chr1/ENSG00000094963&quot;</span>
 <span class="n">expr_table</span> <span class="o">=</span> <span class="s2">&quot;/Thyroid&quot;</span>
 <span class="n">cov_table</span> <span class="o">=</span> <span class="s2">&quot;/Thyroid&quot;</span>
 <span class="n">dat</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">genotype_file</span><span class="p">,</span> <span class="n">expr_file</span><span class="p">,</span> <span class="n">cov_file</span><span class="p">,</span> <span class="n">geno_table</span><span class="p">,</span> <span class="n">expr_table</span><span class="p">,</span> <span class="n">cov_table</span><span class="p">)</span>
-<span class="n">saveRDS</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s1">&#39;Thyroid.ENSG00000237846.pm1Mb.RDS&#39;</span><span class="p">)</span>
+<span class="n">saveRDS</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s1">&#39;Thyroid.FMO2.pm1Mb.RDS&#39;</span><span class="p">)</span>
 <span class="c1">## </span>
 <span class="n">geno_table</span> <span class="o">=</span> <span class="s2">&quot;/chr11/ENSG00000248746&quot;</span>
 <span class="n">expr_table</span> <span class="o">=</span> <span class="s2">&quot;/Muscle_Skeletal&quot;</span>
 <span class="n">cov_table</span> <span class="o">=</span> <span class="s2">&quot;/Muscle_Skeletal&quot;</span>
 <span class="n">dat</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">(</span><span class="n">genotype_file</span><span class="p">,</span> <span class="n">expr_file</span><span class="p">,</span> <span class="n">cov_file</span><span class="p">,</span> <span class="n">geno_table</span><span class="p">,</span> <span class="n">expr_table</span><span class="p">,</span> <span class="n">cov_table</span><span class="p">)</span>
-<span class="n">saveRDS</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s1">&#39;Muscle_Skeletal.ENSG00000248746.pm1Mb.RDS&#39;</span><span class="p">)</span>
+<span class="n">saveRDS</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="s1">&#39;Muscle_Skeletal.ACTN3.pm1Mb.RDS&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
@@ -418,7 +419,7 @@ body {
     </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/da367f5dcbc4183ecd0449cbd3d203826a7f6ebc/analysis/20171017_Extract_Full_Tissue_Data.ipynb"><code>analysis/20171017_Extract_Full_Tissue_Data.ipynb</code></a> committed by Gao Wang on Tue Oct 31 13:45:12 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/da367f5dcbc4183ecd0449cbd3d203826a7f6ebc">revision 7, da367f5</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/03b574fc2da63b07a7cac284dd7bd3c2a8015f01/analysis/20171017_Extract_Full_Tissue_Data.ipynb"><code>analysis/20171017_Extract_Full_Tissue_Data.ipynb</code></a> committed by Gao Wang on Tue Oct 31 21:06:01 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/03b574fc2da63b07a7cac284dd7bd3c2a8015f01">revision 9, 03b574f</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>
