@@ -110,193 +110,8 @@ $(document).ready(function () {
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
-</script><style type="text/css">
-table {
-   padding: 0;
-   border-collapse: collapse; }
-thead {
-    border-bottom-width: 1px;
-    border-bottom-color: rgb(0,0,0);
-    border-bottom-style: solid;
-}
-table tr {
-   border: none;
-   background-color: white;
-   margin: 0;
-   padding: 0; }
-table tr:nth-child(2n) {
-   background-color: #f8f8f8; }
-table tr th {
-   font-weight: bold;
-   border: none;
-   margin: 0;
-   padding: 6px 13px; }
-table tr td {
-   border: none;
-   margin: 0;
-   padding: 6px 13px; }
-table tr th :first-child, table tr td :first-child {
-   margin-top: 0; }
-table tr th :last-child, table tr td :last-child {
-   margin-bottom: 0; }
-.dataframe_container { max-height: 400px }
-.dataframe_input {
-    border: 1px solid #ddd;
-    margin-bottom: 5px;
-}
-.rendered_html table {
-  border: none;
-}
-.sos_hint {
-  color: rgba(0,0,0,.4);
-  font-family: monospace;
-  display: none;
-}
-.output_stderr {
-    display: none;
-}
-/*
- div.input {
-     display: none;
- }
-*/
-.hidden_content {
-    display: none;
-}
-.input_prompt {
-    display: none;
-}
-.output_area .prompt {
-    display: none;
-}
-.output_prompt {
-    display: none;
-}
-#nextsteps {
-   color: blue;
-}
-.scatterplot_by_rowname div.xAxis div.tickLabel {
-    transform: translateY(15px) translateX(15px) rotate(45deg);
-    -ms-transform: translateY(15px) translateX(15px) rotate(45deg);
-    -moz-transform: translateY(15px) translateX(15px) rotate(45deg);
-    -webkit-transform: translateY(15px) translateX(15px) rotate(45deg);
-    -o-transform: translateY(15px) translateX(15px) rotate(45deg);
-    /*rotation-point:50% 50%;*/
-    /*rotation:270deg;*/
-}
-div.cell {
-    padding: 0pt;
-    border-width: 0pt;
-}
-.sos_dataframe td, .sos_dataframe th, .sos_dataframe tr {
-    white-space: nowrap;
-    border: none;
-}
-.sos_dataframe tr:hover {
-    background-color: #e6f2ff;
-}
-.display_control_panel  {
-    position: inherit;
-    z-index: 1000;
-}
-.display_checkboxes {
-    margin-top: 5pt;
-}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }.lan_SoS {}</style>
-<script>
-function filterDataFrame(id) {
-    var input = document.getElementById("search_" + id);
-    var filter = input.value.toUpperCase();
-    var table = document.getElementById("dataframe_" + id);
-    var tr = table.getElementsByTagName("tr");
-    // Loop through all table rows, and hide those who don't match the search query
-    for (var i = 1; i < tr.length; i++) {
-        for (var j = 0; j < tr[i].cells.length; ++j) {
-            var matched = false;
-            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
-                tr[i].style.display = "";
-                matched = true
-                break;
-            }
-            if (!matched)
-                tr[i].style.display = "none";
-        } 
-    }
-}
-function sortDataFrame(id, n, dtype) {
-    var table = document.getElementById("dataframe_" + id);
-    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
-    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
-    if (dtype === 'numeric') {
-        var fn = function(a, b) { 
-            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
-        }
-    } else {
-        var fn = function(a, b) {
-            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
-            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
-    }
-    var isSorted = function(array, fn) {
-        if (array.length < 2)
-            return 1;
-        var direction = fn(array[0], array[1]); 
-        for (var i = 1; i < array.length - 1; ++i) {
-            var d = fn(array[i], array[i+1]);
-            if (d == 0)
-                continue;
-            else if (direction == 0)
-                direction = d;
-            else if (direction != d)
-                return 0;
-            }
-        return direction;
-    }
-    var sorted = isSorted(tr, fn);
-    if (sorted == 1 || sorted == -1) {
-        // if sorted already, reverse it
-        for(var i = tr.length - 1; i >= 0; --i)
-            tb.appendChild(tr[i]); // append each row in order
-    } else {
-        tr = tr.sort(fn);
-        for(var i = 0; i < tr.length; ++i)
-            tb.appendChild(tr[i]); // append each row in order
-    }
-}
-function toggle_source() {
-    var btn = document.getElementById("show_cells");
-    if (btn.checked) {
-        $('div.input').css('display', 'flex');
-        $('.hidden_content').show();
-        // this somehow does not work.
-        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
-    } else {
-        $('div.input').hide();
-        $('.hidden_content').hide();
-        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
-    }
-}
-function toggle_prompt() {
-    var btn = document.getElementById("show_prompt");
-    if (btn.checked) {
-        $('.output_prompt').show();
-        $('.input_prompt').show();
-        $('.output_area .prompt').show();
-    } else {
-        $('.output_prompt').hide();
-        $('.input_prompt').hide();
-        $('.output_area .prompt').hide();
-    }
-}
-function toggle_messages() {
-    var btn = document.getElementById("show_messages");
-    if (btn.checked) {
-        $('.sos_hint').show();
-        $('.output_stderr').show();
-    } else {
-        $('.output_stderr').hide();
-        $('.sos_hint').hide();
-    }
-}
-</script><title>GTEx eQTL</title>
+</script>
+<title>GTEx eQTL</title>
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -342,20 +157,6 @@ body {
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
-<div class='display_control_panel'>
-        <div class="display_checkboxes">
-        Show:
-            &nbsp;
-            <input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
-            <label for="show_cells">All cells</label>
-            &nbsp;
-            <input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
-            <label for="show_prompt">Prompt</label>
-            &nbsp;
-            <input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
-            <label for="show_messages">Messages</label>
-    </div>
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -371,10 +172,10 @@ body {
 <h2 id="Get-subset-of-SNPs">Get subset of SNPs<a class="anchor-link" href="#Get-subset-of-SNPs">&#182;</a></h2>
 </div>
 </div>
-</div><div class="rendered lan_R">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;../data/Thyroid.FMO2.2Mb.RDS&#39;</span><span class="p">)</span>
@@ -382,13 +183,11 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[30]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[30]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">snps</span> <span class="o">=</span> <span class="n">colnames</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
@@ -396,50 +195,42 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_R">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">put</span> <span class="n">snps</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">get</span> <span class="n">snps</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[11]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">snps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">snps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -447,24 +238,20 @@ body {
 </pre>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
-    </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[12]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">geno</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTExV8/genotypes/GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze_MAF001_GTonly.vcf.gz&#39;</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -480,10 +267,10 @@ body {
 <h2 id="Convert-to-BIMBAM-genotype">Convert to BIMBAM genotype<a class="anchor-link" href="#Convert-to-BIMBAM-genotype">&#182;</a></h2>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[33]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[33]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">bash:</span>
@@ -491,13 +278,11 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[34]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[34]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">bash:</span>
@@ -506,11 +291,9 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -542,11 +325,9 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -554,10 +335,10 @@ Note: No phenotypes present.
 <h2 id="Prepare-BIMBAM-phenotype">Prepare BIMBAM phenotype<a class="anchor-link" href="#Prepare-BIMBAM-phenotype">&#182;</a></h2>
 </div>
 </div>
-</div><div class="rendered lan_R">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[35]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[35]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="o">.</span><span class="n">lm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="n">Z</span><span class="p">,</span> <span class="n">dat</span><span class="err">$</span><span class="n">y</span><span class="p">)</span><span class="err">$</span><span class="n">residuals</span>
@@ -565,10 +346,8 @@ Note: No phenotypes present.
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -576,10 +355,10 @@ Note: No phenotypes present.
 <h2 id="Run-BIMBAM">Run BIMBAM<a class="anchor-link" href="#Run-BIMBAM">&#182;</a></h2>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[37]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[37]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">bash:</span>
@@ -588,11 +367,9 @@ Note: No phenotypes present.
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -606,7 +383,6 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
-        </div><div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stderr output_text">
@@ -614,11 +390,9 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -642,62 +416,54 @@ Note: No phenotypes present.
 <p>First, read all BIMBAM multi-snp results, sort by BF factors and match with SNP positions for convenience of interpretation.</p>
 </div>
 </div>
-</div><div class="rendered lan_Python3">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[38]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[38]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">bfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;output/pref4.multi.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[41]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[41]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">snps</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/Thyroid.FMO2.bimbam.recode.pos.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[42]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[42]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">bfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bfs</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[48]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[48]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">bfs_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">bfs</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[58]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[58]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">top_models</span> <span class="o">=</span> <span class="p">[[</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
@@ -708,13 +474,11 @@ Note: No phenotypes present.
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_Python3">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[60]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[60]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/gaow/Documents/GTExV8/Toys/FMO2/Thyroid.FMO2.bimbam.out&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
@@ -722,13 +486,11 @@ Note: No phenotypes present.
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[61]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[61]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">bash:</span>
@@ -736,10 +498,8 @@ Note: No phenotypes present.
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div><div class="rendered lan_SoS">
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[69]:</div>
@@ -772,7 +532,6 @@ Note: No phenotypes present.
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -781,7 +540,7 @@ Note: No phenotypes present.
 <h3 id="For-varbvsmix">For varbvsmix<a class="anchor-link" href="#For-varbvsmix">&#182;</a></h3>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[70]:</div>
@@ -818,7 +577,6 @@ Note: No phenotypes present.
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -826,7 +584,7 @@ Note: No phenotypes present.
 <h3 id="For-varbvs">For varbvs<a class="anchor-link" href="#For-varbvs">&#182;</a></h3>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
 <div class="prompt input_prompt">In&nbsp;[71]:</div>
@@ -863,7 +621,6 @@ Note: No phenotypes present.
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
