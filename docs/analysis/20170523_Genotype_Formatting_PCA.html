@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.2" />
+<meta name="ipynb_website:version" content="0.9.3" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
@@ -110,193 +110,8 @@ $(document).ready(function () {
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
-</script><style type="text/css">
-table {
-   padding: 0;
-   border-collapse: collapse; }
-thead {
-    border-bottom-width: 1px;
-    border-bottom-color: rgb(0,0,0);
-    border-bottom-style: solid;
-}
-table tr {
-   border: none;
-   background-color: white;
-   margin: 0;
-   padding: 0; }
-table tr:nth-child(2n) {
-   background-color: #f8f8f8; }
-table tr th {
-   font-weight: bold;
-   border: none;
-   margin: 0;
-   padding: 6px 13px; }
-table tr td {
-   border: none;
-   margin: 0;
-   padding: 6px 13px; }
-table tr th :first-child, table tr td :first-child {
-   margin-top: 0; }
-table tr th :last-child, table tr td :last-child {
-   margin-bottom: 0; }
-.dataframe_container { max-height: 400px }
-.dataframe_input {
-    border: 1px solid #ddd;
-    margin-bottom: 5px;
-}
-.rendered_html table {
-  border: none;
-}
-.sos_hint {
-  color: rgba(0,0,0,.4);
-  font-family: monospace;
-  display: none;
-}
-.output_stderr {
-    display: none;
-}
-/*
- div.input {
-     display: none;
- }
-*/
-.hidden_content {
-    display: none;
-}
-.input_prompt {
-    display: none;
-}
-.output_area .prompt {
-    display: none;
-}
-.output_prompt {
-    display: none;
-}
-#nextsteps {
-   color: blue;
-}
-.scatterplot_by_rowname div.xAxis div.tickLabel {
-    transform: translateY(15px) translateX(15px) rotate(45deg);
-    -ms-transform: translateY(15px) translateX(15px) rotate(45deg);
-    -moz-transform: translateY(15px) translateX(15px) rotate(45deg);
-    -webkit-transform: translateY(15px) translateX(15px) rotate(45deg);
-    -o-transform: translateY(15px) translateX(15px) rotate(45deg);
-    /*rotation-point:50% 50%;*/
-    /*rotation:270deg;*/
-}
-div.cell {
-    padding: 0pt;
-    border-width: 0pt;
-}
-.sos_dataframe td, .sos_dataframe th, .sos_dataframe tr {
-    white-space: nowrap;
-    border: none;
-}
-.sos_dataframe tr:hover {
-    background-color: #e6f2ff;
-}
-.display_control_panel  {
-    position: inherit;
-    z-index: 1000;
-}
-.display_checkboxes {
-    margin-top: 5pt;
-}.lan_SoS {}.lan_Python3 .input_prompt { background-color: #FFE771 !important }.lan_R .input_prompt { background-color: #DCDCDA !important }</style>
-<script>
-function filterDataFrame(id) {
-    var input = document.getElementById("search_" + id);
-    var filter = input.value.toUpperCase();
-    var table = document.getElementById("dataframe_" + id);
-    var tr = table.getElementsByTagName("tr");
-    // Loop through all table rows, and hide those who don't match the search query
-    for (var i = 1; i < tr.length; i++) {
-        for (var j = 0; j < tr[i].cells.length; ++j) {
-            var matched = false;
-            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
-                tr[i].style.display = "";
-                matched = true
-                break;
-            }
-            if (!matched)
-                tr[i].style.display = "none";
-        } 
-    }
-}
-function sortDataFrame(id, n, dtype) {
-    var table = document.getElementById("dataframe_" + id);
-    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
-    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
-    if (dtype === 'numeric') {
-        var fn = function(a, b) { 
-            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
-        }
-    } else {
-        var fn = function(a, b) {
-            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
-            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
-    }
-    var isSorted = function(array, fn) {
-        if (array.length < 2)
-            return 1;
-        var direction = fn(array[0], array[1]); 
-        for (var i = 1; i < array.length - 1; ++i) {
-            var d = fn(array[i], array[i+1]);
-            if (d == 0)
-                continue;
-            else if (direction == 0)
-                direction = d;
-            else if (direction != d)
-                return 0;
-            }
-        return direction;
-    }
-    var sorted = isSorted(tr, fn);
-    if (sorted == 1 || sorted == -1) {
-        // if sorted already, reverse it
-        for(var i = tr.length - 1; i >= 0; --i)
-            tb.appendChild(tr[i]); // append each row in order
-    } else {
-        tr = tr.sort(fn);
-        for(var i = 0; i < tr.length; ++i)
-            tb.appendChild(tr[i]); // append each row in order
-    }
-}
-function toggle_source() {
-    var btn = document.getElementById("show_cells");
-    if (btn.checked) {
-        $('div.input').css('display', 'flex');
-        $('.hidden_content').show();
-        // this somehow does not work.
-        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
-    } else {
-        $('div.input').hide();
-        $('.hidden_content').hide();
-        $('div.cell').css('padding', '0pt').css('border-width', '0pt');
-    }
-}
-function toggle_prompt() {
-    var btn = document.getElementById("show_prompt");
-    if (btn.checked) {
-        $('.output_prompt').show();
-        $('.input_prompt').show();
-        $('.output_area .prompt').show();
-    } else {
-        $('.output_prompt').hide();
-        $('.input_prompt').hide();
-        $('.output_area .prompt').hide();
-    }
-}
-function toggle_messages() {
-    var btn = document.getElementById("show_messages");
-    if (btn.checked) {
-        $('.sos_hint').show();
-        $('.output_stderr').show();
-    } else {
-        $('.output_stderr').hide();
-        $('.sos_hint').hide();
-    }
-}
-</script><title>GTEx eQTL</title>
+</script>
+<title>GTEx eQTL</title>
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -330,9 +145,6 @@ body {
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
-<li>
-  <a href="../writeup.html">Writeup</a>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -342,20 +154,6 @@ body {
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
-<div class='display_control_panel'>
-        <div class="display_checkboxes">
-        Show:
-            &nbsp;
-            <input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
-            <label for="show_cells">All cells</label>
-            &nbsp;
-            <input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
-            <label for="show_prompt">Prompt</label>
-            &nbsp;
-            <input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
-            <label for="show_messages">Messages</label>
-    </div>
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -363,10 +161,10 @@ body {
 <h1 id="Imputation-data-post-processing-and-PCA-analysis">Imputation data post-processing and PCA analysis<a class="anchor-link" href="#Imputation-data-post-processing-and-PCA-analysis">&#182;</a></h1><p>Process VCF files from Michigan imputation server by removing imputed sites and fix variant IDs. We also perform MDS analysis to obtain covariates for association analysis.</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
@@ -390,10 +188,8 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -402,10 +198,10 @@ body {
 <h3 id="VCF-to-PLINK-conversion">VCF to PLINK conversion<a class="anchor-link" href="#VCF-to-PLINK-conversion">&#182;</a></h3><p>Code chunk below converts from VCF to PLINK format, fixing variant ID issues along the course.</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="o">-</span><span class="n">J</span> <span class="mi">8</span>
@@ -468,17 +264,15 @@ body {
   <span class="n">rm</span> <span class="n">plink</span><span class="o">.</span><span class="n">merge</span><span class="o">-</span><span class="nb">list</span>
 <span class="p">[</span><span class="n">default_1</span><span class="p">]</span>
 <span class="kn">input:</span> <span class="n">original_genotypes</span>
-<span class="kp">sos_run</span><span class="p">(</span><span class="s1">&#39;broad_to_plink&#39;</span><span class="p">,</span> <span class="n">project_name</span> <span class="o">=</span> <span class="s2">&quot;GTEx7.dbGaP&quot;</span><span class="p">)</span>
+<span class="n">sos_run</span><span class="p">(</span><span class="s1">&#39;broad_to_plink&#39;</span><span class="p">,</span> <span class="n">project_name</span> <span class="o">=</span> <span class="s2">&quot;GTEx7.dbGaP&quot;</span><span class="p">)</span>
 <span class="p">[</span><span class="n">default_2</span><span class="p">]</span>
 <span class="kn">input:</span> <span class="n">imputed_genotypes</span>
-<span class="kp">sos_run</span><span class="p">(</span><span class="s1">&#39;imputed_genotypes&#39;</span><span class="p">,</span> <span class="n">project_name</span> <span class="o">=</span> <span class="s2">&quot;GTEx7.Imputed&quot;</span><span class="p">)</span>
+<span class="n">sos_run</span><span class="p">(</span><span class="s1">&#39;imputed_genotypes&#39;</span><span class="p">,</span> <span class="n">project_name</span> <span class="o">=</span> <span class="s2">&quot;GTEx7.Imputed&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -486,10 +280,10 @@ body {
 <h3 id="Remove-imputed-variant-sites">Remove imputed variant sites<a class="anchor-link" href="#Remove-imputed-variant-sites">&#182;</a></h3><p>Code chunk below compares <code>GTEx7.dbGap</code> and <code>GTEx7.Imputed</code> and extract only genotyped variants from imputation results. Additional filters on minor allele frequency and minor allele counts are also applied. The result is genotype input for eQTL discovery, saved in PLINK format.</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[8]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">variants_filter</span>
@@ -523,11 +317,9 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -535,11 +327,9 @@ body {
 </pre>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -555,7 +345,7 @@ body {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">LD_pruning_1</span><span class="p">]</span>
@@ -631,23 +421,22 @@ body {
    <span class="n">ls</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">n</span><span class="p">}</span><span class="o">/*.</span><span class="n">html</span> <span class="o">|</span> <span class="n">foo</span> <span class="o">&gt;</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="p">}</span>
 <span class="p">[</span><span class="n">genotype_pca_broad</span><span class="p">]</span>
 <span class="kn">input:</span> <span class="s2">&quot;${cwd}/genotype_plink/GTEx7.dbGaP.bed&quot;</span>
-<span class="kp">sos_run</span><span class="p">(</span><span class="s2">&quot;LD_pruning + global_ancestry&quot;</span><span class="p">)</span>
+<span class="n">sos_run</span><span class="p">(</span><span class="s2">&quot;LD_pruning + global_ancestry&quot;</span><span class="p">)</span>
 <span class="p">[</span><span class="n">genotype_pca_umich</span><span class="p">]</span>
 <span class="kn">input:</span> <span class="s2">&quot;${cwd}/genotype_plink/GTEx7.Imputed.bed&quot;</span>
-<span class="kp">sos_run</span><span class="p">(</span><span class="s2">&quot;LD_pruning + global_ancestry&quot;</span><span class="p">)</span>
+<span class="n">sos_run</span><span class="p">(</span><span class="s2">&quot;LD_pruning + global_ancestry&quot;</span><span class="p">)</span>
 <span class="p">[</span><span class="n">genotype_pca_umich_filtered</span><span class="p">]</span>
 <span class="c1"># Filtered imputation data removing imputed sites</span>
 <span class="kn">input:</span> <span class="s2">&quot;${cwd}/genotype_plink/GTEx7.Imputed.genotyped.filtered.bed&quot;</span>
-<span class="kp">sos_run</span><span class="p">(</span><span class="s2">&quot;LD_pruning + global_ancestry&quot;</span><span class="p">)</span>
+<span class="n">sos_run</span><span class="p">(</span><span class="s2">&quot;LD_pruning + global_ancestry&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">genotype_pca_broad</span>
@@ -656,7 +445,6 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
@@ -674,10 +462,10 @@ body {
 <p>GTEx has provided in dbGaP the PCA analysis done at Broad before imputation. I want to verify it agrees with my PCA analysis for imputed data. Code chunk below matches sample label with Broad PCA results to prepare data for plot, and saved to a temporary file <code>/tmp/GTExPCA.ped</code> (previewed below) to be used by the same plot routine I developed here.</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">preview</span> <span class="n">dat</span> <span class="o">--</span><span class="n">limit</span> <span class="mi">20</span>
@@ -696,7 +484,6 @@ body {
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
@@ -1331,20 +1118,18 @@ body {
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">pca_plot_broad</span>
 <span class="p">[</span><span class="n">pca_plot_broad</span><span class="p">]</span>
 <span class="kn">input:</span> <span class="s1">&#39;/tmp/GTExPCA.ped&#39;</span>
-<span class="kp">sos_run</span><span class="p">(</span><span class="s2">&quot;global_ancestry:2&quot;</span><span class="p">)</span>
+<span class="n">sos_run</span><span class="p">(</span><span class="s2">&quot;global_ancestry:2&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
@@ -1354,17 +1139,16 @@ body {
 <h2 id="PCA-results">PCA results<a class="anchor-link" href="#PCA-results">&#182;</a></h2><p>Broad provided:</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">preview</span> <span class="n">img</span><span class="o">/</span><span class="n">gtex_broad_pca</span><span class="o">.</span><span class="n">png</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
@@ -1384,7 +1168,6 @@ body {
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -1392,17 +1175,16 @@ body {
 <p>Broad, my analysis:</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">preview</span> <span class="n">img</span><span class="o">/</span><span class="n">gtex_dbgap_pca_gaow</span><span class="o">.</span><span class="n">png</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
@@ -1422,7 +1204,6 @@ body {
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -1430,17 +1211,16 @@ body {
 <p>Imputed, my analysis:</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">preview</span> <span class="n">img</span><span class="o">/</span><span class="n">gtex_umich_imputed_pca</span><span class="o">.</span><span class="n">png</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
@@ -1460,7 +1240,6 @@ body {
 </div>
 </div>
 </div>
-    </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -1468,21 +1247,19 @@ body {
 <p>The results are quite consistent across different datasets.</p>
 </div>
 </div>
-</div><div class="rendered lan_SoS">
+</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -1510,11 +1287,9 @@ body {
 </table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
-    </div>
 <hr>
 &copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
 <p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/36f11aff464fd5957ae1ba9a376bef08697a89f3/analysis/20170523_Genotype_Formatting_PCA.ipynb"><code>analysis/20170523_Genotype_Formatting_PCA.ipynb</code></a> committed by Gao Wang on Tue Aug 29 09:53:59 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/36f11aff464fd5957ae1ba9a376bef08697a89f3">revision 5, 36f11af</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>

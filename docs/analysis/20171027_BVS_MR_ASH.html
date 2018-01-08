@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.2" />
+<meta name="ipynb_website:version" content="0.9.3" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
@@ -110,7 +110,8 @@ $(document).ready(function () {
 $(document).ready(function () {
   window.buildTabsets("TOC");
 });
-</script><title>GTEx eQTL</title>
+</script>
+<title>GTEx eQTL</title>
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -144,9 +145,6 @@ body {
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
-<li>
-  <a href="../writeup.html">Writeup</a>
-</li>
       </ul>
 <ul class="nav navbar-nav navbar-right">
 <li>
@@ -156,20 +154,6 @@ body {
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
-<div class='display_control_panel'>
-        <div class="display_checkboxes">
-        Show:
-            &nbsp;
-            <input type="checkbox" id="show_cells" name="show_cells" onclick="toggle_source()">
-            <label for="show_cells">All cells</label>
-            &nbsp;
-            <input type="checkbox" id="show_prompt" name="show_prompt" onclick="toggle_prompt()">
-            <label for="show_prompt">Prompt</label>
-            &nbsp;
-            <input type="checkbox" id="show_messages" name="show_messages" onclick="toggle_messages()">
-            <label for="show_messages">Messages</label>
-    </div>
-</div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
@@ -196,7 +180,7 @@ body {
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>autoselect.mixsd <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>betahat<span class="p">,</span>sebetahat<span class="p">,</span>mult <span class="o">=</span> <span class="kp">sqrt</span><span class="p">(</span><span class="m">2</span><span class="p">)){</span>
@@ -258,7 +242,6 @@ fitfv <span class="o">=</span> <span class="kr">function</span><span class="p">(
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
@@ -271,7 +254,7 @@ fitfv <span class="o">=</span> <span class="kr">function</span><span class="p">(
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>input_file <span class="o">=</span> <span class="s">&quot;../data/Thyroid.FMO2.1Mb.RDS&quot;</span>
@@ -303,7 +286,6 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
@@ -316,7 +298,7 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>mix.top <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit11<span class="o">$</span>lfsr<span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
@@ -324,11 +306,9 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -343,13 +323,12 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>bvs.top <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit21<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">],</span> decreasing<span class="o">=</span><span class="bp">T</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
@@ -357,11 +336,9 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -376,7 +353,6 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
@@ -390,7 +366,7 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[5]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>get.credible.set <span class="o">&lt;-</span> <span class="kr">function</span> <span class="p">(</span>bf<span class="p">,</span> pr<span class="p">)</span> <span class="p">{</span>
@@ -406,12 +382,11 @@ R <span class="o">&lt;-</span> cor<span class="p">(</span>X<span class="p">)</sp
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[6]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>credint.prob <span class="o">&lt;-</span> <span class="m">0.95</span>
@@ -430,23 +405,20 @@ plots        <span class="o">&lt;-</span> <span class="kt">vector</span><span cl
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[7]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span>cr<span class="p">)</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_subarea output_stream output_stdout output_text">
@@ -486,7 +458,6 @@ chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38
 </pre>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
@@ -508,30 +479,27 @@ chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[13]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[13]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>X2 <span class="o">=</span> X<span class="p">[,</span><span class="kp">unique</span><span class="p">(</span><span class="kt">c</span><span class="p">(</span>mix.top<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">],</span> bvs.top<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">colnames</span><span class="p">(</span>X<span class="p">),</span> <span class="m">100</span><span class="p">)))]</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[14]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[14]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="kp">dim</span><span class="p">(</span>X2<span class="p">)</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -541,13 +509,12 @@ chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38
 </ol>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[18]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>initial <span class="o">=</span> univariate_regression<span class="p">(</span>X2<span class="p">,</span> y <span class="p">,</span>Z<span class="p">)</span>
@@ -571,12 +538,11 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[22]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[22]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>mix.top2 <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit31<span class="o">$</span>lfsr<span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
@@ -584,11 +550,9 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -603,13 +567,12 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[23]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[23]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>bvs.top2 <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit41<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">],</span> decreasing<span class="o">=</span><span class="bp">T</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
@@ -617,11 +580,9 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -636,7 +597,6 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 </table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
@@ -679,18 +639,16 @@ chr1_171133158_A_G_b38</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[24]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[24]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>R<span class="p">[</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;chr1_171172098_C_T_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171199984_T_C_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171122735_A_G_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171133158_A_G_b38&#39;</span><span class="p">),</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;chr1_171172098_C_T_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171199984_T_C_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171122735_A_G_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171133158_A_G_b38&#39;</span><span class="p">)]</span>
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -705,13 +663,12 @@ chr1_171133158_A_G_b38</code></pre>
 </table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[26]:</div><div class="hidden_content">
+<div class="prompt input_prompt">In&nbsp;[26]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="c1"># This is the top 4 markers identified with random varbvs init</span>
@@ -723,11 +680,9 @@ R<span class="p">[</span>markers3<span class="p">,</span> markers3<span class="p
 </pre></div>
 </div>
 </div>
-        </div>
 </div>
 <div class="output_wrapper">
 <div class="output">
-<div class="hidden_content">
 <div class="output_area">
 <div class="prompt"></div>
 <div class="output_html rendered_html output_subarea ">
@@ -742,7 +697,6 @@ R<span class="p">[</span>markers3<span class="p">,</span> markers3<span class="p
 </table>
 </div>
 </div>
-        </div>
 </div>
 </div>
 </div>
