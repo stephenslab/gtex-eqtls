@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.3" />
+<meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
+
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
 <link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
 <link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -14,10 +18,13 @@
 <script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
 <link rel="stylesheet"
-      href="../site_libs/highlight/textmate.css"
+      href="../site_libs/highlightjs/null.min.css"
       type="text/css" />
-<script src="../site_libs/highlight/highlight.js"></script>
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 <script type="text/javascript">
 if (window.hljs && document.readyState && document.readyState === "complete") {
    window.setTimeout(function() {
@@ -25,9 +32,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
    }, 0);
 }
 </script>
-<script src="../js/toc2.js"></script>
+
+<script src="../js/doc_toc.js"></script>
 <script src="../js/docs.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
     MathJax.Hub.Config({
         extensions: ["tex2jax.js"],
@@ -49,6 +58,67 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
         }
     });
 </script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
 <script>
 $( document ).ready(function(){
             var cfg={'threshold':3,     // depth of toc (number of levels)
@@ -75,19 +145,19 @@ $( document ).ready(function(){
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
             var docs=analysisArray;
+            var docs_map=analysisArrayMap;
             var pos=analysisArray.indexOf(file);
             for (var a=pos;a>=0;a--){
-                  var name=docs[a]
-                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
             }
             $('a[href="'+file+'.html'+'"]').css("color","#126dce");
             for (var a=pos+1;a<docs.length;a++){
-                  var name=docs[a]
-                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
             }
-            $("#toc-header").hide();
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
     });
 </script>
+
 <script>
 // manage active state of menu based on current page
 $(document).ready(function () {
@@ -111,7 +181,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
+
+
+
 <title>GTEx eQTL</title>
+
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -120,10 +194,13 @@ body {
 }
 </style>
 </head>
+
 <body>
 <div tabindex="-1" id="notebook" class="border-box-sizing">
 <div class="container" id="notebook-container">
+
 <!-- code folding -->
+
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -136,21 +213,31 @@ body {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        
 <li>
   <a href="../index.html">Overview</a>
 </li>
+        
 <li>
   <a href="../analysis.html">Analysis</a>
 </li>
+        
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
+        
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+        
       </ul>
+        
 <ul class="nav navbar-nav navbar-right">
 <li>
    <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
+        
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -159,6 +246,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="BIMBAM-analysis-with-selected-set-of-FMO2-SNPs-for-Thyroid">BIMBAM analysis with selected set of FMO2 SNPs for Thyroid<a class="anchor-link" href="#BIMBAM-analysis-with-selected-set-of-FMO2-SNPs-for-Thyroid">&#182;</a></h1><p>We pick a few hundred SNPs that harbors eQTLs (3 or 4 eQTLs) and analyze with BIMBAM. Here we focus on regions between 171.12Mb to 171.20Mb on chr1, based on <a href="20171027_BVS_MR_ASH.html">what we've previously learned</a>.</p>
+
 </div>
 </div>
 </div>
@@ -178,9 +266,11 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="n">dat</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;../data/Thyroid.FMO2.2Mb.RDS&#39;</span><span class="p">)</span>
 <span class="n">X</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">X</span><span class="p">[,</span><span class="mi">3501</span><span class="p">:</span><span class="mi">4500</span><span class="p">]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -190,9 +280,11 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="n">snps</span> <span class="o">=</span> <span class="n">colnames</span><span class="p">(</span><span class="n">X</span><span class="p">)</span>
 <span class="n">cat</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="n">rownames</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="n">Z</span><span class="p">),</span><span class="n">collapse</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="s1">&#39;/tmp/Thyroid.samples&#39;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -201,9 +293,11 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">put</span> <span class="n">snps</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -212,9 +306,11 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">get</span> <span class="n">snps</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -223,20 +319,29 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="k">print</span><span class="p">(</span><span class="n">snps</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">snps</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>chr1_171097715_C_T_b38 chr1_171323497_T_C_b38
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -245,15 +350,18 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">geno</span> <span class="o">=</span> <span class="s1">&#39;~/Documents/GTExV8/genotypes/GTEx_Analysis_2017-06-05_v8_WholeGenomeSeq_838Indiv_Analysis_Freeze_MAF001_GTonly.vcf.gz&#39;</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Here I have to exclude indels because BIMBAM cannot handle it. Also I include about 400 SNPs for computational convenience.</p>
+
 </div>
 </div>
 </div>
@@ -273,9 +381,11 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">bash:</span>
     <span class="n">tabix</span> <span class="err">$</span><span class="p">{</span><span class="n">geno</span><span class="p">}</span> <span class="n">chr1</span><span class="p">:</span><span class="mi">171120000</span><span class="o">-</span><span class="mi">171200000</span> <span class="o">--</span><span class="k">print</span><span class="o">-</span><span class="n">header</span> <span class="o">|</span> <span class="n">awk</span> <span class="s1">&#39;(length($4)==1 &amp;&amp; length($5)==1) || $1 ~ /^#/&#39;</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">vcf</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -286,13 +396,20 @@ body {
     <span class="n">plink</span> <span class="o">--</span><span class="n">vcf</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">selected</span><span class="o">.</span><span class="n">vcf</span> <span class="o">--</span><span class="n">recode</span> <span class="n">bimbam</span><span class="o">-</span><span class="mi">1</span><span class="nb">chr</span> \
         <span class="o">--</span><span class="n">out</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span> <span class="o">--</span><span class="n">keep</span> <span class="o">&lt;</span><span class="p">(</span><span class="n">awk</span> <span class="s1">&#39;{print $1,$1}&#39;</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">samples</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>PLINK v1.90b4.1 64-bit (30 Mar 2017)           www.cog-genomics.org/plink/1.9/
 (C) 2005-2017 Shaun Purcell, Christopher Chang   GNU General Public License v3
@@ -302,6 +419,7 @@ Options in effect:
   --out /tmp/Thyroid.FMO2.bimbam
   --recode bimbam-1chr
   --vcf /tmp/Thyroid.FMO2.selected.vcf
+
 64307 MB RAM detected; reserving 32153 MB for main workspace.
 --vcf: /tmp/Thyroid.FMO2.bimbam-temporary.bed +
 /tmp/Thyroid.FMO2.bimbam-temporary.bim + /tmp/Thyroid.FMO2.bimbam-temporary.fam
@@ -322,8 +440,10 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -341,9 +461,11 @@ Note: No phenotypes present.
 <div class=" highlight hl-sos"><pre><span></span><span class="n">y</span> <span class="o">=</span> <span class="o">.</span><span class="n">lm</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="n">Z</span><span class="p">,</span> <span class="n">dat</span><span class="err">$</span><span class="n">y</span><span class="p">)</span><span class="err">$</span><span class="n">residuals</span>
 <span class="n">cat</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="n">y</span><span class="p">,</span><span class="n">collapse</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">),</span> <span class="nb">file</span> <span class="o">=</span> <span class="s1">&#39;/tmp/Thyroid.FMO2.bimbam.recode.pheno.txt&#39;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -362,13 +484,20 @@ Note: No phenotypes present.
     <span class="n">bimbam</span><span class="o">-</span><span class="n">lin</span> <span class="o">-</span><span class="n">g</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span><span class="o">.</span><span class="n">recode</span><span class="o">.</span><span class="n">geno</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">p</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span><span class="o">.</span><span class="n">recode</span><span class="o">.</span><span class="n">pheno</span><span class="o">.</span><span class="n">txt</span> <span class="o">-</span><span class="n">pos</span> <span class="o">/</span><span class="n">tmp</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span><span class="o">.</span><span class="n">recode</span><span class="o">.</span><span class="n">pos</span><span class="o">.</span><span class="n">txt</span> \
                 <span class="o">-</span><span class="n">o</span> <span class="n">pref4</span> <span class="o">-</span><span class="n">l</span> <span class="mi">3</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>-bimbam: position files contain 365 records.
 -bimbam: file 0 has 574 individual and 365 snps
@@ -380,21 +509,28 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>RuntimeError: Failed to execute commmand ``/bin/bash /home/gaow/GIT/github/gtex-eqtls/analysis/.sos/scratch_0_0_7c56f7b2.sh`` (ret=1, workdir=/home/gaow/GIT/github/gtex-eqtls/analysis)
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>BIMBAM of 365 SNPs and <code>-l 4</code> (up to 4 SNPs in multi-snp analysis) will use more than 64GB memory and gets killed. Try it with <code>-l 3</code>.</p>
+
 </div>
 </div>
 </div>
@@ -411,6 +547,7 @@ Note: No phenotypes present.
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>First, read all BIMBAM multi-snp results, sort by BF factors and match with SNP positions for convenience of interpretation.</p>
+
 </div>
 </div>
 </div>
@@ -421,9 +558,11 @@ Note: No phenotypes present.
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">bfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;output/pref4.multi.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -432,9 +571,11 @@ Note: No phenotypes present.
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">snps</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/tmp/Thyroid.FMO2.bimbam.recode.pos.txt&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">readlines</span><span class="p">()]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -443,9 +584,11 @@ Note: No phenotypes present.
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">bfs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bfs</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;+&#39;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -454,9 +597,11 @@ Note: No phenotypes present.
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">bfs_sorted</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">bfs</span><span class="p">,</span> <span class="n">key</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">float</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">]),</span> <span class="n">reverse</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -469,9 +614,11 @@ Note: No phenotypes present.
                <span class="n">snps</span><span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span><span class="o">-</span><span class="mi">1</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="k">if</span> <span class="n">x</span><span class="p">[</span><span class="mi">4</span><span class="p">]</span> <span class="o">!=</span> <span class="s1">&#39;NA&#39;</span> <span class="k">else</span> <span class="s1">&#39;NA&#39;</span><span class="p">]</span> \
               <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">bfs_sorted</span><span class="p">]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -481,9 +628,11 @@ Note: No phenotypes present.
 <div class=" highlight hl-sos"><pre><span></span><span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s1">&#39;/home/gaow/Documents/GTExV8/Toys/FMO2/Thyroid.FMO2.bimbam.out&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
     <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">top_models</span><span class="p">]))</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -493,9 +642,11 @@ Note: No phenotypes present.
 <div class=" highlight hl-sos"><pre><span></span><span class="kn">bash:</span>
      <span class="n">gzip</span> <span class="o">--</span><span class="n">best</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTExV8</span><span class="o">/</span><span class="n">Toys</span><span class="o">/</span><span class="n">FMO2</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span><span class="o">.</span><span class="n">out</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -504,19 +655,32 @@ Note: No phenotypes present.
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">preview</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTExV8</span><span class="o">/</span><span class="n">Toys</span><span class="o">/</span><span class="n">FMO2</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span><span class="o">.</span><span class="n">out</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTExV8/Toys/FMO2/Thyroid.FMO2.bimbam.out.gz (44.0 MiB):</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>+25.825	chr1_171140916_T_C_b38	chr1_171172098_C_T_b38	chr1_171190872_G_A_b38
 +25.691	chr1_171140916_T_C_b38	chr1_171164750_C_A_b38	chr1_171172098_C_T_b38
@@ -526,8 +690,10 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -549,19 +715,32 @@ Note: No phenotypes present.
     <span class="s1">&#39;chr1_171172098_C_T_b38|chr1_171199984_T_C_b38|chr1_171122735_A_G_b38|chr1_171133158_A_G_b38&#39;</span> \
     <span class="o">|</span> <span class="n">gzip</span> <span class="o">--</span><span class="n">best</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTExV8</span><span class="o">/</span><span class="n">Toys</span><span class="o">/</span><span class="n">FMO2</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span><span class="o">.</span><span class="n">bvsmix</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTExV8/Toys/FMO2/Thyroid.FMO2.bimbam.bvsmix.gz (2.2 MiB):</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>1:+25.825	chr1_171140916_T_C_b38	chr1_171172098_C_T_b38	chr1_171190872_G_A_b38
 2:+25.691	chr1_171140916_T_C_b38	chr1_171164750_C_A_b38	chr1_171172098_C_T_b38
@@ -571,8 +750,10 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -593,19 +774,32 @@ Note: No phenotypes present.
     <span class="s1">&#39;chr1_171168633_C_A_b38|chr1_171147265_C_A_b38|chr1_171164750_C_A_b38|chr1_171178589_C_T_b38&#39;</span> \
     <span class="o">|</span> <span class="n">gzip</span> <span class="o">--</span><span class="n">best</span> <span class="o">&gt;</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTExV8</span><span class="o">/</span><span class="n">Toys</span><span class="o">/</span><span class="n">FMO2</span><span class="o">/</span><span class="n">Thyroid</span><span class="o">.</span><span class="n">FMO2</span><span class="o">.</span><span class="n">bimbam</span><span class="o">.</span><span class="n">bvs</span><span class="o">.</span><span class="n">gz</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTExV8/Toys/FMO2/Thyroid.FMO2.bimbam.bvs.gz (2.2 MiB):</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>2:+25.691	chr1_171140916_T_C_b38	chr1_171164750_C_A_b38	chr1_171172098_C_T_b38
 13:+25.497	chr1_171140916_T_C_b38	chr1_171168633_C_A_b38	chr1_171190872_G_A_b38
@@ -615,19 +809,22 @@ Note: No phenotypes present.
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>So at the face value, <code>varbvsmix</code> picked up <code>chr1_171172098_C_T_b38</code> which is part of the strongest association signal identified by BIMBAM.</p>
+
 </div>
 </div>
 </div>
 <hr>
-&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
 <p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/4822e800ab8fadf84352f80660ce199bb26406cb/analysis/20171030_BIMBAM.ipynb"><code>analysis/20171030_BIMBAM.ipynb</code></a> committed by Gao Wang on Mon Oct 30 13:13:28 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/4822e800ab8fadf84352f80660ce199bb26406cb">revision 1, 4822e80</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>

@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.3" />
+<meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
+
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
 <link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
 <link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -14,10 +18,13 @@
 <script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
 <link rel="stylesheet"
-      href="../site_libs/highlight/textmate.css"
+      href="../site_libs/highlightjs/null.min.css"
       type="text/css" />
-<script src="../site_libs/highlight/highlight.js"></script>
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 <script type="text/javascript">
 if (window.hljs && document.readyState && document.readyState === "complete") {
    window.setTimeout(function() {
@@ -25,9 +32,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
    }, 0);
 }
 </script>
-<script src="../js/toc2.js"></script>
+
+<script src="../js/doc_toc.js"></script>
 <script src="../js/docs.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
     MathJax.Hub.Config({
         extensions: ["tex2jax.js"],
@@ -49,6 +58,67 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
         }
     });
 </script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
 <script>
 $( document ).ready(function(){
             var cfg={'threshold':3,     // depth of toc (number of levels)
@@ -75,19 +145,19 @@ $( document ).ready(function(){
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
             var docs=analysisArray;
+            var docs_map=analysisArrayMap;
             var pos=analysisArray.indexOf(file);
             for (var a=pos;a>=0;a--){
-                  var name=docs[a]
-                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
             }
             $('a[href="'+file+'.html'+'"]').css("color","#126dce");
             for (var a=pos+1;a<docs.length;a++){
-                  var name=docs[a]
-                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
             }
-            $("#toc-header").hide();
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
     });
 </script>
+
 <script>
 // manage active state of menu based on current page
 $(document).ready(function () {
@@ -111,7 +181,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
+
+
+
 <title>GTEx eQTL</title>
+
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -120,10 +194,13 @@ body {
 }
 </style>
 </head>
+
 <body>
 <div tabindex="-1" id="notebook" class="border-box-sizing">
 <div class="container" id="notebook-container">
+
 <!-- code folding -->
+
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -136,21 +213,31 @@ body {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        
 <li>
   <a href="../index.html">Overview</a>
 </li>
+        
 <li>
   <a href="../analysis.html">Analysis</a>
 </li>
+        
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
+        
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+        
       </ul>
+        
 <ul class="nav navbar-nav navbar-right">
 <li>
    <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
+        
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -159,6 +246,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Compute-pairwise-LD-for-selected-SNPs">Compute pairwise LD for selected SNPs<a class="anchor-link" href="#Compute-pairwise-LD-for-selected-SNPs">&#182;</a></h1><p>Though it is straightfoward enough to do it in R / Python, I use PLINK to compute the LD matrix.</p>
+
 </div>
 </div>
 </div>
@@ -167,6 +255,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>PLINK is highly efficient. First I extract the subset of variants of interest from all data, then for a quick look I use <code>--indep-pairwise</code> to prune SNPs at given LD level. Finally I use <code>--r2</code> option to compute LD stats and formally report a summary.</p>
+
 </div>
 </div>
 </div>
@@ -183,9 +272,11 @@ body {
 <span class="n">snp_list_random</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/mash_revision/snp_random.txt&quot;</span>
 <span class="n">genotype_data</span> <span class="o">=</span> <span class="s2">&quot;${cwd!a}/genotype_plink/GTEx7.Imputed.bed&quot;</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -193,6 +284,7 @@ body {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Prepare-SNP-ID-list-to-extract">Prepare SNP ID list to extract<a class="anchor-link" href="#Prepare-SNP-ID-list-to-extract">&#182;</a></h2><p>For example, codes below prepares SNPs using the eQTLs from <code>mash</code> paper.</p>
 <h3 id="From-text-file">From text file<a class="anchor-link" href="#From-text-file">&#182;</a></h3><p>In particular <a href="https://github.com/stephenslab/gtexresults_mash/blob/master/Data/maxz.txt">this file</a>.</p>
+
 </div>
 </div>
 </div>
@@ -203,19 +295,32 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">preview</span> <span class="o">/</span><span class="n">home</span><span class="o">/</span><span class="n">gaow</span><span class="o">/</span><span class="n">GIT</span><span class="o">/</span><span class="n">github</span><span class="o">/</span><span class="n">gtexresults_mash</span><span class="o">/</span><span class="n">Data</span><span class="o">/</span><span class="n">maxz</span><span class="o">.</span><span class="n">txt</span> <span class="o">--</span><span class="n">limit</span> <span class="mi">2</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/GIT/github/gtexresults_mash/Data/maxz.txt (12.7 MiB):</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>&#34;Adipose_Subcutaneous&#34; &#34;Adipose_Visceral_Omentum&#34; &#34;Adrenal_Gland&#34; &#34;Artery_Aorta&#34; &#34;Artery_Coronary&#34; &#34;Artery_Tibial&#34; &#34;Brain_Anterior_cingulate_cortex_BA24&#34; &#34;Brain_Caudate_basal_ganglia&#34; &#34;Brain_Cerebellar_Hemisphere&#34; &#34;Brain_Cerebellum&#34; &#34;Brain_Cortex&#34; &#34;Brain_Frontal_Cortex_BA9&#34; &#34;Brain_Hippocampus&#34; &#34;Brain_Hypothalamus&#34; &#34;Brain_Nucleus_accumbens_basal_ganglia&#34; &#34;Brain_Putamen_basal_ganglia&#34; &#34;Breast_Mammary_Tissue&#34; &#34;Cells_EBV-transformed_lymphocytes&#34; &#34;Cells_Transformed_fibroblasts&#34; &#34;Colon_Sigmoid&#34; &#34;Colon_Transverse&#34; &#34;Esophagus_Gastroesophageal_Junction&#34; &#34;Esophagus_Mucosa&#34; &#34;Esophagus_Muscularis&#34; &#34;Heart_Atrial_Appendage&#34; &#34;Heart_Left_Ventricle&#34; &#34;Liver&#34; &#34;Lung&#34; &#34;Muscle_Skeletal&#34; &#34;Nerve_Tibial&#34; &#34;Ovary&#34; &#34;Pancreas&#34; &#34;Pituitary&#34; &#34;Prostate&#34; &#34;Skin_Not_Sun_Exposed_Suprapubic&#34; &#34;Skin_Sun_Exposed_Lower_leg&#34; &#34;Small_Intestine_Terminal_Ileum&#34; &#34;Spleen&#34; &#34;Stomach&#34; &#34;Testis&#34; &#34;Thyroid&#34; &#34;Uterus&#34; &#34;Vagina&#34; &#34;Whole_Blood&#34;
 &#34;ENSG00000000419.8_20_49461813_G_C_b37&#34; 0.140035769899035 0.0475048018545887 -0.185199569115366 -0.707475748922068 1.02660000912618 -0.0771338912837303 0.146658841279342 -0.259401046879882 -0.337210009547116 0.39750489467677 -1.05580658870737 0.913743710447618 -0.128762251875501 0.0558638858658976 1.01386831943158 0.377598395957177 -0.479508220110367 0.388489721109613 -0.48229879064876 -0.364704657885265 -1.87231328500187 -2.06022009981082 -0.298559593121012 -3.19471555767819 0.362237923742557 0.62719316987283 2.00021812889745 0.629467212595717 -0.23561462140269 -0.332783730867599 -1.00055889996764 -0.960125863288923 -0.96386316399376 -1.50881700277794 -0.976703698613329 0.577720300522746 -2.60306648809215 -4.85288408765059 0.362665598516544 -1.65680479255712 -0.344732538236625 -0.268148514893524 -0.366403004075725 -0.900413650345225
@@ -225,8 +330,10 @@ body {
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -241,32 +348,57 @@ body {
            <span class="p">[</span><span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">x</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">:</span><span class="mi">3</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">np</span><span class="o">.</span><span class="n">loadtxt</span><span class="p">(</span><span class="s2">&quot;${mash_snps!a}&quot;</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="s1">&#39;str&#39;</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">usecols</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,))</span><span class="o">.</span><span class="n">tolist</span><span class="p">()],</span>
           <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">%preview /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint"> input: <br>output: <a target="_blank" href="/home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt">/home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt</a>
 </div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt (183.2 KiB):</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>20:49461813
 1:169695110
@@ -276,14 +408,17 @@ body {
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="From-HDF5-table-row-names">From HDF5 table row names<a class="anchor-link" href="#From-HDF5-table-row-names">&#182;</a></h3><p>In particular my GTEx V6 sumstat database <code>MatrixEQTLSumStats.Portable.h5</code></p>
+
 </div>
 </div>
 </div>
@@ -304,32 +439,57 @@ body {
     <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">snp_list</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="n">max_list</span><span class="p">,</span> <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
     <span class="n">np</span><span class="o">.</span><span class="n">savetxt</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">snp_list_random</span><span class="err">!</span><span class="n">ar</span><span class="p">},</span> <span class="n">random_list</span><span class="p">,</span> <span class="n">fmt</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">%s</span><span class="s1">&#39;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">%preview /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt /home/gaow/Documents/GTEx/mash_revision/snp_random.txt</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint"> input: <br>output: <a target="_blank" href="/home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt">/home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt</a>, <a target="_blank" href="/home/gaow/Documents/GTEx/mash_revision/snp_random.txt">/home/gaow/Documents/GTEx/mash_revision/snp_random.txt</a>
 </div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_eqtls.txt (183.2 KiB):</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>20:49461813
 1:169695110
@@ -339,14 +499,24 @@ body {
 </pre>
 </div>
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">> /home/gaow/Documents/GTEx/mash_revision/snp_random.txt (549.6 KiB):</div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>20:49782767
 20:49654572
@@ -356,8 +526,10 @@ body {
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -368,6 +540,7 @@ body {
 <li>Steps 1 &amp; 2 extracts data and run PLINK to get a quick estimate for, for example, when a pruning cutoff of 0.2 is set.</li>
 <li>Steps 3 &amp; 4 more formally calculates LD on per-chromosome basis</li>
 </ul>
+
 </div>
 </div>
 </div>
@@ -390,6 +563,7 @@ body {
       <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">sex</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">pheno</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">parents</span> \
       <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">bed</span> \
       <span class="o">--</span><span class="n">out</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">n</span><span class="p">}</span>
+
 <span class="p">[</span><span class="n">get_ld_2</span><span class="p">]</span>
 <span class="c1"># Quickly survey how many SNPs are removed for given cutoff</span>
 <span class="n">pairwise_ld_param</span> <span class="o">=</span> <span class="s1">&#39;10000 500 0.2&#39;</span>
@@ -398,6 +572,7 @@ body {
     <span class="n">plink</span> <span class="o">--</span><span class="n">bfile</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="err">!</span><span class="n">n</span><span class="p">}</span> \
           <span class="o">--</span><span class="n">indep</span><span class="o">-</span><span class="n">pairwise</span> <span class="err">$</span><span class="p">{</span><span class="n">pairwise_ld_param</span><span class="p">}</span> \
           <span class="o">--</span><span class="n">out</span> <span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">nn</span><span class="p">}</span>
+
 <span class="p">[</span><span class="n">get_ld_3</span><span class="p">]</span>
 <span class="c1"># split data by chrom</span>
 <span class="n">chroms</span> <span class="o">=</span> <span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">22</span><span class="p">)]</span>
@@ -410,6 +585,7 @@ body {
       <span class="o">--</span><span class="n">allow</span><span class="o">-</span><span class="n">no</span><span class="o">-</span><span class="n">sex</span> \
       <span class="o">--</span><span class="n">make</span><span class="o">-</span><span class="n">bed</span> \
       <span class="o">--</span><span class="n">out</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="err">!</span><span class="n">n</span><span class="p">}</span>
+
 <span class="p">[</span><span class="n">get_ld_4</span><span class="p">]</span>
 <span class="c1"># compute LD</span>
 <span class="kn">input:</span> <span class="kp">group_by</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">pattern</span> <span class="o">=</span> <span class="s1">&#39;{name}.bed&#39;</span>
@@ -420,19 +596,32 @@ body {
           <span class="o">--</span><span class="n">out</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="err">!</span><span class="n">nn</span><span class="p">}</span> \
           <span class="o">--</span><span class="n">r2</span> <span class="n">square</span> <span class="n">gz</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">1 task completed: <a onclick="task_info('5b8b72200e012d39f40eca525b4bf6ea', 'localhost')">5b8b</a></div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
 plink --bfile /home/gaow/Documents/GTEx/mash_revision/GTEx7.Imputed.extracted \
@@ -445,6 +634,7 @@ Options in effect:
   --bfile /home/gaow/Documents/GTEx/mash_revision/GTEx7.Imputed.extracted
   --indep-pairwise 10000 500 0.2
   --out /home/gaow/Documents/GTEx/mash_revision/GTEx7.Imputed.extracted
+
 32120 MB RAM detected; reserving 16060 MB for main workspace.
 13030 variants loaded from .bim file.
 635 people (0 males, 0 females, 635 ambiguous) loaded from .fam.
@@ -481,18 +671,23 @@ Pruning complete.  4204 of 13030 variants removed.
 Marker lists written to
 /home/gaow/Documents/GTEx/mash_revision/GTEx7.Imputed.extracted.prune.in and
 /home/gaow/Documents/GTEx/mash_revision/GTEx7.Imputed.extracted.prune.out .
+
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Here I executed steps 1 &amp; 2. You'll see PLINK's log if you expand the code chunk above. But the relevant PLINK output message here is:</p>
+
 <pre><code>Pruning complete.  4204 of 13030 variants removed.</code></pre>
+
 </div>
 </div>
 </div>
@@ -501,6 +696,7 @@ Marker lists written to
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Examine-LD-strengths-per-chromosome">Examine LD strengths per chromosome<a class="anchor-link" href="#Examine-LD-strengths-per-chromosome">&#182;</a></h2><p>This section takes a deeper look at LD pattern using results from steps 3 &amp; 4. Cell below loads all data and compute some summary statistics on LD strength.</p>
+
 </div>
 </div>
 </div>
@@ -529,15 +725,18 @@ Marker lists written to
     <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Here is summary of proportion of pairs on each chromosome (row) having LD greater than thresholds (column):</p>
+
 </div>
 </div>
 </div>
@@ -552,13 +751,21 @@ Marker lists written to
 <span class="n">prop</span>
 <span class="nb">apply</span><span class="p">(</span><span class="n">prop</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">mean</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <thead><tr><th></th><th scope=col>0.1</th><th scope=col>0.2</th><th scope=col>0.3</th><th scope=col>0.4</th><th scope=col>0.5</th><th scope=col>0.6</th><th scope=col>0.7</th><th scope=col>0.8</th><th scope=col>0.9</th><th scope=col>0.95</th><th scope=col>0.99</th></tr></thead>
@@ -587,10 +794,17 @@ Marker lists written to
 	<tr><th scope=row>chr 22</th><td>0.007098249 </td><td>0.004217100 </td><td>0.0030903940</td><td>0.0023338913</td><td>0.0017705382</td><td>0.0015130054</td><td>0.0012232810</td><td>0.0007725985</td><td>0.0004989699</td><td>2.736286e-04</td><td>8.047901e-05</td></tr>
 </tbody>
 </table>
+
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <dl class=dl-horizontal>
 	<dt>0.1</dt>
@@ -616,16 +830,21 @@ Marker lists written to
 	<dt>0.99</dt>
 		<dd>3.7725986625247e-05</dd>
 </dl>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Here is summary of number of unique SNPs involved on each chromosome (row) having LD greater than thresholds (column):</p>
+
 </div>
 </div>
 </div>
@@ -639,13 +858,21 @@ Marker lists written to
 <span class="n">rownames</span><span class="p">(</span><span class="n">snps</span><span class="p">)</span> <span class="o">=</span> <span class="n">paste</span><span class="p">(</span><span class="s1">&#39;chr&#39;</span><span class="p">,</span> <span class="mi">1</span><span class="p">:</span><span class="mi">22</span><span class="p">)</span>
 <span class="n">snps</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <thead><tr><th></th><th scope=col>0.1</th><th scope=col>0.2</th><th scope=col>0.3</th><th scope=col>0.4</th><th scope=col>0.5</th><th scope=col>0.6</th><th scope=col>0.7</th><th scope=col>0.8</th><th scope=col>0.9</th><th scope=col>0.95</th><th scope=col>0.99</th></tr></thead>
@@ -674,16 +901,21 @@ Marker lists written to
 	<tr><th scope=row>chr 22</th><td>240</td><td>193</td><td>167</td><td>142</td><td>106</td><td> 92</td><td> 77</td><td> 54</td><td> 40</td><td> 23</td><td> 7 </td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Proportion of SNPs involved are:</p>
+
 </div>
 </div>
 </div>
@@ -694,13 +926,21 @@ Marker lists written to
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="nb">apply</span><span class="p">(</span><span class="n">snps</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="nb">sum</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_snps</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <dl class=dl-horizontal>
 	<dt>0.1</dt>
@@ -726,10 +966,14 @@ Marker lists written to
 	<dt>0.99</dt>
 		<dd>0.0242517267843438</dd>
 </dl>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -738,13 +982,21 @@ Marker lists written to
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <h2>Session Info</h2>
 <p class="session_section">SoS</p>
@@ -768,9 +1020,11 @@ Marker lists written to
 <td colspan="2"><pre>R version 3.4.0 (2017-04-21)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: BunsenLabs GNU/Linux 8.7 (Hydrogen)
+
 Matrix products: default
 BLAS: /usr/lib64/microsoft-r/3.4/lib64/R/lib/libRblas.so
 LAPACK: /usr/lib/libopenblasp-r0.2.12.so
+
 locale:
  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
@@ -778,10 +1032,13 @@ locale:
  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
 [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
+
 other attached packages:
 [1] RevoUtilsMath_10.0.0
+
 loaded via a namespace (and not attached):
  [1] compiler_3.4.0      R6_2.2.0            magrittr_1.5       
  [4] RevoUtils_10.0.4    IRdisplay_0.4.4     pbdZMQ_0.2-5       
@@ -791,13 +1048,17 @@ loaded via a namespace (and not attached):
 [16] evaluate_0.10      </pre></td>
 </tr>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <hr>
-&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
 <p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/6afc11ba4aa0f24f34536ec77c932f1411e8e06e/analysis/20170828_Compute_LD.ipynb"><code>analysis/20170828_Compute_LD.ipynb</code></a> committed by Gao Wang on Wed Aug 30 13:34:51 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/6afc11ba4aa0f24f34536ec77c932f1411e8e06e">revision 5, 6afc11b</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>

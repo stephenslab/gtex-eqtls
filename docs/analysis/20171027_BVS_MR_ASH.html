@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.3" />
+<meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
+
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
 <link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
 <link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -14,10 +18,13 @@
 <script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
 <link rel="stylesheet"
-      href="../site_libs/highlight/textmate.css"
+      href="../site_libs/highlightjs/null.min.css"
       type="text/css" />
-<script src="../site_libs/highlight/highlight.js"></script>
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 <script type="text/javascript">
 if (window.hljs && document.readyState && document.readyState === "complete") {
    window.setTimeout(function() {
@@ -25,9 +32,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
    }, 0);
 }
 </script>
-<script src="../js/toc2.js"></script>
+
+<script src="../js/doc_toc.js"></script>
 <script src="../js/docs.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
     MathJax.Hub.Config({
         extensions: ["tex2jax.js"],
@@ -49,6 +58,67 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
         }
     });
 </script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
 <script>
 $( document ).ready(function(){
             var cfg={'threshold':3,     // depth of toc (number of levels)
@@ -75,19 +145,19 @@ $( document ).ready(function(){
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
             var docs=analysisArray;
+            var docs_map=analysisArrayMap;
             var pos=analysisArray.indexOf(file);
             for (var a=pos;a>=0;a--){
-                  var name=docs[a]
-                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
             }
             $('a[href="'+file+'.html'+'"]').css("color","#126dce");
             for (var a=pos+1;a<docs.length;a++){
-                  var name=docs[a]
-                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
             }
-            $("#toc-header").hide();
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
     });
 </script>
+
 <script>
 // manage active state of menu based on current page
 $(document).ready(function () {
@@ -111,7 +181,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
+
+
+
 <title>GTEx eQTL</title>
+
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -120,10 +194,13 @@ body {
 }
 </style>
 </head>
+
 <body>
 <div tabindex="-1" id="notebook" class="border-box-sizing">
 <div class="container" id="notebook-container">
+
 <!-- code folding -->
+
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -136,21 +213,31 @@ body {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        
 <li>
   <a href="../index.html">Overview</a>
 </li>
+        
 <li>
   <a href="../analysis.html">Analysis</a>
 </li>
+        
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
+        
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+        
       </ul>
+        
 <ul class="nav navbar-nav navbar-right">
 <li>
    <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
+        
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -167,6 +254,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>In this example we analyze a data set where there is potentially multiple SNPs associated with gene expression. We use both <code>bvs</code> and <code>mr-ash</code> methods, initializing both of them with results from <code>lasso</code>.</p>
+
 </div>
 </div>
 </div>
@@ -234,15 +322,18 @@ lasso_reorder <span class="o">=</span> <span class="kr">function</span><span cla
         index_order <span class="o">=</span> <span class="kt">c</span><span class="p">(</span>path_order<span class="p">,</span> <span class="kp">seq</span><span class="p">(</span><span class="m">1</span><span class="p">,</span><span class="kp">dim</span><span class="p">(</span>beta_path<span class="p">)[</span><span class="m">1</span><span class="p">])[</span><span class="o">-</span>path_order<span class="p">])</span>
         <span class="kr">return</span><span class="p">(</span>index_order<span class="p">)</span>
     <span class="p">}</span>
+
 <span class="c1"># compute fitted values from varbvsmix </span>
 fitfv <span class="o">=</span> <span class="kr">function</span><span class="p">(</span>X<span class="p">,</span>Z<span class="p">,</span>fit<span class="p">){</span>
   bhat <span class="o">=</span> <span class="kp">rowSums</span><span class="p">(</span>fit<span class="o">$</span>alpha<span class="o">*</span>fit<span class="o">$</span>mu<span class="p">)</span>
   <span class="kr">return</span><span class="p">(</span>X <span class="o">%*%</span> bhat <span class="o">+</span> fit<span class="o">$</span>mu.cov<span class="p">[</span><span class="m">1</span><span class="p">]</span> <span class="o">+</span> Z <span class="o">%*%</span> fit<span class="o">$</span>mu.cov<span class="p">[</span><span class="m">-1</span><span class="p">])</span>
 <span class="p">}</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -284,9 +375,11 @@ fit12 <span class="o">=</span> varbvs<span class="o">::</span>varbvsmix<span cla
 fit21 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class="p">(</span>X<span class="p">[,</span> index_order<span class="p">],</span> Z<span class="p">,</span> y<span class="p">,</span> mu <span class="o">=</span> mu_zero<span class="p">,</span> alpha <span class="o">=</span> alpha_zero<span class="p">,</span> verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class="p">(</span>X<span class="p">,</span> Z<span class="p">,</span> y<span class="p">,</span> verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -304,13 +397,21 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 <div class=" highlight hl-r"><pre><span></span>mix.top <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit11<span class="o">$</span>lfsr<span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
 <span class="kp">cbind</span><span class="p">(</span><span class="m">1</span> <span class="o">-</span> fit11<span class="o">$</span>lfsr<span class="p">[</span>mix.top<span class="p">],</span> fit21<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">][</span>mix.top<span class="p">])</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <tbody>
@@ -321,10 +422,14 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 	<tr><th scope=row>chr1_171178705_A_G_b38</th><td>0.4825416   </td><td>2.025857e-05</td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -334,13 +439,21 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 <div class=" highlight hl-r"><pre><span></span>bvs.top <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit21<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">],</span> decreasing<span class="o">=</span><span class="bp">T</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
 <span class="kp">cbind</span><span class="p">(</span><span class="m">1</span> <span class="o">-</span> fit11<span class="o">$</span>lfsr<span class="p">[</span>bvs.top<span class="p">],</span> fit21<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">][</span>bvs.top<span class="p">])</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <tbody>
@@ -351,16 +464,21 @@ fit22 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 	<tr><th scope=row>chr1_171150061_G_C_b38</th><td>0.4147678 </td><td>0.01523159</td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Credible-sets">Credible sets<a class="anchor-link" href="#Credible-sets">&#182;</a></h2><p>Check if  <code>chr1_171122735_A_G_b38</code> is in credible set of <code>varbvs</code> result</p>
+
 </div>
 </div>
 </div>
@@ -380,9 +498,11 @@ top.markers <span class="o">&lt;-</span> <span class="kp">subset</span><span cla
 m           <span class="o">&lt;-</span> <span class="kp">length</span><span class="p">(</span>top.markers<span class="p">)</span>
 R <span class="o">&lt;-</span> cor<span class="p">(</span>X<span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -403,9 +523,11 @@ plots        <span class="o">&lt;-</span> <span class="kt">vector</span><span cl
   j          <span class="o">&lt;-</span> <span class="kp">names</span><span class="p">(</span><span class="kp">which.max</span><span class="p">(</span>out<span class="o">$</span>BF<span class="p">[,</span><span class="m">1</span><span class="p">]))</span>
 <span class="p">}</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -414,13 +536,20 @@ plots        <span class="o">&lt;-</span> <span class="kt">vector</span><span cl
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="kp">print</span><span class="p">(</span>cr<span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>$chr1_171172098_C_T_b38
  chr1_171169344_G_A_b38  chr1_171168633_C_A_b38 chr1_171185504_AG_A_b38 
@@ -429,6 +558,7 @@ plots        <span class="o">&lt;-</span> <span class="kt">vector</span><span cl
                    3899                    3841                    3877 
  chr1_171176942_T_C_b38  chr1_171165549_G_C_b38 
                    3864                    3800 
+
 $chr1_171133158_A_G_b38
  chr1_171115021_G_A_b38  chr1_171134102_T_C_b38  chr1_171133158_A_G_b38 
                    3576                    3650                    3646 
@@ -442,6 +572,7 @@ chr1_171128484_A_AG_b38  chr1_171128486_A_G_b38 chr1_171116174_A_AT_b38
                    3629                    3630                    3582 
  chr1_171135804_C_T_b38 
                    3659 
+
 $chr1_171199984_T_C_b38
    chr1_171190872_G_A_b38    chr1_171164750_C_A_b38    chr1_171178705_A_G_b38 
                      3938                      3798                      3871 
@@ -455,17 +586,21 @@ chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38
                      3965                      3953                      3945 
    chr1_171190982_C_T_b38    chr1_171193444_T_C_b38    chr1_171174538_G_C_b38 
                      3940                      3966                      3852 
+
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>No, it is not ...</p>
+
 </div>
 </div>
 </div>
@@ -474,6 +609,7 @@ chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Narrow-X-to-100-SNPs">Narrow X to 100 SNPs<a class="anchor-link" href="#Narrow-X-to-100-SNPs">&#182;</a></h2><p>Next I'll try to come up with a smaller set of SNPs, say 100, that includes top hits from both methods along with random SNPs being the rest. Will see if there is still difference in behavior.</p>
+
 </div>
 </div>
 </div>
@@ -484,9 +620,11 @@ chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>X2 <span class="o">=</span> X<span class="p">[,</span><span class="kp">unique</span><span class="p">(</span><span class="kt">c</span><span class="p">(</span>mix.top<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">2</span><span class="p">],</span> bvs.top<span class="p">[</span><span class="m">1</span><span class="o">:</span><span class="m">3</span><span class="p">],</span> <span class="kp">sample</span><span class="p">(</span><span class="kp">colnames</span><span class="p">(</span>X<span class="p">),</span> <span class="m">100</span><span class="p">)))]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -495,22 +633,34 @@ chr1_171193412_T_TGAC_b38    chr1_171192026_C_A_b38    chr1_171191344_A_T_b38
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span><span class="kp">dim</span><span class="p">(</span>X2<span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <ol class=list-inline>
 	<li>574</li>
 	<li>104</li>
 </ol>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -536,9 +686,11 @@ fit32 <span class="o">=</span> varbvs<span class="o">::</span>varbvsmix<span cla
 fit41 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class="p">(</span>X2<span class="p">[,</span> index_order<span class="p">],</span> Z<span class="p">,</span> y<span class="p">,</span> verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class="p">(</span>X2<span class="p">,</span> Z<span class="p">,</span> y<span class="p">,</span> verbose <span class="o">=</span> <span class="bp">F</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -548,13 +700,21 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 <div class=" highlight hl-r"><pre><span></span>mix.top2 <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit31<span class="o">$</span>lfsr<span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
 <span class="kp">cbind</span><span class="p">(</span><span class="m">1</span> <span class="o">-</span> fit31<span class="o">$</span>lfsr<span class="p">[</span>mix.top2<span class="p">],</span> fit41<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">][</span>mix.top2<span class="p">])</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <tbody>
@@ -565,10 +725,14 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 	<tr><th scope=row>chr1_171397048_C_T_b38</th><td>0.7077927 </td><td>0.07585271</td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -578,13 +742,21 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 <div class=" highlight hl-r"><pre><span></span>bvs.top2 <span class="o">=</span> <span class="kp">names</span><span class="p">(</span><span class="kp">sort</span><span class="p">(</span>fit41<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">],</span> decreasing<span class="o">=</span><span class="bp">T</span><span class="p">)[</span><span class="m">1</span><span class="o">:</span><span class="m">5</span><span class="p">])</span>
 <span class="kp">cbind</span><span class="p">(</span><span class="m">1</span> <span class="o">-</span> fit31<span class="o">$</span>lfsr<span class="p">[</span>bvs.top2<span class="p">],</span> fit41<span class="o">$</span>alpha<span class="p">[,</span><span class="m">1</span><span class="p">][</span>bvs.top2<span class="p">])</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <tbody>
@@ -595,37 +767,48 @@ fit42 <span class="o">=</span> varbvs<span class="o">::</span>varbvs<span class=
 	<tr><th scope=row>chr1_171133158_A_G_b38</th><td>0.9951271 </td><td>0.03176375</td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Compare-~7.5K-vs-~100-SNPs">Compare ~7.5K vs ~100 SNPs<a class="anchor-link" href="#Compare-~7.5K-vs-~100-SNPs">&#182;</a></h3><h4 id="varbvs">varbvs<a class="anchor-link" href="#varbvs">&#182;</a></h4><p>With 7.5K SNPs it identifies:</p>
+
 <pre><code>chr1_171172098_C_T_b38
 chr1_171133158_A_G_b38
 chr1_171199984_T_C_b38</code></pre>
 <p>and it missed one from <code>varbvsmix</code>:</p>
+
 <pre><code>chr1_171122735_A_G_b38</code></pre>
 <p>With 100 SNPs it now picks up the one previously missed according to <code>varbvsmix</code>:</p>
+
 <pre><code>chr1_171172098_C_T_b38  
 chr1_171199984_T_C_b38  
 chr1_171122735_A_G_b38</code></pre>
 <p>But dropped</p>
+
 <pre><code>chr1_171133158_A_G_b38</code></pre>
 <h4 id="varbvsmix">varbvsmix<a class="anchor-link" href="#varbvsmix">&#182;</a></h4><p>With 7.5K SNPs it identifies</p>
+
 <pre><code>chr1_171172098_C_T_b38
 chr1_171122735_A_G_b38</code></pre>
 <p>which overlaps with <code>varbvs</code> on only <code>chr1_171172098_C_T_b38</code>.</p>
 <p>With 100 SNPs it now picks up 4 SNPs</p>
+
 <pre><code>chr1_171172098_C_T_b38  
 chr1_171199984_T_C_b38  
 chr1_171122735_A_G_b38
 chr1_171133158_A_G_b38</code></pre>
 <p><strong>Which is in fact the union of hits identified by both <code>varbvsmix</code> and <code>varbvs</code> when input is 7.5K SNPs</strong></p>
+
 </div>
 </div>
 </div>
@@ -644,13 +827,21 @@ chr1_171133158_A_G_b38</code></pre>
     <div class="input_area">
 <div class=" highlight hl-r"><pre><span></span>R<span class="p">[</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;chr1_171172098_C_T_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171199984_T_C_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171122735_A_G_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171133158_A_G_b38&#39;</span><span class="p">),</span><span class="kt">c</span><span class="p">(</span><span class="s">&#39;chr1_171172098_C_T_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171199984_T_C_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171122735_A_G_b38&#39;</span><span class="p">,</span> <span class="s">&#39;chr1_171133158_A_G_b38&#39;</span><span class="p">)]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <thead><tr><th></th><th scope=col>chr1_171172098_C_T_b38</th><th scope=col>chr1_171199984_T_C_b38</th><th scope=col>chr1_171122735_A_G_b38</th><th scope=col>chr1_171133158_A_G_b38</th></tr></thead>
@@ -661,10 +852,14 @@ chr1_171133158_A_G_b38</code></pre>
 	<tr><th scope=row>chr1_171133158_A_G_b38</th><td>-0.16129847</td><td>-0.04275903</td><td>0.51658953 </td><td> 1.00000000</td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -678,13 +873,21 @@ markers3 <span class="o">&lt;-</span> <span class="kt">c</span><span class="p">(
               <span class="s">&quot;chr1_171178589_C_T_b38&quot;</span><span class="p">)</span>
 R<span class="p">[</span>markers3<span class="p">,</span> markers3<span class="p">]</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <table>
 <thead><tr><th></th><th scope=col>chr1_171168633_C_A_b38</th><th scope=col>chr1_171147265_C_A_b38</th><th scope=col>chr1_171164750_C_A_b38</th><th scope=col>chr1_171178589_C_T_b38</th></tr></thead>
@@ -695,13 +898,17 @@ R<span class="p">[</span>markers3<span class="p">,</span> markers3<span class="p
 	<tr><th scope=row>chr1_171178589_C_T_b38</th><td>-0.09399136</td><td>0.25503481 </td><td>-0.1129913 </td><td> 1.00000000</td></tr>
 </tbody>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <hr>
-&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
 <p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/fbad0caa76e67aa339958705374783f4f02bbfc7/analysis/20171027_BVS_MR_ASH.ipynb"><code>analysis/20171027_BVS_MR_ASH.ipynb</code></a> committed by Gao Wang on Fri Oct 27 12:26:40 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/fbad0caa76e67aa339958705374783f4f02bbfc7">revision 5, fbad0ca</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>

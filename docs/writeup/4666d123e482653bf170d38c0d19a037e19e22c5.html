@@ -3,6 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="robots" content="noindex">
 <meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
@@ -141,12 +142,12 @@ $( document ).ready(function(){
             st.toc_index=0;
             // fire the main function with these parameters
             table_of_contents(cfg, st);
-            var file=prototypeDict[$("h1:first").attr("id")];
+            var file=writeupDict[$("h1:first").attr("id")];
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
-            var docs=prototypeArray;
-            var docs_map=prototypeArrayMap;
-            var pos=prototypeArray.indexOf(file);
+            var docs=writeupArray;
+            var docs_map=writeupArrayMap;
+            var pos=writeupArray.indexOf(file);
             for (var a=pos;a>=0;a--){
                   $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
             }
@@ -245,7 +246,7 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="PEER-analysis-result-not-orthogonal">PEER analysis result not orthogonal<a class="anchor-link" href="#PEER-analysis-result-not-orthogonal">&#182;</a></h1>
+<h1 id="Meetings">Meetings<a class="anchor-link" href="#Meetings">&#182;</a></h1>
 </div>
 </div>
 </div>
@@ -253,109 +254,52 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<p>Here is the original data dimension:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
-<span class="n">pfile</span> <span class="o">=</span> <span class="s1">&#39;/home/gaow/Documents/GTEx/peer_analysis/Heart_Atrial_Appendage_PEER_covariates.txt&#39;</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[1]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="n">peer</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">pfile</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">index_col</span> <span class="o">=</span> <span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">transpose</span><span class="p">()</span>
-<span class="n">peer</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[1]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(264, 35)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>So there are 264 samples in this tissue and 35 PEER factors has been computed from expression data (see <a href="http://stephenslab.github.io/gtex-eqtls/writeup/GTEx7_Analysis_Plan.html#Covariates">why 35 PEER factors are generated</a>).</p>
-<h2 id="Orthonormal-basis-via-SVD">Orthonormal basis via SVD<a class="anchor-link" href="#Orthonormal-basis-via-SVD">&#182;</a></h2><p>After <code>orth</code>:</p>
-
-</div>
-</div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[2]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">scipy.linalg</span>
-<span class="n">bmat</span> <span class="o">=</span> <span class="n">scipy</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">orth</span><span class="p">(</span><span class="n">peer</span><span class="p">)</span>
-<span class="n">bmat</span><span class="o">.</span><span class="n">shape</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt output_prompt">Out[2]:</div>
-
-
-
-
-<div class="output_text output_subarea output_execute_result">
-<pre>(264, 31)</pre>
-</div>
-
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div>
-<div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>So there should in fact be only 31 independent factors.</p>
+<h2 id="20180108-GTEx-V8-data-status-update">20180108 GTEx V8 data status update<a class="anchor-link" href="#20180108-GTEx-V8-data-status-update">&#182;</a></h2><p>AWG call.</p>
+<p>V8 release timeline: End of December 2017 internal release. End of June 2018 public release (dbGAP embargo period).</p>
+<p>Francois, recap of status:</p>
+<ul>
+<li>End of December 2017: data was largely complete. 838 donors, ~16,000 RNA seq samples</li>
+<li>Major change is phased + imputed genotype, analysis are updated<ul>
+<li>with exception of: allelic fold change calculation and sQTL results (<code>leafcutter</code>) but both will be available next week</li>
+<li>eQTL results has been updated with imputed genotypes</li>
+</ul>
+</li>
+<li>Annotation files etc are uploaded for fine-mapping</li>
+</ul>
+<p>Tuuli:</p>
+<ul>
+<li>The need to compile "official" GTEx regulatory annotations from ensembl + encode roadmap</li>
+</ul>
+<p>Tuuli, V8 paper:</p>
+<ul>
+<li>Strict reproducibility is perhaps not realistic given the time frame, but we should put all scripts and documentation of analysis in github, for transparency.<ul>
+<li>Just a github directory for GTEx V8 main paper, and consolidate people's work</li>
+<li>Will be made public when the paper comes out</li>
+<li>Problems:<ul>
+<li>Manolis: How do you link existing repo to main paper repo? Redudant work for people who already has organized separate github repos.</li>
+<li>Francois: How about scripts private to a cluster environment? <ul>
+<li>Tuuli: compensate with good documentation; does not have to be runnable.</li>
+</ul>
+</li>
+<li>Manolis: Dumping everything in github but not runnable will likely lead to lots of critism and complaints. Maybe share core scripts is enough.<ul>
+<li>Francois and Tuuli disagree that people will attack such practice.</li>
+<li>Manolis insists that people expect Consortium work come with quality and completness not sloppiness ... thus deeply worried. Maybe into each individual analysts github repos would be better, not under GTEx umbrella and not intended to be user-friendly. But make the "key" methodology scripts very well documented and runnable, not those one-liners, hacks and data processing.</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>Companion papers: Google doc will be sent out to the group.<ul>
+<li>Any papers should be discussed with AWG; no unpleasant surprises.</li>
+<li>Submission embargo? biorxiv embargo? End of 2018 or submission of main paper whichever first.</li>
+</ul>
+</li>
+</ul>
+<p>Kristin:</p>
+<ul>
+<li>Push out main paper; review presentation list</li>
+</ul>
 
 </div>
 </div>
@@ -364,113 +308,133 @@ body {
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Orthonormal-basis-via-QR">Orthonormal basis via QR<a class="anchor-link" href="#Orthonormal-basis-via-QR">&#182;</a></h2><p>The first output is the Q matrix (original dimension ...) and the 2nd is the row sum of the R matrix. Note that R matrix has a few zeros particularly at larger index. Maybe setting PEER = 35 is bad idea to start with -- but I was only following the guideline!</p>
+<h2 id="20171211-GTEx-fine-mapping-workgroup-meeting">20171211 GTEx fine mapping workgroup meeting<a class="anchor-link" href="#20171211-GTEx-fine-mapping-workgroup-meeting">&#182;</a></h2><p>Phone conference with GTEx members from many cities ... Andrew presented.</p>
+<p>Software to apply:</p>
+<ul>
+<li>Farhad Caviar: PIP on all tissues, 3 days</li>
+<li>Andrew Caveman: PIP on all tissues, but whole blood first, a couple of days; all tissues 3 weeks</li>
+<li>William DAP-G: a couple of days per tissue. A couple of tissues to start from.<ul>
+<li>PIP</li>
+<li>LD clusters</li>
+</ul>
+</li>
+<li>Possibly 1 or 2 more software</li>
+<li>Results for all tissues will be available mid-Jan.</li>
+</ul>
+<p>Data:</p>
+<ul>
+<li>Francois: VCF are almost final, though missingness are causing confusion (but in short we can mean-impute them). Should be finalized mid-week this week</li>
+<li>Andrew: ChIP-seq benchmarks (an annotation list) to be shared. The data comes from roadmap epigenomics and will be lifted over to V9 data.</li>
+<li>Tuuli: Has annotation for post transcriptional modification</li>
+<li>William: Has annotation for TFBS.</li>
+</ul>
+<p>Simulation data:</p>
+<ul>
+<li>Andrew: not necessary. or at least should not be too close to the way any methods work. eg, no one-eqtl per gene type of setup.</li>
+<li>William: is necessary. no need to worry about generating from certain models. Simulation based on simple linear model is generic enough.</li>
+<li>Eleazar: Simulation results not interesting, compared to ChIP-seq / other annotation benchmarks.</li>
+</ul>
+<p>Exploration then benchmarking, or benchmarking right now?</p>
+<ul>
+<li>Blood results before Christmas, so that benchmarking can be put together.</li>
+</ul>
+<p>Benchmarking:</p>
+<ul>
+<li>Input: data and annotation. Annotation can be used for tests, or for validation<ul>
+<li>Caveman now taks pre-computed annotations</li>
+<li>Some type of Enrichment summary</li>
+</ul>
+</li>
+<li>Output: scores?<ul>
+<li>Gao has to figure out these</li>
+<li>PIP, lfdr? at variant vs. gene level? how about LD cluster based methods?</li>
+</ul>
+</li>
+<li>Blood results ready in a week to start putting together benchmarks. </li>
+<li>All tissues by mid-Jan<ul>
+<li>data availability</li>
+</ul>
+</li>
+</ul>
+<p>Extension of methods:</p>
+<ul>
+<li>cell-specific eQTLs</li>
+<li>splicing eQTLs</li>
+<li>age dependent QTLs</li>
+<li>co-localisation<ul>
+<li>Haky: GWAS group is also interested</li>
+</ul>
+</li>
+<li>multiple traits<ul>
+<li>Tuuli: can anyone put together a quick&amp;dirty M&amp;M analysis? <ul>
+<li>Tuuli's group is developing something</li>
+</ul>
+</li>
+<li>Andrew: pairwise tissue analysis</li>
+<li>William: can look at a few tissues</li>
+</ul>
+</li>
+</ul>
+<h2 id="20171002-GTEx-fine-mapping-meeting">20171002 GTEx fine mapping meeting<a class="anchor-link" href="#20171002-GTEx-fine-mapping-meeting">&#182;</a></h2><p>Goal: methods do not repeat each-other; should build on each other.</p>
+<h3 id="What-is-fine-mapping">What is fine-mapping<a class="anchor-link" href="#What-is-fine-mapping">&#182;</a></h3><ul>
+<li>probability estimates of each variant being causal<ul>
+<li>how to verify it? experimentally?</li>
+</ul>
+</li>
+<li>Should use 1MB region?<ul>
+<li>100KB should not lose a lot.</li>
+</ul>
+</li>
+</ul>
+<h3 id="Fine-mapping-methods">Fine-mapping methods<a class="anchor-link" href="#Fine-mapping-methods">&#182;</a></h3><p>Analyse/benchmark one data-set using all methods. The best tissue might be Thyroid to test it out.</p>
+<ul>
+<li>people are interested in it.</li>
+<li>we can report results in a few weeks</li>
+</ul>
+<p>Methods out there (in the conference call):</p>
+<ul>
+<li>CaVEMaN, DAP, CAVIAR</li>
+<li>Can provide these results in a few weeks<ul>
+<li>2MB radius</li>
+<li>on Thyroid data</li>
+<li>channel in Slack for this topic</li>
+</ul>
+</li>
+</ul>
+<p>General flavors</p>
+<ul>
+<li>Enrichment of eQTLs giving annotations: <ul>
+<li>@william: Same model but various ways to estimate priors. Open to different prior options. Also see concensus results from different methods is also important.</li>
+<li>But measuring consensus is difficult. Correlation is high but individual level there are problems.</li>
+</ul>
+</li>
+<li>Conditional analysis: soon to be uploaded to <code>exchange</code></li>
+<li>Additional type of integrated analysis<ul>
+<li>@eric</li>
+</ul>
+</li>
+</ul>
+<p>Provide fine-mapping results for the community</p>
+<h3 id="cell-specific-QTL">cell-specific QTL<a class="anchor-link" href="#cell-specific-QTL">&#182;</a></h3><ul>
+<li>Fine-mapping for <strong>cell-specific</strong> QTL: cell-type deconvolution to get proportion of cells.<ul>
+<li>interaction terms / interaction testing?</li>
+</ul>
+</li>
+</ul>
+<p>Provide fine-mapping results for the community</p>
+<h3 id="Splicing-QTLs">Splicing QTLs<a class="anchor-link" href="#Splicing-QTLs">&#182;</a></h3><p>Can we fine-map splice QTLs?</p>
+<h3 id="Interest-in-fine-mapping-companion-paper?">Interest in fine-mapping companion paper?<a class="anchor-link" href="#Interest-in-fine-mapping-companion-paper?">&#182;</a></h3><p>People are interested. There is also co-localization working group, but not progressing much.</p>
+<h3 id="Interest-in-multi-tissue-fine-mapping?">Interest in multi-tissue fine-mapping?<a class="anchor-link" href="#Interest-in-multi-tissue-fine-mapping?">&#182;</a></h3><p>It is important but computationally hard. William is the only one who positively responed, but he only agree to do a few tissues.</p>
+<h3 id="Other-related-stuff">Other related stuff<a class="anchor-link" href="#Other-related-stuff">&#182;</a></h3><ul>
+<li>Sharing of results</li>
+</ul>
 
 </div>
 </div>
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[3]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
-<span class="n">np</span><span class="o">.</span><span class="n">set_printoptions</span><span class="p">(</span><span class="n">formatter</span><span class="o">=</span><span class="p">{</span><span class="s1">&#39;float&#39;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="s2">&quot;{0:0.2f}&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">x</span><span class="p">)})</span>
-<span class="n">qmat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;reduced&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
-<span class="k">print</span><span class="p">(</span><span class="n">qmat</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">rmat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linalg</span><span class="o">.</span><span class="n">qr</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;reduced&#39;</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
-<span class="k">print</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">around</span><span class="p">(</span><span class="n">rmat</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)))</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-<div class="output_subarea output_stream output_stdout output_text">
-<pre>(264, 35)
-[1.00 -1.00 2.00 3.00 -4.00 -5.00 -10.00 -12.00 13.00 -15.00 -16.00 -15.00
- 15.00 -16.00 16.00 -16.00 -17.00 14.00 15.00 15.00 15.00 14.00 -15.00
- 15.00 15.00 13.00 14.00 -10.00 0.00 10.00 -0.00 -0.00 -0.00 0.00 0.00]
-</pre>
-</div>
-</div>
-
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[4]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
-</pre></div>
-
-</div>
-</div>
-</div>
-
-<div class="output_wrapper">
-<div class="output">
-
-
-<div class="output_area">
-
-<div class="prompt"></div>
-
-
-
-<div class="output_html rendered_html output_subarea ">
-<p class="session_section">SoS</p>
-<table class="session_info">
-<tr>
-<th>SoS Version</th><td><pre>0.9.8.10</pre></td>
-</tr>
-</table>
-<p class="session_section">Python3</p>
-<table class="session_info">
-<tr>
-<th>Kernel</th><td><pre>python3</pre></td>
-</tr>
-<tr>
-<th>Language</th><td><pre>Python3</pre></td>
-</tr>
-<tr>
-<th>Version</th><td><pre>3.6.1 |Continuum Analytics, Inc.| (default, May 11 2017, 13:09:58) 
-[GCC 4.4.7 20120313 (Red Hat 4.4.7-1)]</pre></td>
-</tr>
-<tr>
-<th>pandas</th><td><pre>0.20.2</pre></td>
-</tr>
-<tr>
-<th>scipy</th><td><pre>0.19.1</pre></td>
-</tr>
-<tr>
-<th>numpy</th><td><pre>1.13.1</pre></td>
-</tr>
-</table>
-
-</div>
-
-</div>
-
-</div>
-</div>
-
 </div>
 <hr>
 &copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/e74fb18d223dd478a39545c686bb4f5400e5e51a/prototype/20170828_PEER_Not_Orthogonal.ipynb"><code>prototype/20170828_PEER_Not_Orthogonal.ipynb</code></a> committed by Gao Wang on Wed Aug 30 13:16:30 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/e74fb18d223dd478a39545c686bb4f5400e5e51a">revision 6, e74fb18</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/529ff7dad746d8a51d4c9ba2ce663284535bf865/writeup/Meetings.ipynb"><code>writeup/Meetings.ipynb</code></a> committed by Gao Wang on Mon Jan 8 10:43:29 2018 <a href="http://github.com/stephenslab/gtex-eqtls/commit/529ff7dad746d8a51d4c9ba2ce663284535bf865">revision 5, 529ff7d</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

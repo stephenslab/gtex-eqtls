@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.3" />
+<meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
+
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
 <link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
 <link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -14,10 +18,13 @@
 <script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
 <link rel="stylesheet"
-      href="../site_libs/highlight/textmate.css"
+      href="../site_libs/highlightjs/null.min.css"
       type="text/css" />
-<script src="../site_libs/highlight/highlight.js"></script>
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 <script type="text/javascript">
 if (window.hljs && document.readyState && document.readyState === "complete") {
    window.setTimeout(function() {
@@ -25,9 +32,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
    }, 0);
 }
 </script>
-<script src="../js/toc2.js"></script>
+
+<script src="../js/doc_toc.js"></script>
 <script src="../js/docs.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
     MathJax.Hub.Config({
         extensions: ["tex2jax.js"],
@@ -49,6 +58,67 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
         }
     });
 </script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
 <script>
 $( document ).ready(function(){
             var cfg={'threshold':3,     // depth of toc (number of levels)
@@ -75,19 +145,19 @@ $( document ).ready(function(){
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
             var docs=analysisArray;
+            var docs_map=analysisArrayMap;
             var pos=analysisArray.indexOf(file);
             for (var a=pos;a>=0;a--){
-                  var name=docs[a]
-                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
             }
             $('a[href="'+file+'.html'+'"]').css("color","#126dce");
             for (var a=pos+1;a<docs.length;a++){
-                  var name=docs[a]
-                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
             }
-            $("#toc-header").hide();
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
     });
 </script>
+
 <script>
 // manage active state of menu based on current page
 $(document).ready(function () {
@@ -111,7 +181,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
+
+
+
 <title>GTEx eQTL</title>
+
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -120,10 +194,13 @@ body {
 }
 </style>
 </head>
+
 <body>
 <div tabindex="-1" id="notebook" class="border-box-sizing">
 <div class="container" id="notebook-container">
+
 <!-- code folding -->
+
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -136,21 +213,31 @@ body {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        
 <li>
   <a href="../index.html">Overview</a>
 </li>
+        
 <li>
   <a href="../analysis.html">Analysis</a>
 </li>
+        
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
+        
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+        
       </ul>
+        
 <ul class="nav navbar-nav navbar-right">
 <li>
    <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
+        
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -181,6 +268,7 @@ body {
 <li>cluster.multiSNPtakes  as  input  the <code>.multi</code> and  a <code>.single</code> file,  produced  bybimbam, and performs some calculations to produce an object.</li>
 <li><code>plot.multiSNP</code> plots this object.</li>
 </ul>
+
 </div>
 </div>
 </div>
@@ -191,16 +279,21 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">nnonmissing</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="k">return</span><span class="p">(</span><span class="nb">sum</span><span class="p">(</span><span class="err">!</span><span class="ow">is</span><span class="o">.</span><span class="n">na</span><span class="p">(</span><span class="n">x</span><span class="p">)))}</span>
 <span class="n">normalise</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">){</span><span class="k">return</span><span class="p">(</span><span class="n">x</span><span class="o">/</span><span class="nb">sum</span><span class="p">(</span><span class="n">x</span><span class="p">))}</span>
+
 <span class="n">cluster</span><span class="o">.</span><span class="n">multiSNP</span><span class="o">=</span><span class="n">function</span><span class="p">(</span><span class="n">multifile</span><span class="p">,</span><span class="n">singlefile</span><span class="p">){</span>
 <span class="n">x</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">multifile</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
 <span class="n">rs</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">singlefile</span><span class="p">,</span><span class="n">header</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
 <span class="n">pos</span> <span class="o">=</span> <span class="n">rs</span><span class="p">[,</span><span class="mi">2</span><span class="p">]</span>
+
 <span class="n">nsnp</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">nnonmissing</span><span class="p">)</span><span class="o">-</span><span class="mi">1</span>
 <span class="n">L</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">nsnp</span><span class="p">)</span>
 <span class="n">NSNP</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">x</span><span class="p">[,</span><span class="o">-</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="mi">2</span><span class="p">)],</span><span class="n">na</span><span class="o">.</span><span class="n">rm</span><span class="o">=</span><span class="n">T</span><span class="p">)</span>
 <span class="n">prior</span> <span class="o">=</span> <span class="n">normalise</span><span class="p">((</span><span class="mf">0.5</span><span class="o">^</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">L</span><span class="p">))[</span><span class="n">nsnp</span><span class="p">]</span><span class="o">/</span><span class="n">choose</span><span class="p">(</span><span class="n">NSNP</span><span class="p">,</span><span class="n">nsnp</span><span class="p">))</span>
 <span class="n">post</span> <span class="o">=</span> <span class="n">normalise</span><span class="p">(</span><span class="mi">10</span><span class="o">^</span><span class="n">x</span><span class="p">[,</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="n">prior</span><span class="p">)</span>
+
 <span class="c1">#print(lapply(split(post,nsnp),sum)) # posterior on different numbers of SNPs</span>
+
+
 <span class="n">pairp</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nrow</span><span class="o">=</span><span class="n">NSNP</span><span class="p">,</span><span class="n">ncol</span><span class="o">=</span><span class="n">NSNP</span><span class="p">)</span>
 <span class="n">contains</span> <span class="o">=</span> <span class="n">matrix</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nrow</span><span class="o">=</span><span class="n">NSNP</span><span class="p">,</span><span class="n">ncol</span><span class="o">=</span><span class="n">length</span><span class="p">(</span><span class="n">post</span><span class="p">))</span>
 <span class="k">for</span><span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">NSNP</span><span class="p">){</span>
@@ -211,8 +304,10 @@ body {
 <span class="n">pairp</span><span class="p">[</span><span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">post</span><span class="p">[</span><span class="n">contains</span><span class="p">[</span><span class="n">i</span><span class="p">,]</span> <span class="o">&amp;</span> <span class="n">contains</span><span class="p">[</span><span class="n">j</span><span class="p">,]])</span>
 <span class="p">}</span>
 <span class="p">}</span>
+
 <span class="n">marginalp</span> <span class="o">=</span> <span class="n">diag</span><span class="p">(</span><span class="n">pairp</span><span class="p">)</span>
 <span class="n">indepp</span> <span class="o">=</span> <span class="n">marginalp</span> <span class="o">%*%</span> <span class="n">t</span><span class="p">(</span><span class="n">marginalp</span><span class="p">)</span>
+
 <span class="c1">#marginalp = rep(0,NSNP)</span>
 <span class="c1">#for(j in 1:NSNP){</span>
 <span class="c1">#marginalp[j] = sum(post[rowSums(x[,-(1:2)]==j &amp; !is.na(x[,-(1:2)]))==1])</span>
@@ -221,6 +316,7 @@ body {
 <span class="c1">#Nums = 1:length(marginalp)</span>
 <span class="c1">#cu_5 = sort(marginalp, decreasing = T)[5]</span>
 <span class="c1">#Nums = Nums[marginalp &gt; min(0.01,cu_5)]</span>
+
 <span class="c1">#for(i in Nums){</span>
 <span class="c1">#containsi = apply(x[,-(1:2)]==i,1,sum,na.rm=T)</span>
 <span class="c1">#sub = x[containsi,]</span>
@@ -231,13 +327,17 @@ body {
 <span class="c1">#}</span>
 <span class="c1">#}</span>
 <span class="c1">#pairp = pairp[Nums,Nums]</span>
+
+
 <span class="c1">#d1 = dor(i,j) - dindep(i,j)</span>
 <span class="c1"># where dor is big if i and j tend to occur together</span>
 <span class="c1"># and dindep is big if i and j do not tend to occur together (ie less often than expected by chance)</span>
 <span class="c1">#so d is small if i and j tend not to occur together</span>
 <span class="n">d</span> <span class="o">=</span> <span class="n">pairp</span><span class="o">^</span><span class="mi">2</span> <span class="o">-</span> <span class="mi">4</span><span class="o">*</span><span class="p">(</span><span class="n">indepp</span> <span class="o">&gt;</span> <span class="n">pairp</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">indepp</span> <span class="o">-</span> <span class="n">pairp</span><span class="p">)</span><span class="o">^</span><span class="mi">2</span>
 <span class="c1">#d = pairp - 4*(indepp &gt; pairp) * (indepp - pairp)</span>
+
 <span class="n">diag</span><span class="p">(</span><span class="n">d</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span>
+
 <span class="n">a</span><span class="o">=</span> <span class="n">cutree</span><span class="p">(</span><span class="n">hclust</span><span class="p">(</span><span class="k">as</span><span class="o">.</span><span class="n">dist</span><span class="p">(</span><span class="n">d</span><span class="p">),</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;complete&quot;</span><span class="p">),</span><span class="n">h</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 <span class="n">nclust</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">a</span><span class="p">)</span>
 <span class="n">clusterprobs</span> <span class="o">=</span> <span class="n">rep</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="n">nclust</span><span class="p">)</span>
@@ -248,6 +348,7 @@ body {
 <span class="p">}</span>
 <span class="k">return</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">id</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">character</span><span class="p">(</span><span class="n">rs</span><span class="p">[,</span><span class="mi">1</span><span class="p">]),</span><span class="n">pos</span><span class="o">=</span><span class="n">pos</span><span class="p">,</span><span class="n">marginalp</span><span class="o">=</span><span class="n">marginalp</span><span class="p">,</span><span class="n">cluster</span> <span class="o">=</span> <span class="p">(</span><span class="n">rank</span><span class="p">(</span><span class="o">-</span><span class="n">unlist</span><span class="p">(</span><span class="n">clusterprobs</span><span class="p">)))[</span><span class="n">a</span><span class="p">],</span><span class="n">clusterprobs</span><span class="o">=</span><span class="n">sort</span><span class="p">(</span><span class="n">clusterprobs</span><span class="p">,</span><span class="n">decreasing</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)))</span>
 <span class="p">}</span>
+
 <span class="n">plot</span><span class="o">.</span><span class="n">multiSNP</span><span class="o">=</span><span class="n">function</span><span class="p">(</span><span class="n">mSNP</span><span class="p">,</span><span class="n">minp</span><span class="o">=</span><span class="mf">0.05</span><span class="p">,</span><span class="n">interactive</span><span class="o">=</span><span class="n">FALSE</span><span class="p">,</span><span class="n">names</span><span class="o">=</span><span class="n">FALSE</span><span class="p">,</span><span class="o">...</span><span class="p">){</span>
 <span class="c1">#par(mfcol=c(2,1))</span>
 <span class="n">plot</span><span class="p">(</span><span class="n">mSNP</span><span class="err">$</span><span class="n">pos</span><span class="p">,</span><span class="n">mSNP</span><span class="err">$</span><span class="n">marginalp</span><span class="p">,</span><span class="nb">type</span><span class="o">=</span><span class="s2">&quot;h&quot;</span><span class="p">,</span><span class="n">lwd</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="o">...</span><span class="p">,</span><span class="n">col</span><span class="o">=</span><span class="n">mSNP</span><span class="err">$</span><span class="n">cluster</span><span class="p">,</span><span class="n">ylab</span><span class="o">=</span><span class="s2">&quot;Posterior Prob&quot;</span><span class="p">,</span> <span class="n">xlab</span><span class="o">=</span><span class="s2">&quot;Position&quot;</span><span class="p">,</span><span class="n">main</span><span class="o">=</span><span class="s2">&quot;Marginal Probability of Each SNP&quot;</span><span class="p">)</span>
@@ -258,15 +359,18 @@ body {
 <span class="c1">#barplot(mSNP$clusterprobs,col=1:length(mSNP$clusterprobs),ylim=c(0,1),main=&quot;Probability for each cluster of SNPs&quot;)</span>
 <span class="p">}</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Now I (Gao Wang) use this code to make plot for my <a href="20171030_BIMBAM.html">results obtained here</a>.</p>
+
 </div>
 </div>
 </div>
@@ -277,31 +381,41 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">mSNP</span> <span class="o">=</span> <span class="n">cluster</span><span class="o">.</span><span class="n">multiSNP</span><span class="p">(</span><span class="s2">&quot;output/pref4.multi.txt&quot;</span><span class="p">,</span><span class="s2">&quot;output/pref4.single.txt&quot;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>Keyboard Interrupt
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>This script takes long time and non-trivial memory (40GB) to run.</p>
+
 </div>
 </div>
 </div>
 <hr>
-&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
 <p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/f9990e55c91dfcdd651894a83fce5a04daff7fe8/analysis/20171030_BIMBAM_Plots.ipynb"><code>analysis/20171030_BIMBAM_Plots.ipynb</code></a> committed by Gao Wang on Fri Nov 17 01:00:20 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/f9990e55c91dfcdd651894a83fce5a04daff7fe8">revision 2, f9990e5</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>

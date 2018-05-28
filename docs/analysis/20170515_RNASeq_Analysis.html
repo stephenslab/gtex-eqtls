@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.3" />
+<meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
+
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
 <link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
 <link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -14,10 +18,13 @@
 <script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
 <link rel="stylesheet"
-      href="../site_libs/highlight/textmate.css"
+      href="../site_libs/highlightjs/null.min.css"
       type="text/css" />
-<script src="../site_libs/highlight/highlight.js"></script>
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 <script type="text/javascript">
 if (window.hljs && document.readyState && document.readyState === "complete") {
    window.setTimeout(function() {
@@ -25,9 +32,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
    }, 0);
 }
 </script>
-<script src="../js/toc2.js"></script>
+
+<script src="../js/doc_toc.js"></script>
 <script src="../js/docs.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
     MathJax.Hub.Config({
         extensions: ["tex2jax.js"],
@@ -49,6 +58,67 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
         }
     });
 </script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
 <script>
 $( document ).ready(function(){
             var cfg={'threshold':3,     // depth of toc (number of levels)
@@ -75,19 +145,19 @@ $( document ).ready(function(){
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
             var docs=analysisArray;
+            var docs_map=analysisArrayMap;
             var pos=analysisArray.indexOf(file);
             for (var a=pos;a>=0;a--){
-                  var name=docs[a]
-                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
             }
             $('a[href="'+file+'.html'+'"]').css("color","#126dce");
             for (var a=pos+1;a<docs.length;a++){
-                  var name=docs[a]
-                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
             }
-            $("#toc-header").hide();
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
     });
 </script>
+
 <script>
 // manage active state of menu based on current page
 $(document).ready(function () {
@@ -111,7 +181,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
+
+
+
 <title>GTEx eQTL</title>
+
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -120,10 +194,13 @@ body {
 }
 </style>
 </head>
+
 <body>
 <div tabindex="-1" id="notebook" class="border-box-sizing">
 <div class="container" id="notebook-container">
+
 <!-- code folding -->
+
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -136,21 +213,31 @@ body {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        
 <li>
   <a href="../index.html">Overview</a>
 </li>
+        
 <li>
   <a href="../analysis.html">Analysis</a>
 </li>
+        
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
+        
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+        
       </ul>
+        
 <ul class="nav navbar-nav navbar-right">
 <li>
    <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
+        
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -159,6 +246,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="RNA-Seq-data-preprocessing">RNA-Seq data preprocessing<a class="anchor-link" href="#RNA-Seq-data-preprocessing">&#182;</a></h1><p>This workflow includes data normalization and PEER factor analysis.</p>
+
 </div>
 </div>
 </div>
@@ -167,6 +255,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><strong>Update</strong>: on Aug 14 and Aug 20 2017 <a href="https://github.com/stephenslab/gtex-eqtls/tree/master/data/confidential/eQTL_pipeline_AWG_call_081417.pdf">updated eQTL pipeline for V7 &amp; 8</a>  are released. Major changes involve normalization procedure (relevant here) and choice of number of PEER factors.</p>
+
 </div>
 </div>
 </div>
@@ -182,15 +271,18 @@ body {
 <span class="n">sample_attr</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx/gtex7/sample_annotations/GTEx_Analysis_2016-01-15_v7_SampleAttributesDS.txt&quot;</span>
 <span class="n">cwd</span> <span class="o">=</span> <span class="s2">&quot;~/Documents/GTEx&quot;</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Data-file-format-conversion">Data file format conversion<a class="anchor-link" href="#Data-file-format-conversion">&#182;</a></h2><p>Code chunk below is prototyping codes to convert RNA-seq file to HDF5 format. It is not needed when the normalization workflow is executed (next section) because normalization workflow performs format conversion on original data. But it is useful to have here, in case the original data will have to be processed separately.</p>
+
 </div>
 </div>
 </div>
@@ -233,9 +325,11 @@ body {
     <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
         <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">output</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -252,6 +346,7 @@ body {
 </ol>
 <p>It results in 4 <strong>analysis ready expression data files</strong> in HDF5 format of different versions / organizations of the same information: emperical quantile normalized and standard normal quantile normalized, saved as flat tables or grouped by tissues. Additionally 2 original Count and RPKM files are converted to HDF5 format grouped by tissues.</p>
 <p>See code chunk below for an implementation.</p>
+
 </div>
 </div>
 </div>
@@ -274,15 +369,18 @@ body {
         <span class="s2">&quot;${cwd!a}/rna_processed/${input[0]!nnb}.h5&quot;</span>
 <span class="kn">task:</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span><span class="p">,</span> <span class="kp">queue</span> <span class="o">=</span> <span class="s2">&quot;mstephens&quot;</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s2">&quot;20:00:00&quot;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s2">&quot;90G&quot;</span>
 <span class="kn">python:</span>
+
     <span class="c1"># Adopted by Gao Wang from:</span>
     <span class="c1"># https://github.com/broadinstitute/gtex-pipeline</span>
     <span class="c1"># Originally authored by Francois Aguet</span>
+
     <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span>
     <span class="kn">import</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span>
     <span class="kn">import</span> <span class="nn">gzip</span>
     <span class="kn">import</span> <span class="nn">subprocess</span>
     <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">stats</span>
     <span class="kn">import</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">os</span>
+
     <span class="k">def</span> <span class="nf">annotate_tissue_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">fsample</span><span class="p">):</span>
         <span class="sd">&#39;&#39;&#39;Save data to tissue specific tables&#39;&#39;&#39;</span>
         <span class="n">samples</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">fsample</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">delimiter</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">header</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
@@ -297,11 +395,13 @@ body {
         <span class="n">sample</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">((</span><span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot;[\W\d]+&quot;</span><span class="p">,</span> <span class="s2">&quot;_&quot;</span><span class="p">,</span> <span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">),</span> <span class="n">v</span><span class="p">)</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">sample_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">v</span><span class="p">))</span>
         <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">sample</span><span class="p">[</span><span class="n">k</span><span class="p">]]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">sample</span><span class="p">}</span>
         <span class="k">return</span> <span class="n">data</span>
+
     <span class="k">def</span> <span class="nf">write_per_tissue_data</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">output</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">output</span><span class="p">):</span>
             <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
             <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">]</span><span class="o">.</span><span class="n">to_hdf</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">k</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;a&#39;</span><span class="p">,</span> <span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">get_donors_from_vcf</span><span class="p">(</span><span class="n">vcfpath</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract donor IDs from VCF</span>
@@ -311,46 +411,57 @@ body {
                 <span class="k">if</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">()[:</span><span class="mi">2</span><span class="p">]</span><span class="o">==</span><span class="s1">&#39;##&#39;</span><span class="p">:</span> <span class="k">continue</span>
                 <span class="k">break</span>
         <span class="k">return</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)[</span><span class="mi">9</span><span class="p">:]</span>
+
     <span class="k">def</span> <span class="nf">read_gct</span><span class="p">(</span><span class="n">gct_file</span><span class="p">,</span> <span class="n">donor_ids</span><span class="p">,</span> <span class="n">dtype</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load GCT as DataFrame</span>
 <span class="sd">        First col of expression data is ENCODE gene name, 2nd col is HUGO name</span>
 <span class="sd">        ======================================================================</span>
 <span class="sd">        A more memory friendly version:</span>
+
 <span class="sd">        head = pd.read_csv(fdata, skiprows = 2, sep = &#39;\t&#39;, nrows = 1)</span>
 <span class="sd">        dt = {&#39;Description&#39;: str, &#39;Name&#39;: str}</span>
 <span class="sd">        dt.update({x: dtype for x in head.columns if x not in dt})</span>
 <span class="sd">        data = pd.read_csv(fdata, compression=&#39;gzip&#39;, skiprows=2,</span>
 <span class="sd">                           index_col=0, header=0, dtype = dt, sep=&#39;\t&#39;).drop(&#39;Description&#39;, 1)</span>
+
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">gct_file</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">skiprows</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;Description&#39;</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
         <span class="n">df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="kp">name</span> <span class="o">=</span> <span class="s1">&#39;gene_id&#39;</span>
         <span class="k">return</span> <span class="n">df</span><span class="p">[[</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s1">&#39;-&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)[:</span><span class="mi">2</span><span class="p">])</span> <span class="ow">in</span> <span class="n">donor_ids</span><span class="p">]]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">dtype</span><span class="p">,</span> <span class="n">copy</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+
     <span class="k">def</span> <span class="nf">normalize_quantiles</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Note: replicates behavior of R function normalize.quantiles from library(&quot;preprocessCore&quot;)</span>
+
 <span class="sd">        Reference:</span>
 <span class="sd">         [1] Bolstad et al., Bioinformatics 19(2), pp. 185-193, 2003</span>
+
 <span class="sd">        Adapted from https://github.com/andrewdyates/quantile_normalize</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
             <span class="n">M</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
         <span class="n">Q</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">m</span><span class="p">,</span><span class="n">n</span> <span class="o">=</span> <span class="n">M</span><span class="o">.</span><span class="n">shape</span>
+
         <span class="c1"># compute quantile vector</span>
         <span class="n">quantiles</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="n">quantiles</span> <span class="o">+=</span> <span class="n">M</span><span class="p">[</span><span class="n">Q</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span><span class="n">i</span><span class="p">]</span>
         <span class="n">quantiles</span> <span class="o">=</span> <span class="n">quantiles</span> <span class="o">/</span> <span class="n">n</span>
+
         <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
             <span class="c1"># Get equivalence classes; unique values == 0</span>
             <span class="n">dupes</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">int</span><span class="p">)</span>
             <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="o">-</span><span class="mi">1</span><span class="p">):</span>
                 <span class="k">if</span> <span class="n">M</span><span class="p">[</span><span class="n">Q</span><span class="p">[</span><span class="n">j</span><span class="p">,</span><span class="n">i</span><span class="p">],</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="n">M</span><span class="p">[</span><span class="n">Q</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span><span class="n">i</span><span class="p">],</span><span class="n">i</span><span class="p">]:</span>
                     <span class="n">dupes</span><span class="p">[</span><span class="n">j</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">dupes</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span>
+
             <span class="c1"># Replace column with quantile ranks</span>
             <span class="n">M</span><span class="p">[</span><span class="n">Q</span><span class="p">[:,</span><span class="n">i</span><span class="p">],</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">quantiles</span>
+
             <span class="c1"># Average together equivalence classes</span>
             <span class="n">j</span> <span class="o">=</span> <span class="n">m</span><span class="o">-</span><span class="mi">1</span>
             <span class="k">while</span> <span class="n">j</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
@@ -361,8 +472,10 @@ body {
                     <span class="n">M</span><span class="p">[</span><span class="n">idxs</span><span class="p">,</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">median</span><span class="p">(</span><span class="n">M</span><span class="p">[</span><span class="n">idxs</span><span class="p">,</span><span class="n">i</span><span class="p">])</span>
                     <span class="n">j</span> <span class="o">-=</span> <span class="mi">1</span> <span class="o">+</span> <span class="n">dupes</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
             <span class="k">assert</span> <span class="n">j</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span>
+
         <span class="k">if</span> <span class="ow">not</span> <span class="n">inplace</span><span class="p">:</span>
             <span class="k">return</span> <span class="n">M</span>
+
     <span class="k">def</span> <span class="nf">inverse_quantile_normalization</span><span class="p">(</span><span class="n">M</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        After quantile normalization of samples, standardize expression of each gene</span>
@@ -370,6 +483,7 @@ body {
         <span class="n">R</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">mstats</span><span class="o">.</span><span class="n">rankdata</span><span class="p">(</span><span class="n">M</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>  <span class="c1"># ties are averaged</span>
         <span class="n">Q</span> <span class="o">=</span> <span class="n">stats</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">R</span><span class="o">/</span><span class="p">(</span><span class="n">M</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">Q</span>
+
     <span class="k">def</span> <span class="nf">normalize_expression</span><span class="p">(</span><span class="n">expression_df</span><span class="p">,</span> <span class="n">counts_df</span><span class="p">,</span> <span class="n">expression_threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">count_threshold</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">min_samples</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Genes are thresholded based on the following expression rules:</span>
@@ -378,14 +492,18 @@ body {
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># donor_ids = [&#39;-&#39;.join(i.split(&#39;-&#39;)[:2]) for i in expression_df.columns]</span>
         <span class="n">donor_ids</span> <span class="o">=</span> <span class="n">expression_df</span><span class="o">.</span><span class="n">columns</span>
+
         <span class="c1"># expression thresholds</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="p">((</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">expression_df</span><span class="o">&gt;</span><span class="n">expression_threshold</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">min_samples</span><span class="p">)</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">counts_df</span><span class="o">&gt;</span><span class="n">count_threshold</span><span class="p">,</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">&gt;=</span><span class="n">min_samples</span><span class="p">))</span><span class="o">.</span><span class="n">values</span>
+
         <span class="c1"># apply normalization</span>
         <span class="n">M</span> <span class="o">=</span> <span class="n">normalize_quantiles</span><span class="p">(</span><span class="n">expression_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
         <span class="n">R</span> <span class="o">=</span> <span class="n">inverse_quantile_normalization</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+
         <span class="n">quant_std_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">R</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">donor_ids</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">expression_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">)</span>
         <span class="n">quant_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">M</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">donor_ids</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">expression_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">mask</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="n">dtype</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">quant_std_df</span><span class="p">,</span> <span class="n">quant_df</span>
+
     <span class="k">class</span> <span class="nc">Environment</span><span class="p">:</span>
         <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">expression_gct</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">ar</span><span class="p">}</span>
@@ -397,6 +515,7 @@ body {
             <span class="bp">self</span><span class="o">.</span><span class="n">expression_threshold</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">rpkm_cutoff</span><span class="p">}</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">count_threshold</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">read_cutoff</span><span class="p">}</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">min_samples</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">sample_cutoff</span><span class="p">}</span>
+
     <span class="n">args</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;Generating normalized expression files ... &#39;</span><span class="p">,</span> <span class="n">end</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">flush</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
     <span class="n">donor_ids</span> <span class="o">=</span> <span class="n">get_donors_from_vcf</span><span class="p">(</span><span class="n">args</span><span class="o">.</span><span class="n">vcf</span><span class="p">)</span>
@@ -420,15 +539,18 @@ body {
     <span class="n">write_per_tissue_data</span><span class="p">(</span><span class="n">counts_per_tissue</span><span class="p">,</span> <span class="n">prefix</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;rpkm&#39;</span><span class="p">,</span> <span class="s1">&#39;reads&#39;</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;.h5&quot;</span><span class="p">)</span>
     <span class="k">print</span><span class="p">(</span><span class="s1">&#39;done.&#39;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="A-glance-at-normalized-expression-data">A glance at normalized expression data<a class="anchor-link" href="#A-glance-at-normalized-expression-data">&#182;</a></h2><p>Code chunk below shows how to load data in HDF5 to R, and how the information is organized. For example here are all data groups in the HDF5 file of standardized QN transformed expression data:</p>
+
 </div>
 </div>
 </div>
@@ -446,13 +568,21 @@ body {
 <span class="n">groups</span> <span class="o">=</span> <span class="n">groups</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="n">groups</span> <span class="o">!=</span> <span class="s1">&#39;/&#39;</span><span class="p">)]</span>
 <span class="n">groups</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <ol class=list-inline>
 	<li>'/Adipose_Subcutaneous'</li>
@@ -509,16 +639,21 @@ body {
 	<li>'/Vagina'</li>
 	<li>'/Whole_Blood'</li>
 </ol>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>and here is preview of table <code>/Lung</code>:</p>
+
 </div>
 </div>
 </div>
@@ -530,13 +665,20 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="n">mydata</span> <span class="o">&lt;-</span> <span class="n">h5read</span><span class="p">(</span><span class="n">fdata</span><span class="p">,</span> <span class="s2">&quot;/Lung&quot;</span><span class="p">)</span>
 <span class="nb">str</span><span class="p">(</span><span class="n">mydata</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>List of 4
  $ axis0        : chr [1:414(1d)] &#34;GTEX-111CU-0326-SM-5GZXO&#34; &#34;GTEX-111FC-1126-SM-5GZWU&#34; &#34;GTEX-111VG-0726-SM-5GIDC&#34; &#34;GTEX-111YS-0626-SM-5GZXV&#34; ...
@@ -546,14 +688,17 @@ body {
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>So <code>/Lung</code> has attribute <code>axis0</code> for sample names, <code>axis1</code> for gene names, and <code>block0_values</code> the 414 * 43624 data matrix. One can make <code>t(block0_values)</code> a separate matrix and set its rownames to <code>axis1</code> and colnames to <code>axis0</code>.</p>
+
 </div>
 </div>
 </div>
@@ -562,6 +707,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="PEER-factor-analysis">PEER factor analysis<a class="anchor-link" href="#PEER-factor-analysis">&#182;</a></h2><p>Code chunk below installs <code>PEER</code> R packages.</p>
+
 </div>
 </div>
 </div>
@@ -579,9 +725,11 @@ body {
     <span class="n">R</span> <span class="n">CMD</span> <span class="n">INSTALL</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
     <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="n">R_peer_source_1</span><span class="o">.</span><span class="mf">3.</span><span class="n">tgz</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
@@ -589,6 +737,7 @@ body {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>PEER factor analysis package has a number of configuable parameters. For this analysis I use default values hard-coded into the script (see code chunk below, step <code>rnaseq_2</code>). Therefore these settings cannot be configured from input parameter though it is straightforward to implement it otherwise.</p>
 <p>For every tissue I compute PEER factor using the top 10,000 expressed genes. It takes 1hr to 3hrs to complete each tissue.</p>
+
 </div>
 </div>
 </div>
@@ -614,8 +763,10 @@ body {
     <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span>
     <span class="n">use_genes</span> <span class="o">=</span> <span class="mi">10000</span>
     <span class="n">expr</span><span class="o">.</span><span class="n">h5</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="nb">input</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">}</span>
+
     <span class="n">library</span><span class="p">(</span><span class="n">peer</span><span class="p">,</span> <span class="n">quietly</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>  <span class="c1"># https://github.com/PMBio/peer</span>
     <span class="n">library</span><span class="p">(</span><span class="n">rhdf5</span><span class="p">,</span> <span class="n">quietly</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
+
     <span class="n">WriteTable</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">filename</span><span class="p">,</span> <span class="n">index</span><span class="o">.</span><span class="kp">name</span><span class="p">)</span> <span class="p">{</span>
         <span class="n">datafile</span> <span class="o">&lt;-</span> <span class="nb">file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="nb">open</span> <span class="o">=</span> <span class="s2">&quot;wt&quot;</span><span class="p">)</span>
         <span class="n">on</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">close</span><span class="p">(</span><span class="n">datafile</span><span class="p">))</span>
@@ -623,6 +774,7 @@ body {
         <span class="n">writeLines</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="n">collapse</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">),</span> <span class="n">con</span><span class="o">=</span><span class="n">datafile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">write</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">datafile</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s2">&quot;</span><span class="se">\t</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">col</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="n">FALSE</span><span class="p">,</span> <span class="n">quote</span><span class="o">=</span><span class="n">FALSE</span><span class="p">)</span>
     <span class="p">}</span>
+
     <span class="n">loadTable</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="n">auto_transpose</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">)</span> <span class="p">{</span>
       <span class="n">obj</span> <span class="o">&lt;-</span> <span class="n">h5read</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">group</span><span class="p">)</span>
       <span class="n">dat</span> <span class="o">&lt;-</span> <span class="n">obj</span><span class="err">$</span><span class="n">block0_values</span>
@@ -631,17 +783,20 @@ body {
       <span class="k">if</span> <span class="p">(</span><span class="n">ncol</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">nrow</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="n">auto_transpose</span><span class="p">)</span> <span class="n">dat</span> <span class="o">&lt;-</span> <span class="n">t</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
       <span class="k">return</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
     <span class="p">}</span>
+
     <span class="n">getNumPeer</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">ss</span><span class="p">)</span> <span class="p">{</span>
       <span class="k">if</span> <span class="p">(</span><span class="n">ss</span><span class="o">&lt;</span><span class="mi">150</span><span class="p">)</span> <span class="k">return</span> <span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="n">ceiling</span><span class="p">(</span><span class="n">ss</span> <span class="o">/</span> <span class="mi">5</span><span class="p">)))</span>
       <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ss</span> <span class="o">&gt;=</span><span class="mi">150</span> <span class="o">&amp;&amp;</span> <span class="n">ss</span> <span class="o">&lt;</span> <span class="mi">250</span><span class="p">)</span> <span class="k">return</span><span class="p">(</span><span class="mi">30</span><span class="p">)</span>
       <span class="k">else</span> <span class="k">return</span><span class="p">(</span><span class="mi">35</span><span class="p">)</span>
     <span class="p">}</span>
+
     <span class="n">whichpart</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span> <span class="p">{</span>
       <span class="n">nx</span> <span class="o">&lt;-</span> <span class="n">length</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
       <span class="n">p</span> <span class="o">&lt;-</span> <span class="n">nx</span><span class="o">-</span><span class="n">n</span>
       <span class="n">xp</span> <span class="o">&lt;-</span> <span class="n">sort</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">partial</span><span class="o">=</span><span class="n">p</span><span class="p">)[</span><span class="n">p</span><span class="p">]</span>
       <span class="n">which</span><span class="p">(</span><span class="n">x</span> <span class="o">&gt;</span> <span class="n">xp</span><span class="p">)</span>
     <span class="p">}</span>
+
     <span class="n">getTopGenes</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">gmat</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">)</span> <span class="p">{</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">ncol</span><span class="p">(</span><span class="n">M</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="n">num</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">return</span><span class="p">(</span><span class="n">gmat</span><span class="p">)</span>
@@ -650,12 +805,14 @@ body {
             <span class="k">return</span><span class="p">(</span><span class="n">gmat</span><span class="p">[,</span><span class="n">top</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
         <span class="p">}</span>
     <span class="p">}</span>
+
     <span class="n">cat</span><span class="p">(</span><span class="s2">&quot;PEER: loading expression data ... &quot;</span><span class="p">)</span>
     <span class="c1"># rows are number of samples. columns are number of genes</span>
     <span class="n">M</span> <span class="o">&lt;-</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">loadTable</span><span class="p">(</span><span class="n">expr</span><span class="o">.</span><span class="n">h5</span><span class="p">,</span> <span class="s2">&quot;/${_tissues}&quot;</span><span class="p">))</span>
     <span class="n">M</span> <span class="o">&lt;-</span> <span class="n">getTopGenes</span><span class="p">(</span><span class="n">M</span><span class="p">,</span> <span class="n">use_genes</span><span class="p">)</span>
     <span class="n">n</span> <span class="o">=</span> <span class="n">getNumPeer</span><span class="p">(</span><span class="n">nrow</span><span class="p">(</span><span class="n">M</span><span class="p">))</span>
     <span class="n">cat</span><span class="p">(</span><span class="s2">&quot;done.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
     <span class="c1"># run PEER</span>
     <span class="n">cat</span><span class="p">(</span><span class="n">paste0</span><span class="p">(</span><span class="s2">&quot;PEER: estimating hidden confounders (&quot;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="s2">&quot; for tissue &quot;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_tissues</span><span class="err">!</span><span class="n">r</span><span class="p">}</span> <span class="p">,</span> <span class="s2">&quot;)</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">))</span>
     <span class="n">model</span> <span class="o">&lt;-</span> <span class="n">PEER</span><span class="p">()</span>
@@ -668,9 +825,11 @@ body {
     <span class="c1">#   invisible(PEER_setCovariates(model, covs))</span>
     <span class="c1"># }</span>
     <span class="n">time</span> <span class="o">&lt;-</span> <span class="n">system</span><span class="o">.</span><span class="n">time</span><span class="p">(</span><span class="n">PEER_update</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>
+
     <span class="n">X</span> <span class="o">&lt;-</span> <span class="n">PEER_getX</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># samples x PEER factors</span>
     <span class="n">A</span> <span class="o">&lt;-</span> <span class="n">PEER_getAlpha</span><span class="p">(</span><span class="n">model</span><span class="p">)</span>  <span class="c1"># PEER factors x 1</span>
     <span class="n">R</span> <span class="o">&lt;-</span> <span class="n">t</span><span class="p">(</span><span class="n">PEER_getResiduals</span><span class="p">(</span><span class="n">model</span><span class="p">))</span>  <span class="c1"># genes x samples</span>
+
     <span class="c1"># add relevant row/column names</span>
     <span class="n">c</span> <span class="o">&lt;-</span> <span class="n">paste0</span><span class="p">(</span><span class="s2">&quot;InferredCov&quot;</span><span class="p">,</span><span class="mi">1</span><span class="p">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">X</span><span class="p">))</span>
     <span class="n">rownames</span><span class="p">(</span><span class="n">X</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="n">rownames</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
@@ -681,6 +840,7 @@ body {
     <span class="n">A</span><span class="err">$</span><span class="n">Relevance</span> <span class="o">&lt;-</span> <span class="mf">1.0</span> <span class="o">/</span> <span class="n">A</span><span class="err">$</span><span class="n">Alpha</span>
     <span class="n">rownames</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="n">colnames</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
     <span class="n">colnames</span><span class="p">(</span><span class="n">R</span><span class="p">)</span> <span class="o">&lt;-</span> <span class="n">rownames</span><span class="p">(</span><span class="n">M</span><span class="p">)</span>
+
     <span class="c1"># write results</span>
     <span class="n">cat</span><span class="p">(</span><span class="s2">&quot;PEER: writing results ... &quot;</span><span class="p">)</span>
     <span class="n">WriteTable</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">X</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>  <span class="c1"># format(X, digits=6)</span>
@@ -688,15 +848,18 @@ body {
     <span class="n">WriteTable</span><span class="p">(</span><span class="n">R</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="err">!</span><span class="n">r</span><span class="p">},</span> <span class="s2">&quot;ID&quot;</span><span class="p">)</span>
     <span class="n">cat</span><span class="p">(</span><span class="s2">&quot;done.</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Execute-workflows">Execute workflows<a class="anchor-link" href="#Execute-workflows">&#182;</a></h2><p>See execution cells below.</p>
+
 </div>
 </div>
 </div>
@@ -707,46 +870,75 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sosrun</span> <span class="n">rnaseq</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">1 task completed: <a onclick="task_info('9b995fe7c3b980d751892e558f116c10', 'mstephens')">9b99</a></div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
 </pre>
 </div>
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>INFO: 9b995fe7c3b980d751892e558f116c10 <span class="ansi-green-fg">received</span> dict_keys([&#39;/home/gaow/Documents/GTEx/rn...
 </pre>
 </div>
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <div class="sos_hint">53 tasks completed: <a onclick="task_info('f2a011a9681da1a1fc54ca6b81deb548', 'localhost')">f2a0</a>, <a onclick="task_info('13a862ba169224177255f186d5754625', 'localhost')">13a8</a>, ..., <a onclick="task_info('ce28df86efb482d56e488c89bcd79cad', 'localhost')">ce28</a></div>
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -755,13 +947,21 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="o">%</span><span class="n">sessioninfo</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 <p class="session_section">SoS</p>
 <table class="session_info">
@@ -781,9 +981,11 @@ body {
 <td colspan="2"><pre>R version 3.4.0 (2017-04-21)
 Platform: x86_64-pc-linux-gnu (64-bit)
 Running under: BunsenLabs GNU/Linux 8.7 (Hydrogen)
+
 Matrix products: default
 BLAS: /usr/lib64/microsoft-r/3.4/lib64/R/lib/libRblas.so
 LAPACK: /usr/lib/libopenblasp-r0.2.12.so
+
 locale:
  [1] LC_CTYPE=en_US.UTF-8       LC_NUMERIC=C              
  [3] LC_TIME=en_US.UTF-8        LC_COLLATE=en_US.UTF-8    
@@ -791,10 +993,13 @@ locale:
  [7] LC_PAPER=en_US.UTF-8       LC_NAME=C                 
  [9] LC_ADDRESS=C               LC_TELEPHONE=C            
 [11] LC_MEASUREMENT=en_US.UTF-8 LC_IDENTIFICATION=C       
+
 attached base packages:
 [1] stats     graphics  grDevices utils     datasets  methods   base     
+
 other attached packages:
 [1] RevoUtilsMath_10.0.0
+
 loaded via a namespace (and not attached):
  [1] compiler_3.4.0      R6_2.2.0            magrittr_1.5       
  [4] RevoUtils_10.0.4    IRdisplay_0.4.4     pbdZMQ_0.2-5       
@@ -804,13 +1009,17 @@ loaded via a namespace (and not attached):
 [16] evaluate_0.10      </pre></td>
 </tr>
 </table>
+
+</div>
+
+</div>
+
 </div>
 </div>
-</div>
-</div>
+
 </div>
 <hr>
-&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
 <p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/b5638a8bd5aefe6fa5cbe7fb28218f1526be3bc7/analysis/20170515_RNASeq_Analysis.ipynb"><code>analysis/20170515_RNASeq_Analysis.ipynb</code></a> committed by Gao Wang on Fri Sep 29 16:55:19 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/b5638a8bd5aefe6fa5cbe7fb28218f1526be3bc7">revision 7, b5638a8</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>

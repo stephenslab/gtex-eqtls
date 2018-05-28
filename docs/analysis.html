@@ -1,21 +1,35 @@
+
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.3" />
+<meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <title>GTEx eQTL</title>
-<script src="site_libs/jquery-1.11.3/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
 <link href="site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <script src="site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
 <link href="site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+
 <style type="text/css">code{white-space: pre;}</style>
 <link rel="stylesheet"
-      href="site_libs/highlight/textmate.css"
+      href="site_libs/highlightjs/null.min.css"
       type="text/css" />
-<script src="site_libs/highlight/highlight.js"></script>
+
+<script src="site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
 <style type="text/css">
   div.input_prompt {display: none;}
   div.output_html {
@@ -28,13 +42,7 @@
     background-color: white;
   }
 </style>
-<script type="text/javascript">
-if (window.hljs && document.readyState && document.readyState === "complete") {
-   window.setTimeout(function() {
-      hljs.initHighlighting();
-   }, 0);
-}
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
     MathJax.Hub.Config({
         extensions: ["tex2jax.js"],
@@ -56,7 +64,9 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
         }
     });
 </script>
+
 </head>
+
 <body>
 <style type = "text/css">
 @font-face {
@@ -77,28 +87,33 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
  font-style: normal;
  src: local('PT Mono'), url('fonts/ptmono.ttf') format('truetype');
 }
+
 body {
   font-family: "Droid Sans";
   font-size: 160%;
   padding-top: 66px;
   padding-bottom: 40px;
 }
+
 h1, h2, h3, h4, h5, h6 {
   margin-top: 20px;
  }
+
 a.anchor-link:link {
   text-decoration: none;
   padding: 0px 20px;
   visibility: hidden;
 }
+
 h1:hover .anchor-link,
 h2:hover .anchor-link,
 h3:hover .anchor-link,
 h4:hover .anchor-link,
 h5:hover .anchor-link,
 h6:hover .anchor-link {
-  visibility: visible;
+  visibility: hidden;
 }
+
 .main-container {
   max-width: 940px;
   margin-left: auto;
@@ -119,6 +134,7 @@ button.code-folding-btn:focus {
   outline: none;
 }
 </style>
+
 <script>
 // manage active state of menu based on current page
 $(document).ready(function () {
@@ -128,13 +144,17 @@ $(document).ready(function () {
   if (href === "")
     href = "index.html";
   var menuAnchor = $('a[href="' + href + '"]');
+
   // mark it active
   menuAnchor.parent().addClass('active');
+
   // if it's got a parent navbar menu mark it active as well
   menuAnchor.closest('li.dropdown').addClass('active');
 });
 </script>
+
 <div class="container-fluid main-container">
+
 <!-- tabsets -->
 <script src="site_libs/navigation-1.1/tabsets.js"></script>
 <script>
@@ -142,7 +162,9 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
+
 <!-- code folding -->
+
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -155,21 +177,31 @@ $(document).ready(function () {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        
 <li>
   <a href="./index.html">Overview</a>
 </li>
+        
 <li>
   <a href="./analysis.html">Analysis</a>
 </li>
+        
 <li>
   <a href="./prototype.html">Prototype</a>
 </li>
+        
+<li>
+  <a href="./writeup.html">Writeup</a>
+</li>
+        
       </ul>
+    
 <ul class="nav navbar-nav navbar-right">
 <li>
    <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
+        
     </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -195,6 +227,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171212_Median_TPM_GTEx_V8.html"><strong>20171212 Median TPM GTEx V8</strong></a><br>
 &nbsp; &nbsp;Processing GTEx V8 expression data for various summary statistics</p>
+
 </div>
 </div>
 </div>
@@ -212,6 +245,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171030_Single_Tissue_MR_ASH_Summary.html"><strong>Summary of single tissue analysis results</strong></a><br>
 &nbsp; &nbsp;From &gt; 25K RDS files</p>
+
 </div>
 </div>
 </div>
@@ -221,6 +255,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171030_BIMBAM_Plots.html"><strong>20171030 BIMBAM Plots</strong></a><br>
 &nbsp; &nbsp;BIMBAM plots using Matthew's code 2007</p>
+
 </div>
 </div>
 </div>
@@ -230,6 +265,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171030_BIMBAM.html"><strong>BIMBAM analysis with selected set of FMO2 SNPs for Thyroid</strong></a><br>
 &nbsp; &nbsp;We pick a few hundred SNPs that harbors eQTLs (3 or 4 eQTLs) and analyze with BIMBAM. Here we focus on regions between 171.12Mb to 171.20Mb on chr1, based on <a href="20171027_BVS_MR_ASH.html">what we've previously learned</a>.</p>
+
 </div>
 </div>
 </div>
@@ -239,6 +275,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171027_BVS_MR_ASH.html"><strong>20171027 BVS MR ASH</strong></a><br>
 &nbsp; &nbsp;Analyzing a toy example with <code>varbvs</code> and <code>mr-ash</code></p>
+
 </div>
 </div>
 </div>
@@ -248,6 +285,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171023_Imputation.html"><strong>GTEx V8 genotype data imputation</strong></a><br>
 &nbsp; &nbsp;Revised from old notebook <code>20170518_Imputation.ipynb</code>.</p>
+
 </div>
 </div>
 </div>
@@ -257,6 +295,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171017_Extract_Full_Tissue_Data.html"><strong>Extract per-gene per tissue data</strong></a><br>
 &nbsp; &nbsp;For fine mapping demos.</p>
+
 </div>
 </div>
 </div>
@@ -266,6 +305,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171010_eQTLSummary_HDF5.html"><strong>QTL data preprocessing for Yuxin Zou</strong></a><br>
 &nbsp; &nbsp;This is not GTEx related. This workflow converts data from an immune response eQTL study in primary human monocytes to mash format.</p>
+
 </div>
 </div>
 </div>
@@ -275,6 +315,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171006_MASH_Results_V6.html"><strong>MASH results on V6 data</strong></a><br>
 &nbsp; &nbsp;Basically same setup as V6 paper.</p>
+
 </div>
 </div>
 </div>
@@ -284,6 +325,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171005_MASH_Results_V8.html"><strong>MASH results on V8 data</strong></a><br>
 &nbsp; &nbsp;Instead of setting $\hat{V} = cor(Z_{null})$ we set $\hat{V} = I$</p>
+
 </div>
 </div>
 </div>
@@ -293,6 +335,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171004_MASH_Results_V6_XX.html"><strong>MASH results on V6 data</strong></a><br>
 &nbsp; &nbsp;With $X^TX$ in prior and instead of setting $\hat{V} = cor(Z_{null})$ we set $\hat{V} = I$.</p>
+
 </div>
 </div>
 </div>
@@ -302,6 +345,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171004_MASH_Results_V6.html"><strong>MASH results on V6 data</strong></a><br>
 &nbsp; &nbsp;Without $X^TX$ in prior and instead of setting $\hat{V} = cor(Z_{null})$ we set $\hat{V} = I$.</p>
+
 </div>
 </div>
 </div>
@@ -311,6 +355,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171004_MASH_Results.html"><strong>MASH results on V8 data</strong></a><br>
 &nbsp; &nbsp;Basically same parameter setting as MASH paper.</p>
+
 </div>
 </div>
 </div>
@@ -320,6 +365,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171003_MASH_Results.html"><strong>MASH results on V8 data</strong></a><br>
 &nbsp; &nbsp;Without $X^TX$ in prior.</p>
+
 </div>
 </div>
 </div>
@@ -329,6 +375,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171002_MR_ASH_V8.html"><strong>MR ASH on single tissue data</strong></a><br>
 &nbsp; &nbsp;cis-eQTL analysis using <code>mr-ash</code>, for GTEx V8.</p>
+
 </div>
 </div>
 </div>
@@ -338,6 +385,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20171002_MASH_V8.html"><strong>MASH analysis for GTEx V8 data</strong></a><br>
 &nbsp; &nbsp;This is the new <code>mashr</code> version of analysis.</p>
+
 </div>
 </div>
 </div>
@@ -355,6 +403,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170929_Genotype.html"><strong>GTEx V8 genotypes</strong></a><br>
 &nbsp; &nbsp;Save V8 genotype data to HDF5 for association analysis.</p>
+
 </div>
 </div>
 </div>
@@ -364,6 +413,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170929_Expression_Covariate.html"><strong>GTEx V8 expression and covariate data</strong></a><br>
 &nbsp; &nbsp;Save V8 expression and covariates to HDF5 format, for use with association analysis.</p>
+
 </div>
 </div>
 </div>
@@ -373,6 +423,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170926_eQTLSummary_HDF5.html"><strong>Converting tissue specific eQTL summary statistics to HDF5</strong></a><br>
 &nbsp; &nbsp;Here I convert GTEx summary statistics to HDF5 format, making it easier to query and share the results.</p>
+
 </div>
 </div>
 </div>
@@ -390,6 +441,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170830_Compare_MASH_No_LD.html"><strong>Compare MASH results before and after without SNPs in LD</strong></a><br>
 &nbsp; &nbsp;We performed MASH on both original list of SNPs and SNPs filtered by LD &gt; 0.2. Here we compare the results.</p>
+
 </div>
 </div>
 </div>
@@ -399,6 +451,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170829_MASH_Paper.html"><strong>MASH analysis for Urbut 2017</strong></a><br>
 &nbsp; &nbsp;Reproducing (using old <code>mashr</code> codes) the Urbut 2017 paper in response to reviewer requests.</p>
+
 </div>
 </div>
 </div>
@@ -408,6 +461,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170829_MASH_Input_Preparation.html"><strong>Preparing input data for MASH analysis</strong></a><br>
 &nbsp; &nbsp;This include input max Z score from univariate analysis and training data, for both before and after LD pruning.</p>
+
 </div>
 </div>
 </div>
@@ -417,6 +471,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170828_Compute_LD.html"><strong>Compute pairwise LD for selected SNPs</strong></a><br>
 &nbsp; &nbsp;Though it is straightfoward enough to do it in R / Python, I use PLINK to compute the LD matrix.</p>
+
 </div>
 </div>
 </div>
@@ -426,6 +481,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170824_MR_ASH_Lung.html"><strong>MR-ASH analysis on Lung</strong></a><br>
 &nbsp; &nbsp;cis-eQTL analysis on GTEx V7 Lung data via <code>mr-ash</code>.</p>
+
 </div>
 </div>
 </div>
@@ -435,6 +491,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170814_MR_ASH_V7.html"><strong>MR ASH on GTEx genes</strong></a><br>
 &nbsp; &nbsp;cis-eQTL analysis using <code>mr-ash</code>.</p>
+
 </div>
 </div>
 </div>
@@ -452,6 +509,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170627_Subset_Genes.html"><strong>Extract dataset for given genes</strong></a><br>
 &nbsp; &nbsp;A procedure useful to create toy data from data bundle for methods development and closer look at real data of interest.</p>
+
 </div>
 </div>
 </div>
@@ -461,6 +519,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170605_Prepare_Covariates.html"><strong>Association mapping covariates</strong></a><br>
 &nbsp; &nbsp;Merge covariates info from multiple sources and find orthonormal basis for covariate matrix.</p>
+
 </div>
 </div>
 </div>
@@ -478,6 +537,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170530_CisSNP.html"><strong>Extract cis-SNP</strong></a><br>
 &nbsp; &nbsp;We annotate genotype data by gene positions and extract cis-SNP. Data are extracted from <code>PLINK</code> files and saved to HDF5 format.</p>
+
 </div>
 </div>
 </div>
@@ -487,6 +547,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170523_Genotype_Formatting_PCA.html"><strong>Imputation data post-processing and PCA analysis</strong></a><br>
 &nbsp; &nbsp;Process VCF files from Michigan imputation server by removing imputed sites and fix variant IDs. We also perform MDS analysis to obtain covariates for association analysis.</p>
+
 </div>
 </div>
 </div>
@@ -496,6 +557,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170518_Imputation.html"><strong>GTEx V7 genotype data imputation</strong></a><br>
 &nbsp; &nbsp;The official release currently does not impute missing data. We use Michigan Imputation Server for the task.</p>
+
 </div>
 </div>
 </div>
@@ -505,6 +567,7 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170515_RNASeq_Analysis.html"><strong>RNA-Seq data preprocessing</strong></a><br>
 &nbsp; &nbsp;This workflow includes data normalization and PEER factor analysis.</p>
+
 </div>
 </div>
 </div>
@@ -522,25 +585,29 @@ $(document).ready(function () {
 <div class="text_cell_render border-box-sizing rendered_html">
 <p><a href="analysis/20170424_dbGaP_Download.html"><strong>Download data from dbGaP</strong></a><br>
 &nbsp; &nbsp;A brief documentation to how dbGaP website is accessed &amp; how to download data.</p>
+
 </div>
 </div>
 </div>
 <hr>
-&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
 <!-- To enable disqus, uncomment the section below and provide your disqus_shortname -->
+
 </div>
+
 <script>
 // add bootstrap table styles to pandoc tables
 $(document).ready(function () {
   $('tr.header').parent('thead').parent('table').addClass('table table-condensed');
 });
 </script>
+
 <!-- dynamically load mathjax for compatibility with self-contained -->
 <script>
   (function () {
     var script = document.createElement("script");
     script.type = "text/javascript";
-    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    script.src  = "https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML";
     document.getElementsByTagName("head")[0].appendChild(script);
   })();
 </script>

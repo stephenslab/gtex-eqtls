@@ -1,11 +1,15 @@
+
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.3" />
+<meta name="ipynb_website:version" content="0.9.4" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
+
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
+
 <link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
 <link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
 <link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
 <link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -14,10 +18,13 @@
 <script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
 <script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
 <link rel="stylesheet"
-      href="../site_libs/highlight/textmate.css"
+      href="../site_libs/highlightjs/null.min.css"
       type="text/css" />
-<script src="../site_libs/highlight/highlight.js"></script>
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
 <script type="text/javascript">
 if (window.hljs && document.readyState && document.readyState === "complete") {
    window.setTimeout(function() {
@@ -25,9 +32,11 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
    }, 0);
 }
 </script>
-<script src="../js/toc2.js"></script>
+
+<script src="../js/doc_toc.js"></script>
 <script src="../js/docs.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_HTML"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
 <script>
     MathJax.Hub.Config({
         extensions: ["tex2jax.js"],
@@ -49,6 +58,67 @@ if (window.hljs && document.readyState && document.readyState === "complete") {
         }
     });
 </script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
 <script>
 $( document ).ready(function(){
             var cfg={'threshold':3,     // depth of toc (number of levels)
@@ -75,19 +145,19 @@ $( document ).ready(function(){
             $("#toc-level0 a").css("color","#126dce");
             $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
             var docs=analysisArray;
+            var docs_map=analysisArrayMap;
             var pos=analysisArray.indexOf(file);
             for (var a=pos;a>=0;a--){
-                  var name=docs[a]
-                  $('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
             }
             $('a[href="'+file+'.html'+'"]').css("color","#126dce");
             for (var a=pos+1;a<docs.length;a++){
-                  var name=docs[a]
-                  $(".toc #toc-level0").append('<li><a href="'+name+'.html"><font color="#073642"><b>'+name.replace(/_/g," ")+'</b></font></a></li>');
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
             }
-            $("#toc-header").hide();
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
     });
 </script>
+
 <script>
 // manage active state of menu based on current page
 $(document).ready(function () {
@@ -111,7 +181,11 @@ $(document).ready(function () {
   window.buildTabsets("TOC");
 });
 </script>
+
+
+
 <title>GTEx eQTL</title>
+
 <style type = "text/css">
 body {
   font-family: "Droid Sans";
@@ -120,10 +194,13 @@ body {
 }
 </style>
 </head>
+
 <body>
 <div tabindex="-1" id="notebook" class="border-box-sizing">
 <div class="container" id="notebook-container">
+
 <!-- code folding -->
+
 <div class="navbar navbar-default  navbar-fixed-top" role="navigation">
   <div class="container">
     <div class="navbar-header">
@@ -136,21 +213,31 @@ body {
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
+        
 <li>
   <a href="../index.html">Overview</a>
 </li>
+        
 <li>
   <a href="../analysis.html">Analysis</a>
 </li>
+        
 <li>
   <a href="../prototype.html">Prototype</a>
 </li>
+        
+<li>
+  <a href="../writeup.html">Writeup</a>
+</li>
+        
       </ul>
+        
 <ul class="nav navbar-nav navbar-right">
 <li>
    <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
+        
       </div><!--/.nav-collapse -->
   </div><!--/.container -->
 </div><!--/.navbar -->
@@ -160,6 +247,7 @@ body {
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="MASH-results-on-V6-data">MASH results on V6 data<a class="anchor-link" href="#MASH-results-on-V6-data">&#182;</a></h1><p>Without $X^TX$ in prior and instead of setting $\hat{V} = cor(Z_{null})$ we set $\hat{V} = I$.</p>
 <p>Input data is generated by procedures <a href="20171002_MASH_V8.html">documented here</a>.</p>
+
 </div>
 </div>
 </div>
@@ -174,9 +262,11 @@ body {
     <span class="o">--</span><span class="n">data</span> <span class="o">~/</span><span class="n">Documents</span><span class="o">/</span><span class="n">GTEx</span><span class="o">/</span><span class="n">mash_revision</span><span class="o">/</span><span class="n">GTExV6</span><span class="o">.</span><span class="n">Z</span><span class="o">.</span><span class="n">rds</span> \
     <span class="o">--</span><span class="n">cov</span> <span class="n">noxx</span> <span class="o">--</span><span class="n">vhat</span> <span class="mi">0</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -189,20 +279,29 @@ body {
 <span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
 <span class="n">library</span><span class="p">(</span><span class="nb">repr</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
 <div class="output_subarea output_stream output_stderr output_text">
 <pre>Loading required package: ashr
 </pre>
 </div>
 </div>
+
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
@@ -212,15 +311,18 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTEx/mash_revision/GTExV6.Z.noxx.K5.P3.V0.mash_model.rds&#39;</span><span class="p">)</span>
 <span class="n">res</span><span class="err">$</span><span class="n">result</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s1">&#39;~/Documents/GTEx/mash_revision/GTExV6.Z.noxx.K5.P3.V0.mash_posterior.rds&#39;</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="MASH-model-fit">MASH model fit<a class="anchor-link" href="#MASH-model-fit">&#182;</a></h2><p>The log-likelihood of fit is:</p>
+
 </div>
 </div>
 </div>
@@ -231,25 +333,37 @@ body {
     <div class="input_area">
 <div class=" highlight hl-sos"><pre><span></span><span class="n">get_loglik</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
 <div class="output_html rendered_html output_subarea ">
 -3067920.80564893
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>vs. in V6 mash paper the loglik was -1268999</p>
+
 </div>
 </div>
 </div>
@@ -258,6 +372,7 @@ body {
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Here is a plot of weights learned.</p>
+
 </div>
 </div>
 </div>
@@ -269,13 +384,22 @@ body {
 <div class=" highlight hl-sos"><pre><span></span><span class="n">options</span><span class="p">(</span><span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">width</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">)</span>
 <span class="n">barplot</span><span class="p">(</span><span class="n">get_estimated_pi</span><span class="p">(</span><span class="n">res</span><span class="p">),</span> <span class="n">las</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cex</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">)</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
+
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABaAAAAHgCAIAAADc1V3gAAAABmJLR0QA/wD/AP+gvaeTAAAg
 AElEQVR4nOzdd2BTVf/H8ZPRJF20tIxCKXtZRBAU3IgMtQIyFUVRxPn8FFDxkakCDhyACPj4
@@ -1150,15 +1274,19 @@ ODg4OBgAENySPRtmUxka0rbWNQgb0m9d2Lh0Rm9NFlPdrKtH8xUibanXVhRmpVyLDg+NjHmc
 USBxZ2TgQCC+bv4PQ0QOWy+0Aj0AAAAASUVORK5CYII="
 >
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>The rank 3 PCA component accounts for ~40% of all weights in the GTEx data. But unlike in <a href="https://stephenslab.github.io/gtexresults_mash/Fig.Uk3.html">mash paper analysis</a> <strong>I do not see very hight weights on singleton matrices</strong>. Here is a visualization for it (via correlation heatmap):</p>
+
 </div>
 </div>
 </div>
@@ -1181,13 +1309,22 @@ USBxZ2TgQCC+bv4PQ0QOWy+0Aj0AAAAASUVORK5CYII="
                 <span class="n">colorkey</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">,</span> <span class="n">at</span> <span class="o">=</span> <span class="n">seq</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="n">length</span><span class="o">.</span><span class="n">out</span> <span class="o">=</span> <span class="mi">64</span><span class="p">),</span>
                 <span class="n">scales</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">cex</span> <span class="o">=</span> <span class="mf">0.5</span><span class="p">,</span><span class="n">x</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">rot</span> <span class="o">=</span> <span class="mi">45</span><span class="p">))))</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
+
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABDgAAAQ4CAIAAABjcvvYAAAABmJLR0QA/wD/AP+gvaeTAAAg
 AElEQVR4nOzdeVwT59YH8JOEJYCAoqCIICogm6IWq7FFoVKtVLRuFFxQq7YXpVYEN6pIBa3V
@@ -3129,15 +3266,19 @@ CBUAAAAA0iFUAAAAAEiHUAEAAAAgHUIFAAAAgHQIFQAAAADSIVQAAAAASIdQAQAAACAdQgUA
 AACAdAgVAAAAANL5PxIn17Ubo16mAAAAAElFTkSuQmCC"
 >
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Again this is different from in <a href="https://stephenslab.github.io/gtexresults_mash/Fig.Uk3.html">mash paper analysis</a>.</p>
+
 </div>
 </div>
 </div>
@@ -3146,6 +3287,7 @@ AACAdAgVAAAAANL5PxIn17Ubo16mAAAAAElFTkSuQmCC"
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Next we perform SVD on the rank 3 PCA based covariance matrix, and plot the top eigen vectors.</p>
+
 </div>
 </div>
 </div>
@@ -3163,13 +3305,22 @@ AACAdAgVAAAAANL5PxIn17Ubo16mAAAAAElFTkSuQmCC"
   <span class="n">barplot</span><span class="p">(</span><span class="n">v</span><span class="p">[,</span><span class="n">j</span><span class="p">]</span><span class="o">/</span><span class="n">v</span><span class="p">[,</span><span class="n">j</span><span class="p">][</span><span class="n">which</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">v</span><span class="p">[,</span><span class="n">j</span><span class="p">]))],</span> <span class="n">cex</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="mf">0.7</span><span class="p">,</span>
           <span class="n">las</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s2">&quot;EigenVector &quot;</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="s2">&quot; for PCA-based covariance matrix&quot;</span><span class="p">))</span>
 </pre></div>
+
 </div>
 </div>
 </div>
+
 <div class="output_wrapper">
 <div class="output">
+
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
+
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAJYCAIAAAD9hIhNAAAABmJLR0QA/wD/AP+gvaeTAAAg
 AElEQVR4nOzdeWAU5eE38GeTEMIph6AooCB4BFGgVdSqFK+3pICoxZ/VarVaay+1Vq2KR8XW
@@ -4079,9 +4230,16 @@ nt/wy4w+mkyGuklXe/Ptgk00ohWF2WkJF85ExcY/elYAWYQMCElIhPwftrM0aZIu1JwAAAAA
 SUVORK5CYII="
 >
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
+
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAJYCAIAAAD9hIhNAAAABmJLR0QA/wD/AP+gvaeTAAAg
 AElEQVR4nOzdeWAU5eE38Ek25OC+FUUUFFHwQGqlWluKVw0CHi3Wam1r1b7WX6vWqq13RetZ
@@ -4967,9 +5125,16 @@ pmrY2958vaATjehEWX7WxbMn4pNSHjwphWxCBIQEBG38H6BqejFPTB6uAAAAAElFTkSuQmCC
 "
 >
 </div>
+
 </div>
+
 <div class="output_area">
+
 <div class="prompt"></div>
+
+
+
+
 <div class="output_png output_subarea ">
 <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAABLAAAAJYCAIAAAD9hIhNAAAABmJLR0QA/wD/AP+gvaeTAAAg
 AElEQVR4nOzdeYBVZeE38GcWZoFhX9wQBUUUXJBM0kzDLQcBl8JcK1N7zUrNzDK31FLTEHPp
@@ -5854,20 +6019,24 @@ z/Z1M8lyGuhsygSCltzrZ9Yv/qG/Jp2mbtLT3ny9oBON6EBZftbFsyfjk1IePCmFbEIEhAQE
 rfwfFLHDkWCNreQAAAAASUVORK5CYII="
 >
 </div>
+
+</div>
+
 </div>
 </div>
-</div>
+
 </div>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div>
 <div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Still, <a href="https://stephenslab.github.io/gtexresults_mash/Fig.Uk3.html">mash paper analysis</a> cannot be reproduced.</p>
+
 </div>
 </div>
 </div>
 <hr>
-&copy 2015-2017 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
 <p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/a05a4672f5b87bd4c5d988b75099f0c5ef5d57a9/analysis/20171004_MASH_Results_V6.ipynb"><code>analysis/20171004_MASH_Results_V6.ipynb</code></a> committed by Gao Wang on Fri Oct 6 08:21:28 2017 <a href="http://github.com/stephenslab/gtex-eqtls/commit/a05a4672f5b87bd4c5d988b75099f0c5ef5d57a9">revision 5, a05a467</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
