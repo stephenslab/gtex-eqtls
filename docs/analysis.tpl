@@ -229,7 +229,7 @@ body {
         
 <ul class="nav navbar-nav navbar-right">
 <li>
-   <a href="http://github.com/gaow/mnm-gtex-v8"> <span class="fa fa-github"></span> </a>
+   <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
         
