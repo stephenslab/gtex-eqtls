@@ -1,5 +1,5 @@
 name: 'GTEx V8 Multivariate Analysis'
-repo: 'http://github.com/gaow/mnm-gtex-v8'
+repo: 'http://github.com/stephenslab/gtex-eqtls'
 footer: "&copy 2018 Gao Wang, University of Chicago"
 include_dir: ['analysis']
 # exclude_file: ['analysis/Rmd_Reminder.Rmd']

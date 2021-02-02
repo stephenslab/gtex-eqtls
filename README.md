@@ -22,8 +22,8 @@ Type the following command to build this website from `Rmd` / `ipynb` files:
 
 and checkout the results here at:
 
-https://gaow.github.io/mnm-gtex-v8
+https://stephenslab.github.io/gtex-eqtls
 
-[mashr_wf]: https://gaow.github.io/mnm-gtex-v8/analysis/mashr_flashr_workflow.html
-[fastqtl_wf]: https://gaow.github.io/mnm-gtex-v8/analysis/fastqtl_to_mash.html
-[indep_qtl_wf]: https://gaow.github.io/mnm-gtex-v8/analysis/Independent_eQTL_Results.html
+[mashr_wf]: https://stephenslab.github.io/gtex-eqtls/analysis/mashr_flashr_workflow.html
+[fastqtl_wf]: https://stephenslab.github.io/gtex-eqtls/analysis/fastqtl_to_mash.html
+[indep_qtl_wf]: https://stephenslab.github.io/gtex-eqtls/analysis/Independent_eQTL_Results.html
