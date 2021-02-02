@@ -6,7 +6,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="ipynb_website:version" content="0.9.4" />
+<meta name="ipynb_website:version" content="0.9.7" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
 <link rel="stylesheet" type="text/css" href="../css/jt.css">
@@ -187,7 +187,7 @@ $(document).ready(function () {
 
 
 
-<title>GTEx eQTL</title>
+<title>GTEx V8 Multivariate Analysis</title>
 
 <style type = "text/css">
 body {
@@ -212,7 +212,7 @@ body {
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <a class="navbar-brand" href="../index.html">GTEx eQTL</a>
+      <a class="navbar-brand" href="../index.html">GTEx V8 Multivariate Analysis</a>
     </div>
     <div id="navbar" class="navbar-collapse collapse">
       <ul class="nav navbar-nav">
@@ -225,19 +225,11 @@ body {
   <a href="../analysis.html">Analysis</a>
 </li>
         
-<li>
-  <a href="../prototype.html">Prototype</a>
-</li>
-        
-<li>
-  <a href="../writeup.html">Writeup</a>
-</li>
-        
       </ul>
         
 <ul class="nav navbar-nav navbar-right">
 <li>
-   <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
+   <a href="http://github.com/gaow/mnm-gtex-v8"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
         
@@ -249,7 +241,7 @@ body {
 
 {% block footer %}
 <hr>
-&copy 2015-2018 Gao Wang et al at Stephens Lab, University of Chicago
+&copy 2018 Gao Wang, University of Chicago
 </div>
 </div>
 </body>

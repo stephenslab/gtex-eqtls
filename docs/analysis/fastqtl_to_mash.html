@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="ipynb_website:version" content="0.9.7" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="stylesheet" type="text/css" href="../css/jt.css">
+
+<link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
+<link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
+<link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<link rel="stylesheet"
+      href="../site_libs/highlightjs/null.min.css"
+      type="text/css" />
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+<script src="../js/doc_toc.js"></script>
+<script src="../js/docs.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+        },
+        "HTML-CSS": {
+            preferredFont: "TeX",
+            availableFonts: ["TeX"],
+            styles: {
+                scale: 110,
+                ".MathJax_Display": {
+                    "font-size": "110%",
+                }
+            }
+        }
+    });
+</script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
+<script>
+$( document ).ready(function(){
+            var cfg={'threshold':3,     // depth of toc (number of levels)
+             'number_sections': false,
+             'toc_cell': false,          // useless here
+             'toc_window_display': true, // display the toc window
+             "toc_section_display": "block", // display toc contents in the window
+             'sideBar':true,       // sidebar or floating window
+             'navigate_menu':false       // navigation menu (only in liveNotebook -- do not change)
+            }
+            var st={};                  // some variables used in the script
+            st.rendering_toc_cell = false;
+            st.config_loaded = false;
+            st.extension_initialized=false;
+            st.nbcontainer_marginleft = $('#notebook-container').css('margin-left')
+            st.nbcontainer_marginright = $('#notebook-container').css('margin-right')
+            st.nbcontainer_width = $('#notebook-container').css('width')
+            st.oldTocHeight = undefined
+            st.cell_toc = undefined;
+            st.toc_index=0;
+            // fire the main function with these parameters
+            table_of_contents(cfg, st);
+            var file=analysisDict[$("h1:first").attr("id")];
+            $("#toc-level0 a").css("color","#126dce");
+            $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
+            var docs=analysisArray;
+            var docs_map=analysisArrayMap;
+            var pos=analysisArray.indexOf(file);
+            for (var a=pos;a>=0;a--){
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+            }
+            $('a[href="'+file+'.html'+'"]').css("color","#126dce");
+            for (var a=pos+1;a<docs.length;a++){
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
+            }
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
+    });
+</script>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+  // mark it active
+  menuAnchor.parent().addClass('active');
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+<div class="container-fluid main-container">
+<!-- tabsets -->
+<script src="../site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+
+
+<title>GTEx V8 Multivariate Analysis</title>
+
+<style type = "text/css">
+body {
+  font-family: "Droid Sans";
+  padding-top: 66px;
+  padding-bottom: 40px;
+}
+</style>
+</head>
+
+<body>
+<div tabindex="-1" id="notebook" class="border-box-sizing">
+<div class="container" id="notebook-container">
+
+<!-- code folding -->
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="../index.html">GTEx V8 Multivariate Analysis</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+<li>
+  <a href="../index.html">Overview</a>
+</li>
+        
+<li>
+  <a href="../analysis.html">Analysis</a>
+</li>
+        
+      </ul>
+        
+<ul class="nav navbar-nav navbar-right">
+<li>
+   <a href="http://github.com/gaow/mnm-gtex-v8"> <span class="fa fa-github"></span> </a>
+</li>
+</ul>
+        
+      </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="eQTL-summary-statistics-formatting">eQTL summary statistics formatting<a class="anchor-link" href="#eQTL-summary-statistics-formatting">&#182;</a></h1><p>This workflow converts <code>fastqtl</code> eQTL analysis summary statistics text output to formats more friendly to R analysis. In particular:</p>
+<ol>
+<li>It converts single study results to HDF5 format grouped by genes.</li>
+<li>It combines multiple studies into one single HDF5 file. In the context of GTEx each study is result from one tissue.</li>
+<li>For MASH analysis in particular, it extracts from the complete data a subset of results to compute data driven MASH prior covariance, and to fit the MASH mixture model.</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Input-data">Input data<a class="anchor-link" href="#Input-data">&#182;</a></h2><h3 id="A-list-of-summary-statistics">A list of summary statistics<a class="anchor-link" href="#A-list-of-summary-statistics">&#182;</a></h3><p>Summary statistics from <code>fasteqtl</code>-like output are in text format, one row per gene-snp pair. Columns in our example data-set are:</p>
+
+<pre><code>gene_id 
+variant_id      
+tss_distance    
+ma_samples      
+ma_count        
+maf     
+pval_nominal    
+slope   
+slope_se</code></pre>
+<p>This is format of GTEx version 8 summary statistics data. Each analysis ("tissue" for GTEx) has a separate text file. Additionally there are support files of gene transcription start site coordinates, and SNP coordinates.</p>
+<p>The workflow takes a list of summary statistics file names, eg, <code>data/fastqtl/FastQTLSumStats.list</code> (can be configured) that has the contents:</p>
+
+<pre><code>Tissue_1.fastqtl.gz
+Tissue_2.fastqtl.gz
+...</code></pre>
+<p>The first two columns of these files have to be <code>gene_id</code> and <code>variant_id</code> (column name does not matter). For other contents we only need columns $\hat{\beta}$, $\text{SE}(\hat{\beta})$ and p-value for the summary statistics. In the <code>fastqtl</code> output format above it is columns <code>8, 9, 7</code>. If your summary statistics file has a different format you can use <code>--cols</code> parameter to pass the proper column numbers. There are two ways to do it:</p>
+<ol>
+<li>Specify 3 numbers for  $\hat{\beta}$, $\text{SE}(\hat{\beta})$ and p-value</li>
+<li>Specify 2 numbers for  $\hat{\beta}$ and p-value. $\text{SE}(\hat{\beta})$ will then be computed on the fly assuming that the test is two-sided test and that $\hat{\beta}/\text{SE}(\hat{\beta})$ is standard normal.</li>
+</ol>
+<p>Current default is <code>--cols 8 9 7</code>. <strong>Currently this pipeline only supports and requires summary statistics $\hat{\beta}$, $\text{SE}(\hat{\beta})$ and p-value, not other quantities (eg t statistic)</strong>.</p>
+<h3 id="A-list-of-gene-names-(optional)">A list of gene names (optional)<a class="anchor-link" href="#A-list-of-gene-names-(optional)">&#182;</a></h3><p>To speed up merging multiple HDF5 files it helps to provide a list of gene names. Otherwise it takes too much time to figure them out from individual HDF5 files before merger can happen. The gene list has the contents like:</p>
+
+<pre><code>ENSG00000186092.4
+ENSG00000227232.5
+ENSG00000228463.9
+ENSG00000241860.6
+ENSG00000268903.1
+ENSG00000269981.1
+ENSG00000279457.4
+ENSG00000279928.2
+...</code></pre>
+<h2 id="Run-analysis">Run analysis<a class="anchor-link" href="#Run-analysis">&#182;</a></h2><p>Under the same folder as this list file, you keep all these listed data files. Then you run:</p>
+
+<pre><code>JOB_OPTION="-j 8"
+#JOB_OPTION="-q midway2 -c midway2.yml"
+sos run workflows/fastqtl_to_mash.ipynb convert \
+    --data-list data/fastqtl/FastQTLSumStats.list \
+    --gene-list data/fastqtl/GTEx_genes.txt \
+    $JOB_OPTION</code></pre>
+<p>to convert to HDF5 only, and</p>
+
+<pre><code>sos run workflows/fastqtl_to_mash.ipynb \
+    --data-list data/fastqtl/FastQTLSumStats.list \
+    --gene-list data/fastqtl/GTEx_genes.txt \
+    $JOB_OPTION</code></pre>
+<p>to convert to HDF5 AND extract MASH input.</p>
+<h3 id="Note-on-JOB_OPTION">Note on <code>JOB_OPTION</code><a class="anchor-link" href="#Note-on-JOB_OPTION">&#182;</a></h3><p>With bash variable <code>JOB_OPTION</code> set to <code>-q midway2 -c midway2.yml</code>, each workflow is configured to run on UChicago RCC's midway2 cluster, via <code>task</code> option. 
+When executed as is, it takes 33hrs to convert the summary statistics for GTEx data (Release V8).
+You might need to configure <code>task</code> differently for your computing environment if you are familiar with <code>SoS</code>.
+Otherwise, you can use the <code>JOB_OPTION</code> <code>-j 8</code> to use 8 CPU threads.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="More-options">More options<a class="anchor-link" href="#More-options">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="n">sos</span> <span class="n">run</span> <span class="n">fastqtl_to_mash</span><span class="o">.</span><span class="n">ipynb</span> <span class="o">-</span><span class="n">h</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>usage: sos run fastqtl_to_mash.ipynb
+               [workflow_name | -t targets] [options] [workflow_options]
+  workflow_name:        Single or combined workflows defined in this script
+  targets:              One or more targets to generate
+  options:              Single-hyphen sos parameters (see &#34;sos run -h&#34; for details)
+  workflow_options:     Double-hyphen workflow-specific parameters
+
+Workflows:
+  convert
+  default
+  document_it
+
+Global Workflow Options:
+  --cwd fastqtl_to_mash_output (as path)
+                        Work directory / output directory
+  --data-list data/eQTL_summary_files.txt (as path)
+                        A text file containing data-set names
+  --gene-list . (as path)
+                        Optionally, a list of gene names.
+  --msg &#39;eQTL mapping summary statistics&#39;
+                        Meta-info tag for HDF5 database
+  --maxsize 1000 (as int)
+                        maximum number of groups per HDF5 file
+  --cols 8 9 7 (as list)
+                        1-based indexing of 3 numbers indicating columns for
+                        betahat, se(betahat) and p-value, or 2 numbesr for
+                        betahat and p-value
+  --keep-ensg-version 0 (as int)
+  --common-suffix &#39;&#39;
+                        for GTEx data, parameter: common_suffix =
+                        &#34;.allpairs.txt&#34;
+
+Sections
+  convert_0, default_0: Generate utility functions
+  convert_1, default_1: Convert summary stats gzip format to HDF5
+  convert_2, default_2: Merge single study data to multivariate data
+  default_3:            Extract data to fit MASH model
+    Workflow Options:
+      --random-per-gene 9 (as int)
+                        Number of random SNPs to draw per gene for fitting MASH
+                        mixture Use -1 to export all
+      --best-per-gene 1 (as int)
+                        Use 1 to extract strongest gene-snp pair Use 0 to avoid
+                        extracting the info
+  default_4:            Subset and split data, generate Z-score and save to RDS
+    Workflow Options:
+      --random-snp-size 0.5 (as float)
+                        Size of mash random SNPs. This specifies the size of
+                        `random` SNP set and the rest of random SNPs go into
+                        `random_test` SNP set. if input is float it means half
+                        random SNPs the input can also be a integer to use
+                        specified number.
+      --effects-list NULL (as path)
+                        A list of effect names (SNP names) to include in mash
+                        analysis.
+      --conditions-list NULL (as path)
+                        A list of condition names (tissue names) to include in
+                        mash analysis
+  document_it:          Export workflow to HTML document
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Output-data">Output data<a class="anchor-link" href="#Output-data">&#182;</a></h2><p>If you run the entire workflow, you should find under <code>./fastqtl_to_mash_output</code> (can be configured):</p>
+<ul>
+<li>Study (tissue) specific HDF5 files of summary statistics</li>
+<li>Merged HDF5 from multiple studies</li>
+<li>"*.portable.h5" data extracted for MASH computations</li>
+<li>"*.mash.rds" data in RDS format splitted to <code>strong</code>/<code>random</code> and optionally <code>random_test</code>, with Z-scores computed from p-values.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
+<span class="c1"># Work directory / output directory</span>
+<span class="kn">parameter:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;./fastqtl_to_mash_output&#39;</span><span class="p">)</span>
+<span class="c1"># A text file containing data-set names</span>
+<span class="kn">parameter:</span> <span class="n">data_list</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;data/eQTL_summary_files.txt&quot;</span><span class="p">)</span>
+<span class="c1"># Optionally, a list of gene names.</span>
+<span class="kn">parameter:</span> <span class="n">gene_list</span> <span class="o">=</span> <span class="n">path</span><span class="p">()</span>
+<span class="c1"># Meta-info tag for HDF5 database</span>
+<span class="kn">parameter:</span> <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;eQTL mapping summary statistics&quot;</span>
+<span class="c1"># maximum number of groups per HDF5 file</span>
+<span class="kn">parameter:</span> <span class="n">maxsize</span> <span class="o">=</span> <span class="mi">1000</span>
+<span class="c1"># 1-based indexing of 3 numbers indicating columns for betahat, se(betahat) and p-value, </span>
+<span class="c1"># or 2 numbesr for betahat and p-value</span>
+<span class="kn">parameter:</span> <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="mi">8</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">7</span><span class="p">]</span>
+<span class="kn">parameter:</span> <span class="n">keep_ensg_version</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="c1"># for GTEx data, parameter: common_suffix = &quot;.allpairs.txt&quot;</span>
+<span class="kn">parameter:</span> <span class="n">common_suffix</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+<span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">cols</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+    <span class="n">cols</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Pipeline-details">Pipeline details<a class="anchor-link" href="#Pipeline-details">&#182;</a></h2><h3 id="HDF5-utilities">HDF5 utilities<a class="anchor-link" href="#HDF5-utilities">&#182;</a></h3><p>The HDF5 Python interface <code>pytables</code> is used to program the data format conversion workhorse.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Generate utility functions</span>
+<span class="p">[</span><span class="n">convert_0</span><span class="p">,</span> <span class="n">default_0</span><span class="p">]</span>
+<span class="kn">depends:</span> <span class="n">Py_Module</span><span class="p">(</span><span class="s1">&#39;tables&#39;</span><span class="p">),</span> <span class="n">Py_Module</span><span class="p">(</span><span class="s1">&#39;pandas&gt;0.23.0&#39;</span><span class="p">)</span>
+<span class="kn">report:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s2">&quot;${ }&quot;</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="s1">&#39;.sos/utils.py&#39;</span>
+    <span class="kn">import</span> <span class="nn">sys</span><span class="o">,</span> <span class="nn">os</span><span class="o">,</span> <span class="nn">re</span><span class="o">,</span> <span class="nn">copy</span>
+    <span class="kn">import</span> <span class="nn">numpy</span> <span class="kn">as</span> <span class="nn">np</span><span class="o">,</span> <span class="nn">pandas</span> <span class="kn">as</span> <span class="nn">pd</span><span class="o">,</span> <span class="nn">tables</span> <span class="kn">as</span> <span class="nn">tb</span>
+    <span class="n">tb</span><span class="o">.</span><span class="n">parameters</span><span class="o">.</span><span class="n">MAX_GROUP_WIDTH</span> <span class="o">=</span> <span class="mi">51200</span>
+    <span class="c1"># tb.parameters.NODE_CACHE_SLOTS = -51200</span>
+    <span class="c1"># tb.parameters.METADATA_CACHE_SIZE = 1048576 * 100000</span>
+    <span class="c1"># tb.parameters.CHUNK_CACHE_SIZE = 2097152 * 100000</span>
+    <span class="c1"># tb.parameters.CHUNK_CACHE_NELMTS = 521</span>
+    <span class="kn">import</span> <span class="nn">scipy.stats</span> <span class="kn">as</span> <span class="nn">st</span>
+
+    <span class="k">class</span> <span class="nc">Environment</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">float</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">duplicate_tag</span> <span class="o">=</span> <span class="s1">&#39;_duplicated_&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">common_suffix</span> <span class="o">=</span> <span class="s1">&#39;${common_suffix}.h5&#39;</span>
+
+    <span class="kp">env</span> <span class="o">=</span> <span class="n">Environment</span><span class="p">()</span>
+
+    <span class="k">class</span> <span class="nc">TBData</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="kp">name</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">None</span><span class="p">,</span> <span class="n">root</span> <span class="o">=</span> <span class="s1">&#39;/&#39;</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;bzip2&#39;</span><span class="p">):</span>
+            <span class="sd">&#39;&#39;&#39;bzip2 may not be compatible with other hdf5 applications; but zlib is fine&#39;&#39;&#39;</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__root</span> <span class="o">=</span> <span class="n">root</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;/&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__group</span> <span class="o">=</span> <span class="kp">name</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span> <span class="o">=</span> <span class="n">msg</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">dict</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+                <span class="k">elif</span> <span class="nb">type</span><span class="p">(</span><span class="n">data</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">str</span><span class="p">:</span>
+                    <span class="c1"># is file name</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__load</span><span class="p">(</span><span class="n">tb</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">data</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="c1"># is file stream</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__load</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+            <span class="k">except</span> <span class="n">tb</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">NoSuchNodeError</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s1">&#39;Cannot find dataset {}!&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kp">name</span><span class="p">))</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">tb_filters</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">Filters</span><span class="p">(</span><span class="n">complevel</span> <span class="o">=</span> <span class="mi">9</span><span class="p">,</span> <span class="n">complib</span><span class="o">=</span><span class="n">complib</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">sink</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+            <span class="k">with</span> <span class="n">tb</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">:</span>
+                    <span class="k">try</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">)</span>
+                    <span class="k">except</span><span class="p">:</span>
+                        <span class="k">pass</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="c1"># there is existing data -- have to merge with current data</span>
+                    <span class="c1"># have to do this because the input file lines are not grouped by gene names!!</span>
+                    <span class="c1"># use try ... except to hopefully faster than if ... else</span>
+                    <span class="c1"># e.g., if not f.__contains__(&#39;/{}&#39;.format(self.__group)) ... else ...</span>
+                    <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">f</span><span class="o">.</span><span class="n">list_nodes</span><span class="p">(</span><span class="s1">&#39;/{}/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">)):</span>
+                        <span class="k">if</span> <span class="n">element</span><span class="o">.</span><span class="kp">name</span> <span class="o">!=</span> <span class="s1">&#39;colnames&#39;</span><span class="p">:</span>
+                            <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="kp">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">element</span><span class="p">[:],</span> <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="kp">name</span><span class="p">]))</span>
+                <span class="k">except</span> <span class="n">tb</span><span class="o">.</span><span class="n">exceptions</span><span class="o">.</span><span class="n">NoSuchNodeError</span><span class="p">:</span>
+                    <span class="n">f</span><span class="o">.</span><span class="n">create_group</span><span class="p">(</span><span class="s2">&quot;/&quot;</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">,</span>
+                                   <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__msg</span> <span class="k">else</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">)</span>
+                <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">__store_array</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+                <span class="n">f</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+        <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">table</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">output</span><span class="p">:</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;colnames&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="p">:</span> <span class="bp">self</span><span class="p">[</span><span class="n">table</span><span class="p">][:,</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;colnames&#39;</span><span class="p">]))},</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;rownames&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">na_rep</span> <span class="o">=</span> <span class="s1">&#39;NA&#39;</span><span class="p">)</span>
+                <span class="k">return</span> <span class="bp">None</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">({</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;colnames&#39;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="p">:</span> <span class="bp">self</span><span class="p">[</span><span class="n">table</span><span class="p">][:,</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="s1">&#39;colnames&#39;</span><span class="p">]))},</span> <span class="n">index</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;rownames&#39;</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">__load</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">fstream</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="k">for</span> <span class="n">element</span> <span class="ow">in</span> <span class="n">fstream</span><span class="o">.</span><span class="n">list_nodes</span><span class="p">(</span><span class="s1">&#39;/{}/{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">)):</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="n">element</span><span class="o">.</span><span class="kp">name</span><span class="p">]</span> <span class="o">=</span> <span class="n">element</span><span class="p">[:]</span>
+                <span class="n">fstream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="n">fstream</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+                <span class="k">raise</span>
+
+        <span class="k">def</span> <span class="nf">__roll_back</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">group</span><span class="p">,</span> <span class="kp">name</span><span class="p">):</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">n</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">group</span><span class="p">,</span> <span class="kp">name</span><span class="p">)</span>
+                <span class="n">n</span><span class="o">.</span><span class="n">_f_remove</span><span class="p">()</span>
+            <span class="k">except</span> <span class="ne">AttributeError</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+        <span class="k">def</span> <span class="nf">__store_array</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="kp">name</span><span class="p">,</span> <span class="n">fstream</span><span class="p">):</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">:</span>
+                <span class="n">element</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="n">fstream</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__root</span><span class="p">),</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">element</span> <span class="o">=</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">fstream</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">)</span>
+            <span class="n">arr</span> <span class="o">=</span> <span class="bp">self</span><span class="p">[</span><span class="kp">name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span> <span class="ow">is</span> <span class="nb">list</span><span class="p">:</span>
+                <span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">arr</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__roll_back</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="kp">name</span><span class="p">)</span>
+            <span class="c1">#</span>
+            <span class="k">if</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span> <span class="o">!=</span> <span class="p">(</span><span class="mi">0</span><span class="p">,):</span>
+                <span class="n">ds</span> <span class="o">=</span> <span class="n">fstream</span><span class="o">.</span><span class="n">create_carray</span><span class="p">(</span><span class="n">element</span><span class="p">,</span> <span class="kp">name</span><span class="p">,</span> <span class="n">tb</span><span class="o">.</span><span class="n">Atom</span><span class="o">.</span><span class="n">from_dtype</span><span class="p">(</span><span class="n">arr</span><span class="o">.</span><span class="n">dtype</span><span class="p">),</span> <span class="n">arr</span><span class="o">.</span><span class="n">shape</span><span class="p">,</span>
+                                           <span class="n">filters</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">tb_filters</span><span class="p">)</span>
+                <span class="n">ds</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">arr</span>
+
+    <span class="k">def</span> <span class="nf">get_tb_grps</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="n">group_name</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">filenames</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">[]</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">filenames</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+            <span class="n">filenames</span> <span class="o">=</span> <span class="p">[</span><span class="n">filenames</span><span class="p">]</span>
+        <span class="n">names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+        <span class="k">for</span> <span class="n">filename</span> <span class="ow">in</span> <span class="n">filenames</span><span class="p">:</span>
+            <span class="k">with</span> <span class="n">tb</span><span class="o">.</span><span class="n">open_file</span><span class="p">(</span><span class="n">filename</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                <span class="n">names</span><span class="o">.</span><span class="n">update</span><span class="p">([</span><span class="n">node</span><span class="o">.</span><span class="n">_v_name</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">root</span> <span class="k">if</span> <span class="n">group_name</span> <span class="ow">is</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">f</span><span class="o">.</span><span class="n">root</span><span class="p">,</span> <span class="s1">&#39;{}&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">group_name</span><span class="p">)))])</span>
+        <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">names</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">get_se</span><span class="p">(</span><span class="n">bhat</span><span class="p">,</span> <span class="n">pval</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bhat</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="n">pval</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">z</span> <span class="o">=</span> <span class="n">st</span><span class="o">.</span><span class="n">norm</span><span class="o">.</span><span class="n">ppf</span><span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">pval</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">z</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">se</span> <span class="o">=</span> <span class="n">bhat</span><span class="o">/</span><span class="n">z</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">se</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        <span class="k">return</span> <span class="n">se</span>
+
+    <span class="k">class</span> <span class="nc">SSData</span><span class="p">:</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">header</span> <span class="o">=</span> <span class="bp">False</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;buffer&#39;</span><span class="p">:{</span><span class="s1">&#39;data&#39;</span><span class="p">:[],</span> <span class="s1">&#39;rownames&#39;</span><span class="p">:[]},</span> <span class="s1">&#39;output&#39;</span><span class="p">:{}}</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="n">header</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">previous_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_name</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">min_line_len</span> <span class="o">=</span> <span class="nb">max</span><span class="p">([</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]},</span> <span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]},</span> <span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">2</span><span class="p">]}])</span>
+
+        <span class="k">def</span> <span class="nf">parse</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">line</span><span class="p">,</span> <span class="n">ensg_version</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">include</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()):</span>
+            <span class="c1"># input line is snp, gene, beta, t, pval and optionally se(bhat)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__reset</span><span class="p">()</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">current_name</span> <span class="o">=</span> <span class="bp">None</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="nb">bytes</span><span class="p">):</span>
+                <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">decode</span><span class="p">()</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">line</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">()</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">header</span><span class="p">:</span>
+                <span class="c1"># header line has to be accounted for</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">header</span> <span class="o">=</span> <span class="bp">False</span>
+                <span class="k">return</span> <span class="mi">0</span>
+            <span class="c1">#</span>
+            <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">include</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="c1"># the line is not long enough ... there is format issues</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">line</span><span class="p">)</span> <span class="o">&lt;</span> <span class="bp">self</span><span class="o">.</span><span class="n">min_line_len</span><span class="p">:</span>
+                <span class="k">return</span> <span class="o">-</span><span class="mi">1</span>
+            <span class="c1">#</span>
+            <span class="k">if</span> <span class="n">ensg_version</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">rsplit</span><span class="p">(</span><span class="s1">&#39;.&#39;</span><span class="p">,</span><span class="mi">1</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_name</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">previous_name</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">current_name</span> <span class="o">=</span> <span class="n">line</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">current_name</span> <span class="o">!=</span> <span class="bp">self</span><span class="o">.</span><span class="n">previous_name</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">__reset</span><span class="p">()</span>
+            <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">2</span><span class="p">]}</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="c1"># the two numbers are bhat and p-value, we need to compute se(bhat)</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">line</span><span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">}],</span> <span class="nb">str</span><span class="p">(</span><span class="n">get_se</span><span class="p">(</span><span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">}]),</span> <span class="nb">float</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">}]))),</span> <span class="n">line</span><span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">}]])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">line</span><span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">}],</span> <span class="n">line</span><span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">}],</span> <span class="n">line</span><span class="p">[</span><span class="err">$</span><span class="p">{</span><span class="n">cols</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="mi">1</span><span class="p">}]])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__format_variant_id</span><span class="p">(</span><span class="n">line</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+            <span class="k">return</span> <span class="mi">0</span>
+        
+        <span class="nd">@staticmethod</span>
+        <span class="k">def</span> <span class="nf">__format_variant_id</span><span class="p">(</span><span class="n">value</span><span class="p">):</span>
+            <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">strip</span><span class="p">(</span><span class="s1">&#39;&quot;&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">lstrip</span><span class="p">(</span><span class="s1">&#39;chr&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">:</span>
+                <span class="c1"># keep it chr, pos, ref, alt</span>
+                <span class="n">value</span> <span class="o">=</span> <span class="n">value</span><span class="p">[:</span><span class="mi">4</span><span class="p">]</span>
+            <span class="k">return</span> <span class="s1">&#39;_&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+        <span class="k">def</span> <span class="nf">__reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">],</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kp">env</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">][</span><span class="s1">&#39;colnames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span><span class="s1">&#39;se&#39;</span><span class="p">,</span><span class="s1">&#39;pval&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">copy</span><span class="o">.</span><span class="n">deepcopy</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">])</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;buffer&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span><span class="p">:[],</span> <span class="s1">&#39;rownames&#39;</span><span class="p">:[]}</span>
+
+        <span class="k">def</span> <span class="nf">dump</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;output&#39;</span><span class="p">]</span>
+
+    <span class="k">class</span> <span class="nc">DataMerger</span><span class="p">(</span><span class="n">TBData</span><span class="p">):</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">files</span><span class="p">,</span> <span class="kp">name</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+            <span class="n">TBData</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="p">{},</span> <span class="kp">name</span><span class="p">,</span> <span class="n">msg</span><span class="p">,</span> <span class="n">complib</span> <span class="o">=</span> <span class="s2">&quot;zlib&quot;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">files</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">files</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">__group</span> <span class="o">=</span> <span class="kp">name</span>
+
+        <span class="k">def</span> <span class="nf">merge</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">one_snp</span> <span class="o">=</span> <span class="bp">None</span>
+            <span class="n">failure_ct</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="c1"># Collect data</span>
+            <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">:</span>
+                <span class="n">tissue</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="sa">r</span><span class="s1">&#39;{}$&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="kp">env</span><span class="o">.</span><span class="n">common_suffix</span><span class="p">),</span> <span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">item</span><span class="p">))</span>
+                <span class="k">try</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">]</span> <span class="o">=</span> <span class="n">TBData</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">)</span>
+                    <span class="k">if</span> <span class="n">one_snp</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span> <span class="n">one_snp</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;data&#39;</span> <span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span><span class="p">]]),</span> <span class="s1">&#39;rownames&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+                    <span class="n">failure_ct</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="c1"># Fix row name</span>
+                <span class="c1"># Because in GTEx data file there are duplicated gene-snp pairs having different sumstats!!</span>
+                <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+                    <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">__dedup</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">],</span> <span class="n">item</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">failure_ct</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">files</span><span class="p">):</span>
+                <span class="k">return</span> <span class="mi">1</span>
+            <span class="c1"># Merge data</span>
+            <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">([</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span><span class="s1">&#39;se&#39;</span><span class="p">,</span><span class="s1">&#39;pval&#39;</span><span class="p">]):</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                    <span class="p">{</span><span class="n">tissue</span> <span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">][</span><span class="s1">&#39;data&#39;</span><span class="p">][:,</span><span class="n">idx</span><span class="p">]},</span>
+                    <span class="n">index</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="k">if</span> <span class="n">data</span><span class="p">[</span><span class="n">tissue</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="p">[</span><span class="n">one_snp</span><span class="p">]</span>
+                    <span class="p">)</span> <span class="k">for</span> <span class="n">tissue</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">keys</span><span class="p">())],</span> <span class="n">sort</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">axis</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;rownames&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="k">if</span> <span class="s1">&#39;colnames&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="bp">self</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="p">[</span><span class="s1">&#39;colnames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">columns</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">dtype</span> <span class="o">=</span> <span class="nb">str</span><span class="p">)</span>
+                <span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="bp">self</span><span class="p">[</span><span class="n">item</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">dtype</span> <span class="o">=</span> <span class="kp">env</span><span class="o">.</span><span class="n">float</span><span class="p">)</span>
+            <span class="c1"># np.savetxt(sys.stdout, self[&#39;pval&#39;], fmt=&#39;%10.5f&#39;)</span>
+            <span class="c1"># print(self[&#39;rownames&#39;])</span>
+            <span class="c1"># print(self[&#39;colnames&#39;])</span>
+            <span class="k">return</span> <span class="mi">0</span>
+
+        <span class="k">def</span> <span class="nf">__dedup</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">seq</span><span class="p">,</span> <span class="n">filename</span><span class="p">):</span>
+            <span class="n">seen</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="n">dups</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+            <span class="k">def</span> <span class="nf">__is_seen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">seen</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">x</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">seen</span><span class="p">:</span>
+                    <span class="n">seen</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">=</span> <span class="mi">0</span>
+                    <span class="k">return</span> <span class="mi">0</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">seen</span><span class="p">[</span><span class="n">x</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+                    <span class="n">dups</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+                    <span class="k">return</span> <span class="mi">1</span>
+            <span class="c1"># Tag them</span>
+            <span class="n">obs</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">__is_seen</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">seen</span><span class="p">)</span> <span class="k">else</span> <span class="s1">&#39;</span><span class="si">%s%s%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="kp">env</span><span class="o">.</span><span class="n">duplicate_tag</span><span class="p">,</span> <span class="n">seen</span><span class="p">[</span><span class="n">x</span><span class="p">])</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">seq</span><span class="p">]</span>
+            <span class="c1"># Log them</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">dups</span><span class="p">):</span>
+                <span class="n">filename</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">filename</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">filename</span> <span class="o">+</span> <span class="s1">&#39;.error&#39;</span><span class="p">,</span> <span class="s1">&#39;a&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                    <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">dups</span><span class="p">:</span>
+                        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s1">&#39;{}:{} appeared {} times in {}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span>\
+                                <span class="n">format</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">__group</span><span class="p">,</span> <span class="n">item</span><span class="p">,</span> <span class="n">seen</span><span class="p">[</span><span class="n">item</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">filename</span><span class="p">))</span>
+            <span class="k">return</span> <span class="n">obs</span>
+
+    <span class="k">def</span> <span class="nf">get_gs_pairs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="kp">name</span><span class="p">,</span> <span class="n">num</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="n">method</span> <span class="o">=</span> <span class="s1">&#39;equal_space&#39;</span><span class="p">):</span>
+        <span class="sd">&#39;&#39;&#39;choose gene-snp pairs from data, controlled by num = (a, b)</span>
+<span class="sd">        for the best gene-snp pair (a = 0 or 1), and b other random </span>
+<span class="sd">        gene-snp pairs&#39;&#39;&#39;</span>
+
+        <span class="k">def</span> <span class="nf">random_sample</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">),</span> <span class="n">k</span><span class="p">))))</span>
+
+        <span class="k">def</span> <span class="nf">equal_sample</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">k</span><span class="p">):</span>
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">&lt;</span> <span class="n">k</span> <span class="ow">or</span> <span class="n">k</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="n">f</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">m</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="p">[</span><span class="n">i</span><span class="o">*</span><span class="n">n</span><span class="o">//</span><span class="n">m</span> <span class="o">+</span> <span class="n">n</span><span class="o">//</span><span class="p">(</span><span class="mi">2</span><span class="o">*</span><span class="n">m</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">m</span><span class="p">)]</span>
+            <span class="k">return</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">f</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">x</span><span class="p">))]))</span>
+
+        <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;colnames&#39;</span> <span class="p">:</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;colnames&#39;</span><span class="p">]}</span>
+        <span class="n">lp</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="s1">&#39;pval&#39;</span><span class="p">)</span>
+        <span class="n">shat</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="s1">&#39;se&#39;</span><span class="p">)</span>
+        <span class="c1"># pval cannot be nan or zero (in fastqtl output, Shat nan has pval zero)</span>
+        <span class="n">lp</span> <span class="o">=</span> <span class="n">lp</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">lp</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">np</span><span class="o">.</span><span class="n">all</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">isfinite</span><span class="p">(</span><span class="n">shat</span><span class="p">),</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)]</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">lp</span><span class="o">.</span><span class="n">empty</span> <span class="ow">and</span> <span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">None</span>
+        <span class="c1"># Find strong SNP-gene pair</span>
+        <span class="n">lp</span> <span class="o">=</span> <span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="n">lp</span><span class="p">)</span>
+        <span class="n">rowidx</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">where</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="o">==</span> <span class="n">lp</span><span class="o">.</span><span class="n">max</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">idxmax</span><span class="p">())[</span><span class="mi">0</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">if</span> <span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">output</span><span class="p">[</span><span class="s1">&#39;strong_rownames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="kp">name</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rownames&#39;</span><span class="p">][</span><span class="n">rowidx</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">())]</span>
+            <span class="n">output</span><span class="p">[</span><span class="s1">&#39;strong&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="s1">&#39;pval&#39;</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">]:</span>
+                <span class="n">output</span><span class="p">[</span><span class="s1">&#39;strong&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">rowidx</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">all_randomidxes</span> <span class="o">=</span> <span class="p">[</span><span class="n">y</span> <span class="k">for</span> <span class="n">y</span><span class="p">,</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s1">&#39;rownames&#39;</span><span class="p">])</span> <span class="k">if</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">lp</span><span class="o">.</span><span class="n">index</span> <span class="ow">and</span> <span class="n">y</span> <span class="o">!=</span> <span class="n">rowidx</span><span class="p">]</span>
+            <span class="n">sample_randomidxes</span> <span class="o">=</span> <span class="n">random_sample</span><span class="p">(</span><span class="n">all_randomidxes</span><span class="p">,</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span> <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;random&#39;</span> <span class="k">else</span> <span class="n">equal_sample</span><span class="p">(</span><span class="n">all_randomidxes</span><span class="p">,</span> <span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">output</span><span class="p">[</span><span class="s1">&#39;random_rownames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;</span><span class="si">%s</span><span class="s1">_</span><span class="si">%s</span><span class="s1">&#39;</span> <span class="o">%</span> <span class="p">(</span><span class="kp">name</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s1">&#39;rownames&#39;</span><span class="p">][</span><span class="n">x</span><span class="p">]</span><span class="o">.</span><span class="n">decode</span><span class="p">())</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">sample_randomidxes</span><span class="p">]</span>
+            <span class="n">output</span><span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">&#39;beta&#39;</span><span class="p">,</span> <span class="s1">&#39;pval&#39;</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">]:</span>
+                <span class="n">output</span><span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">][</span><span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">data</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">sample_randomidxes</span><span class="p">,</span> <span class="p">:]</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;strong&#39;</span> <span class="ow">in</span> <span class="n">output</span> <span class="ow">and</span> <span class="ow">not</span> <span class="s1">&#39;random&#39;</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="k">return</span> <span class="n">output</span>
+
+    <span class="k">def</span> <span class="nf">merge_tmp_h5</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">0</span><span class="p">):</span>
+        <span class="kn">from</span> <span class="nn">glob</span> <span class="kn">import</span> <span class="n">glob</span>
+        <span class="n">tmpfiles</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">glob</span><span class="p">(</span><span class="n">output</span> <span class="o">+</span> <span class="s2">&quot;_*.tmp&quot;</span><span class="p">))</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">output</span><span class="o">+</span><span class="s1">&#39;.h5&#39;</span><span class="p">):</span>
+            <span class="n">os</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">output</span><span class="o">+</span><span class="s1">&#39;.h5&#39;</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">tmpfiles</span><span class="p">):</span>
+            <span class="k">for</span> <span class="kp">name</span> <span class="ow">in</span> <span class="n">get_tb_grps</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+                <span class="n">cmd</span> <span class="o">=</span> <span class="s1">&#39;h5copy -i {0} -o {2} -s &quot;/{1}&quot; -d &quot;/{1}&quot;&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="kp">name</span><span class="p">,</span> <span class="n">output</span><span class="o">+</span><span class="s1">&#39;.h5&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+                    <span class="k">print</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="n">cmd</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Convert-to-HDF5-format">Convert to HDF5 format<a class="anchor-link" href="#Convert-to-HDF5-format">&#182;</a></h3>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Per-study-(tissue)-conversion">Per study (tissue) conversion<a class="anchor-link" href="#Per-study-(tissue)-conversion">&#182;</a></h4><p>For per study conversion I use <code>bzip2</code> compression method and <code>float32</code> to achieve higher compression rate. This workflow step will generate one HDF5 file per summary statistics file. <code>h5copy</code> program can be installed via <code>conda install -c conda-forge hdf5</code>.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Convert summary stats gzip format to HDF5</span>
+<span class="p">[</span><span class="n">convert_1</span><span class="p">,</span> <span class="n">default_1</span><span class="p">]</span>
+<span class="kn">depends:</span> <span class="n">executable</span><span class="p">(</span><span class="s2">&quot;h5copy&quot;</span><span class="p">)</span>
+<span class="n">fail_if</span><span class="p">(</span><span class="ow">not</span> <span class="n">data_list</span><span class="o">.</span><span class="n">is_file</span><span class="p">(),</span> <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Need data list file!&#39;</span><span class="p">)</span>
+<span class="n">data_files</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">get_output</span><span class="p">(</span><span class="n">f</span><span class="s2">&quot;awk &#39;{{print $1}}&#39; {data_list:e}&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">))</span>
+<span class="n">fail_if</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">data_files</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="s1">&#39;Need input data files!&#39;</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">input:</span> <span class="p">[</span><span class="n">f</span><span class="s1">&#39;{data_list:d}/{x}&#39;</span> <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">f</span><span class="s1">&#39;{data_list:d}/{x}&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">data_files</span><span class="p">],</span> <span class="n">group_by</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s1">&#39;{cwd:a}/{_input:bn}.h5&#39;</span>
+<span class="kn">task:</span> <span class="kp">trunk_workers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s1">&#39;36h&#39;</span><span class="p">,</span> <span class="kp">trunk_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s1">&#39;4G&#39;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">tags</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;{_output:bn}&#39;</span>
+
+<span class="kn">bash:</span> <span class="n">expand</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">n</span><span class="p">}</span><span class="n">_</span><span class="o">*.</span><span class="n">tmp</span>
+    
+<span class="kn">python:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s2">&quot;${ }&quot;</span><span class="p">,</span> <span class="nb">input</span> <span class="o">=</span> <span class="s1">&#39;.sos/utils.py&#39;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="kn">import</span> <span class="nn">gzip</span>
+    <span class="n">gene_names</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">gene_list</span><span class="p">:</span><span class="n">r</span><span class="p">})</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span> <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">gene_list</span><span class="o">.</span><span class="n">is_file</span><span class="p">()}</span> <span class="k">else</span> <span class="p">[])</span>
+
+    <span class="n">ssp</span> <span class="o">=</span> <span class="n">SSData</span><span class="p">(</span><span class="n">header</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+    <span class="n">group_counts</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">with</span> <span class="n">gzip</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">})</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">line</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">readline</span><span class="p">()</span>
+            <span class="n">quit</span> <span class="o">=</span> <span class="n">ssp</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">line</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">keep_ensg_version</span><span class="p">},</span> <span class="n">include</span> <span class="o">=</span> <span class="n">gene_names</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">quit</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">if</span> <span class="n">ssp</span><span class="o">.</span><span class="n">current_name</span> <span class="o">!=</span> <span class="n">ssp</span><span class="o">.</span><span class="n">previous_name</span><span class="p">:</span>
+                <span class="n">group_counts</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+                    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">FlavorWarning</span><span class="p">)</span>
+                    <span class="n">data</span> <span class="o">=</span> <span class="n">TBData</span><span class="p">(</span><span class="n">ssp</span><span class="o">.</span><span class="n">dump</span><span class="p">(),</span> <span class="n">ssp</span><span class="o">.</span><span class="n">previous_name</span><span class="p">,</span> <span class="s2">&quot;${msg}&quot;</span><span class="p">)</span>
+                    <span class="n">data</span><span class="o">.</span><span class="n">sink</span><span class="p">(</span><span class="s2">&quot;${_output:n}_</span><span class="si">%i</span><span class="s2">.tmp&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">group_counts</span> <span class="o">/</span> <span class="err">$</span><span class="p">{</span><span class="n">maxsize</span><span class="p">}))</span> 
+                                <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">maxsize</span><span class="p">}</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+                <span class="n">ssp</span><span class="o">.</span><span class="n">previous_name</span> <span class="o">=</span> <span class="n">ssp</span><span class="o">.</span><span class="n">current_name</span>
+            <span class="k">if</span> <span class="n">quit</span><span class="p">:</span>
+                <span class="k">break</span>
+    <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">maxsize</span><span class="p">}</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">merge_tmp_h5</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">nr</span><span class="p">})</span>
+
+<span class="kn">bash:</span> <span class="n">expand</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">n</span><span class="p">}</span><span class="n">_</span><span class="o">*.</span><span class="n">tmp</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h4 id="Merge-per-study-(tissue)-HDF5-to-one-HDF5">Merge per study (tissue) HDF5 to one HDF5<a class="anchor-link" href="#Merge-per-study-(tissue)-HDF5-to-one-HDF5">&#182;</a></h4><p>This step creates tables for each summary statistic per gene from multiple studies. Rows are effects (SNPs), columns are conditions (tissue names). This time I use <code>zlib</code> compression for better compatibility with other HDF5 routines (eg <code>rhdf5</code>).</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Merge single study data to multivariate data</span>
+<span class="p">[</span><span class="n">convert_2</span><span class="p">,</span> <span class="n">default_2</span><span class="p">]</span>
+<span class="kn">depends:</span> <span class="n">executable</span><span class="p">(</span><span class="s2">&quot;h5copy&quot;</span><span class="p">)</span>
+<span class="kn">input:</span> <span class="n">group_by</span> <span class="o">=</span> <span class="s1">&#39;all&#39;</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s1">&#39;{cwd:a}/{data_list:bn}.h5&#39;</span>
+<span class="kn">task:</span> <span class="kp">trunk_workers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s1">&#39;36h&#39;</span><span class="p">,</span> <span class="kp">trunk_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s1">&#39;4G&#39;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">tags</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;{_output:bn}&#39;</span>
+
+<span class="kn">bash:</span> <span class="n">expand</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">n</span><span class="p">}</span><span class="n">_</span><span class="o">*.</span><span class="n">tmp</span>
+
+<span class="kn">python:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span><span class="p">,</span> <span class="nb">input</span> <span class="o">=</span> <span class="s1">&#39;.sos/utils.py&#39;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">gene_list</span><span class="o">.</span><span class="n">is_file</span><span class="p">()}:</span>
+        <span class="n">gene_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">gene_list</span><span class="p">:</span><span class="n">r</span><span class="p">})</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gene_names</span> <span class="o">=</span> <span class="n">get_tb_grps</span><span class="p">([</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">,}])</span>
+    <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">keep_ensg_version</span><span class="p">}</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">gene_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gene_names</span><span class="p">]</span>
+    <span class="n">failure_ct</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="n">item</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gene_names</span><span class="p">):</span>
+        <span class="n">ssm</span> <span class="o">=</span> <span class="n">DataMerger</span><span class="p">([</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">,}],</span> <span class="n">item</span><span class="p">,</span> <span class="s2">&quot;${msg}&quot;</span><span class="p">)</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">FlavorWarning</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">ssm</span><span class="o">.</span><span class="n">merge</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+                <span class="n">ssm</span><span class="o">.</span><span class="n">sink</span><span class="p">(</span><span class="s2">&quot;${_output:n}_</span><span class="si">%i</span><span class="s2">.tmp&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ceil</span><span class="p">((</span><span class="n">idx</span> <span class="o">+</span> <span class="mf">1.0</span><span class="p">)</span> <span class="o">/</span> <span class="err">$</span><span class="p">{</span><span class="n">maxsize</span><span class="p">}))</span> 
+                        <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">maxsize</span><span class="p">}</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">failure_ct</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;${_output:n}.log&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> out of </span><span class="si">%s</span><span class="s2"> groups merged!</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">)</span> <span class="o">-</span> <span class="n">failure_ct</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">)))</span>
+    <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">maxsize</span><span class="p">}</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">merge_tmp_h5</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">nr</span><span class="p">})</span>
+            
+<span class="kn">bash:</span> <span class="n">expand</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="kp">workdir</span> <span class="o">=</span> <span class="n">cwd</span>
+    <span class="n">rm</span> <span class="o">-</span><span class="n">f</span> <span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">n</span><span class="p">}</span><span class="n">_</span><span class="o">*.</span><span class="n">tmp</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Extract-data-for-MASH-model">Extract data for MASH model<a class="anchor-link" href="#Extract-data-for-MASH-model">&#182;</a></h3><p>We need to extract the "top" signals based on single tissue analysis to compute MASH priors, as well as some random SNP sets to fit MASH mixture model.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Extract data to fit MASH model</span>
+<span class="p">[</span><span class="n">default_3</span><span class="p">]</span>
+<span class="c1"># Number of random SNPs to draw per gene for fitting MASH mixture</span>
+<span class="c1"># Use -1 to export all</span>
+<span class="kn">parameter:</span> <span class="n">random_per_gene</span> <span class="o">=</span> <span class="mi">9</span>
+<span class="c1"># Use 1 to extract strongest gene-snp pair</span>
+<span class="c1"># Use 0 to avoid extracting the info</span>
+<span class="kn">parameter:</span> <span class="n">best_per_gene</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.portable.h5&quot;</span>
+<span class="kn">task:</span> <span class="kp">trunk_workers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s1">&#39;36h&#39;</span><span class="p">,</span> <span class="kp">trunk_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s1">&#39;4G&#39;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">tags</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;{_output:bn}&#39;</span>
+
+<span class="kn">python:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s2">&quot;${ }&quot;</span><span class="p">,</span> <span class="nb">input</span> <span class="o">=</span> <span class="s1">&#39;.sos/utils.py&#39;</span>
+    <span class="kn">import</span> <span class="nn">warnings</span>
+    <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">gene_list</span><span class="o">.</span><span class="n">is_file</span><span class="p">()}:</span>
+        <span class="n">gene_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">open</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">gene_list</span><span class="p">:</span><span class="n">r</span><span class="p">})</span><span class="o">.</span><span class="n">readlines</span><span class="p">()</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()]</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">gene_names</span> <span class="o">=</span> <span class="n">get_tb_grps</span><span class="p">([</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">,}])</span>
+    <span class="k">if</span> <span class="err">$</span><span class="p">{</span><span class="n">keep_ensg_version</span><span class="p">}</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="n">gene_names</span> <span class="o">=</span> <span class="p">[</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">splitext</span><span class="p">(</span><span class="n">x</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">gene_names</span><span class="p">]</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">()</span>
+    <span class="n">output</span><span class="p">[</span><span class="s1">&#39;random&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;colnames&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;rownames&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;pval&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+    <span class="n">output</span><span class="p">[</span><span class="s1">&#39;strong&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;colnames&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;rownames&#39;</span><span class="p">:</span> <span class="p">[],</span> <span class="s1">&#39;beta&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;se&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">,</span> <span class="s1">&#39;pval&#39;</span><span class="p">:</span> <span class="bp">None</span><span class="p">}</span>
+    <span class="n">failure_ct</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">idx</span><span class="p">,</span> <span class="kp">name</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">gene_names</span><span class="p">):</span>
+        <span class="c1"># extract the best gene-snp pair or some random gene-snp pairs</span>
+
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">data</span> <span class="o">=</span> <span class="n">TBData</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">},</span> <span class="kp">name</span><span class="p">)</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="n">get_gs_pairs</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="kp">name</span><span class="p">,</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">best_per_gene</span><span class="p">},</span> <span class="err">$</span><span class="p">{</span><span class="n">random_per_gene</span><span class="p">}))</span>
+        <span class="k">except</span> <span class="ne">ValueError</span><span class="p">:</span>
+            <span class="n">res</span> <span class="o">=</span> <span class="bp">None</span>
+        <span class="c1">#</span>
+        <span class="k">if</span> <span class="n">res</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+            <span class="n">failure_ct</span> <span class="o">+=</span> <span class="mi">1</span>
+            <span class="k">continue</span>
+        <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">res</span><span class="p">:</span>
+                <span class="k">continue</span>
+            <span class="k">for</span> <span class="n">kk</span> <span class="ow">in</span> <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">]:</span>
+                <span class="k">if</span> <span class="n">kk</span> <span class="o">==</span> <span class="s1">&#39;rownames&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s2">&quot;{}_rownames&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)]</span>
+                    <span class="k">else</span><span class="p">:</span>
+                        <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;rownames&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">res</span><span class="p">[</span><span class="s2">&quot;{}_rownames&quot;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">k</span><span class="p">)])</span>
+                <span class="k">elif</span> <span class="n">kk</span> <span class="o">==</span> <span class="s1">&#39;colnames&#39;</span><span class="p">:</span>
+                    <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;colnames&#39;</span><span class="p">]</span> <span class="ow">is</span> <span class="bp">None</span><span class="p">:</span>
+                        <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="s1">&#39;colnames&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">res</span><span class="p">[</span><span class="s1">&#39;colnames&#39;</span><span class="p">]</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">kk</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">kk</span><span class="p">],</span> <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">kk</span><span class="p">]))</span> <span class="k">if</span> <span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">kk</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="n">res</span><span class="p">[</span><span class="n">k</span><span class="p">][</span><span class="n">kk</span><span class="p">]</span>
+    <span class="c1">#</span>
+    <span class="k">if</span> <span class="n">failure_ct</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">):</span>
+        <span class="k">with</span> <span class="n">warnings</span><span class="o">.</span><span class="n">catch_warnings</span><span class="p">():</span>
+            <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">category</span> <span class="o">=</span> <span class="n">tb</span><span class="o">.</span><span class="n">FlavorWarning</span><span class="p">)</span>
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">output</span><span class="p">:</span>
+                <span class="n">TBData</span><span class="p">(</span><span class="nb">dict</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="n">k</span><span class="p">]),</span> <span class="n">k</span><span class="p">,</span> <span class="n">msg</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s</span><span class="s2">, </span><span class="si">%s</span><span class="s2"> gene-snp pair&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="s2">&quot;${msg}&quot;</span><span class="p">,</span> <span class="n">k</span><span class="p">),</span> <span class="n">complib</span> <span class="o">=</span> <span class="s1">&#39;zlib&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">sink</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s2">&quot;${_output:n}.log&quot;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="s2">&quot;</span><span class="si">%s</span><span class="s2"> out of </span><span class="si">%s</span><span class="s2"> groups extracted!</span><span class="se">\n</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">)</span> <span class="o">-</span> <span class="n">failure_ct</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">gene_names</span><span class="p">)))</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h3 id="Compute-Z-score-and-save-to-RDS">Compute Z score and save to RDS<a class="anchor-link" href="#Compute-Z-score-and-save-to-RDS">&#182;</a></h3><p>Here I also implemented two command options to subset data:</p>
+<ul>
+<li><code>--effects-list</code>: a list of effect names (row names) to include from output MASH data-set. This option was used in MASH paper to remove SNPs in LD with each other.</li>
+<li><code>--conditions-list</code>: a list of conditions (column names) to include in output MASH data-set. Conditions not in this list are excluded from output. This option was used in MASH paper to focus analysis on brain / no-brain tissues.</li>
+</ul>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Subset and split data, generate Z-score and save to RDS</span>
+<span class="p">[</span><span class="n">default_4</span><span class="p">]</span>
+<span class="c1"># Size of mash random SNPs. </span>
+<span class="c1"># This specifies the size of `random` SNP set </span>
+<span class="c1"># and the rest of random SNPs go into `random_test` SNP set.</span>
+<span class="c1"># if input is float it means half random SNPs</span>
+<span class="c1"># the input can also be a integer to use specified number.</span>
+<span class="kn">parameter:</span> <span class="n">random_snp_size</span> <span class="o">=</span> <span class="mf">0.5</span>
+<span class="c1"># A list of effect names (SNP names) to include in mash analysis.</span>
+<span class="kn">parameter:</span> <span class="n">effects_list</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;NULL&#39;</span><span class="p">)</span>
+<span class="c1"># A list of condition names (tissue names) to include in mash analysis</span>
+<span class="kn">parameter:</span> <span class="n">conditions_list</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;NULL&#39;</span><span class="p">)</span>
+
+<span class="kn">depends:</span> <span class="n">R_library</span><span class="p">(</span><span class="s1">&#39;rhdf5&#39;</span><span class="p">)</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.mash.rds&quot;</span> <span class="k">if</span> <span class="ow">not</span> <span class="nb">str</span><span class="p">(</span><span class="n">_input</span><span class="p">)</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.portable.h5&#39;</span><span class="p">)</span> <span class="k">else</span> <span class="n">f</span><span class="s2">&quot;{_input:nn}.mash.rds&quot;</span>
+
+<span class="kn">task:</span> <span class="kp">trunk_workers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">walltime</span> <span class="o">=</span> <span class="s1">&#39;36h&#39;</span><span class="p">,</span> <span class="kp">trunk_size</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">mem</span> <span class="o">=</span> <span class="s1">&#39;4G&#39;</span><span class="p">,</span> <span class="kp">cores</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="kp">tags</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;{_output:bn}&#39;</span>
+
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s2">&quot;${ }&quot;</span>
+    <span class="n">ConvertP2Z</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">pval</span><span class="p">,</span> <span class="n">beta</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">z</span> <span class="o">&lt;-</span> <span class="nb">abs</span><span class="p">(</span><span class="n">qnorm</span><span class="p">(</span><span class="n">pval</span> <span class="o">/</span> <span class="mi">2</span><span class="p">))</span>
+      <span class="n">z</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="n">beta</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)]</span> <span class="o">&lt;-</span> <span class="o">-</span><span class="mi">1</span> <span class="o">*</span> <span class="n">z</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="n">beta</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)]</span>
+      <span class="k">return</span><span class="p">(</span><span class="n">z</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">GetSS</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">table</span><span class="p">,</span> <span class="n">db</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">dat</span> <span class="o">&lt;-</span> <span class="n">rhdf5</span><span class="p">::</span><span class="n">h5read</span><span class="p">(</span><span class="n">db</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span>
+      <span class="n">dat</span><span class="err">$</span><span class="s2">&quot;z&quot;</span> <span class="o">&lt;-</span> <span class="n">ConvertP2Z</span><span class="p">(</span><span class="n">dat</span><span class="err">$</span><span class="s2">&quot;pval&quot;</span><span class="p">,</span> <span class="n">dat</span><span class="err">$</span><span class="s2">&quot;beta&quot;</span><span class="p">)</span>
+      <span class="k">for</span> <span class="p">(</span><span class="kp">name</span> <span class="ow">in</span> <span class="n">c</span><span class="p">(</span><span class="s2">&quot;beta&quot;</span><span class="p">,</span> <span class="s2">&quot;se&quot;</span><span class="p">,</span> <span class="s2">&quot;pval&quot;</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">dat</span><span class="p">[[</span><span class="kp">name</span><span class="p">]]</span> <span class="o">&lt;-</span> <span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="n">dat</span><span class="p">[[</span><span class="kp">name</span><span class="p">]]))</span>
+        <span class="n">colnames</span><span class="p">(</span><span class="n">dat</span><span class="p">[[</span><span class="kp">name</span><span class="p">]])</span> <span class="o">&lt;-</span> <span class="n">dat</span><span class="err">$</span><span class="n">colnames</span>
+        <span class="n">rownames</span><span class="p">(</span><span class="n">dat</span><span class="p">[[</span><span class="kp">name</span><span class="p">]])</span> <span class="o">&lt;-</span> <span class="n">dat</span><span class="err">$</span><span class="n">rownames</span>
+      <span class="p">}</span>
+      <span class="n">dat</span><span class="err">$</span><span class="n">colnames</span> <span class="o">&lt;-</span> <span class="n">dat</span><span class="err">$</span><span class="n">rownames</span> <span class="o">&lt;-</span> <span class="n">NULL</span>
+      <span class="c1">## fastqtl tend to produce nan for betahat zero</span>
+      <span class="c1">## here I set it to zero as well</span>
+      <span class="n">dat</span><span class="p">[[</span><span class="s1">&#39;se&#39;</span><span class="p">]][</span><span class="n">which</span><span class="p">(</span><span class="ow">is</span><span class="o">.</span><span class="n">nan</span><span class="p">(</span><span class="n">dat</span><span class="p">[[</span><span class="s1">&#39;se&#39;</span><span class="p">]]))]</span> <span class="o">=</span> <span class="mi">0</span>
+      <span class="k">return</span><span class="p">(</span><span class="n">dat</span><span class="p">)</span>
+    <span class="p">}</span>
+  
+    <span class="n">SplitTrainTest</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">dat</span><span class="p">,</span> <span class="n">table</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1"># load data</span>
+        <span class="n">strong</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">strong</span><span class="p">[[</span><span class="n">table</span><span class="p">]]</span>
+        <span class="n">random</span> <span class="o">=</span> <span class="n">dat</span><span class="err">$</span><span class="n">random</span><span class="p">[[</span><span class="n">table</span><span class="p">]]</span>
+        <span class="c1"># select rows to keep</span>
+        <span class="n">num_train</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">random_snp_size</span><span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_train</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span>
+          <span class="n">num_train</span> <span class="o">=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">random</span><span class="p">)</span> <span class="o">*</span> <span class="n">num_train</span>
+        <span class="n">num_train</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">integer</span><span class="p">(</span><span class="n">num_train</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_train</span> <span class="o">&gt;</span> <span class="n">nrow</span><span class="p">(</span><span class="n">random</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">num_train</span> <span class="o">=</span> <span class="n">nrow</span><span class="p">(</span><span class="n">random</span><span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">train</span> <span class="o">=</span> <span class="n">random</span><span class="p">[</span><span class="mi">1</span><span class="p">:</span><span class="n">num_train</span><span class="p">,]</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">num_train</span> <span class="o">==</span> <span class="n">nrow</span><span class="p">(</span><span class="n">random</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">NULL</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">test</span> <span class="o">=</span> <span class="n">random</span><span class="p">[(</span><span class="n">num_train</span><span class="o">+</span><span class="mi">1</span><span class="p">):</span><span class="n">nrow</span><span class="p">(</span><span class="n">random</span><span class="p">),]</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">effects_list</span><span class="p">:</span><span class="n">r</span><span class="p">}</span> <span class="o">!=</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">pout</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">effects_list</span><span class="p">:</span><span class="n">ar</span><span class="p">},</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">NULL</span><span class="p">)</span>
+            <span class="n">strong</span> <span class="o">=</span> <span class="n">strong</span><span class="p">[(</span><span class="n">rownames</span><span class="p">(</span><span class="n">strong</span><span class="p">)</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+            <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[(</span><span class="n">rownames</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="err">!</span><span class="ow">is</span><span class="o">.</span><span class="n">null</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                <span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="p">[(</span><span class="n">rownames</span><span class="p">(</span><span class="n">test</span><span class="p">)</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">pout</span><span class="p">),]</span>                                         
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">conditions_list</span><span class="p">:</span><span class="n">r</span><span class="p">}</span> <span class="o">!=</span> <span class="s1">&#39;NULL&#39;</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">rout</span> <span class="o">=</span> <span class="n">scan</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">conditions_list</span><span class="p">:</span><span class="n">ar</span><span class="p">},</span> <span class="n">what</span><span class="o">=</span><span class="s2">&quot;character&quot;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="n">NULL</span><span class="p">)</span>
+            <span class="n">strong</span> <span class="o">=</span> <span class="n">strong</span><span class="p">[,(</span><span class="n">colnames</span><span class="p">(</span><span class="n">strong</span><span class="p">)</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">rout</span><span class="p">),</span><span class="n">drop</span><span class="o">=</span><span class="n">F</span><span class="p">]</span>
+            <span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[,(</span><span class="n">colnames</span><span class="p">(</span><span class="n">train</span><span class="p">)</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">rout</span><span class="p">),</span><span class="n">drop</span><span class="o">=</span><span class="n">F</span><span class="p">]</span>
+            <span class="k">if</span> <span class="p">(</span><span class="err">!</span><span class="ow">is</span><span class="o">.</span><span class="n">null</span><span class="p">(</span><span class="n">test</span><span class="p">))</span>
+                <span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="p">[,(</span><span class="n">colnames</span><span class="p">(</span><span class="n">test</span><span class="p">)</span> <span class="o">%</span><span class="ow">in</span><span class="o">%</span> <span class="n">rout</span><span class="p">),</span><span class="n">drop</span><span class="o">=</span><span class="n">F</span><span class="p">]</span>
+        <span class="p">}</span> 
+
+        <span class="k">return</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">random</span> <span class="o">=</span> <span class="n">train</span><span class="p">,</span>
+               <span class="n">random</span><span class="o">.</span><span class="n">test</span> <span class="o">=</span> <span class="n">test</span><span class="p">,</span>
+               <span class="n">strong</span> <span class="o">=</span> <span class="n">strong</span><span class="p">))</span>
+    <span class="p">}</span>
+      
+    <span class="n">SS_data</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">strong</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;strong&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">}),</span> <span class="n">random</span> <span class="o">=</span> <span class="n">GetSS</span><span class="p">(</span><span class="s1">&#39;random&#39;</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">}))</span>
+    <span class="n">ztable</span> <span class="o">=</span> <span class="n">SplitTrainTest</span><span class="p">(</span><span class="n">SS_data</span><span class="p">,</span> <span class="s2">&quot;z&quot;</span><span class="p">)</span>
+    <span class="n">btable</span> <span class="o">=</span> <span class="n">SplitTrainTest</span><span class="p">(</span><span class="n">SS_data</span><span class="p">,</span> <span class="s2">&quot;beta&quot;</span><span class="p">)</span>
+    <span class="n">stable</span> <span class="o">=</span> <span class="n">SplitTrainTest</span><span class="p">(</span><span class="n">SS_data</span><span class="p">,</span> <span class="s2">&quot;se&quot;</span><span class="p">)</span>
+    <span class="c1"># save output</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ztable</span><span class="err">$</span><span class="n">random</span><span class="p">,</span>
+                 <span class="n">random</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ztable</span><span class="err">$</span><span class="n">random</span><span class="o">.</span><span class="n">test</span><span class="p">,</span>
+                 <span class="n">strong</span><span class="o">.</span><span class="n">z</span> <span class="o">=</span> <span class="n">ztable</span><span class="err">$</span><span class="n">strong</span><span class="p">,</span>
+                 <span class="n">random</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">btable</span><span class="err">$</span><span class="n">random</span><span class="p">,</span>
+                 <span class="n">random</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">btable</span><span class="err">$</span><span class="n">random</span><span class="o">.</span><span class="n">test</span><span class="p">,</span>
+                 <span class="n">strong</span><span class="o">.</span><span class="n">b</span> <span class="o">=</span> <span class="n">btable</span><span class="err">$</span><span class="n">strong</span><span class="p">,</span>
+                 <span class="n">random</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">stable</span><span class="err">$</span><span class="n">random</span><span class="p">,</span>
+                 <span class="n">random</span><span class="o">.</span><span class="n">test</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">stable</span><span class="err">$</span><span class="n">random</span><span class="o">.</span><span class="n">test</span><span class="p">,</span>
+                 <span class="n">strong</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">stable</span><span class="err">$</span><span class="n">strong</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Export-workflow-documentation-to-HTML-format">Export workflow documentation to HTML format<a class="anchor-link" href="#Export-workflow-documentation-to-HTML-format">&#182;</a></h2>
+<pre><code>sos run workflow/fastqtl_to_mash document_it</code></pre>
+<p>will export the narrative in this workflow notebook to HTML format as a documentation file.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Export workflow to HTML document</span>
+<span class="p">[</span><span class="n">document_it</span><span class="p">]</span>
+<span class="kn">input:</span> <span class="p">[</span><span class="n">item</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.ipynb&#39;</span><span class="p">],</span> <span class="n">group_by</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="kn">output:</span> <span class="p">[</span><span class="n">f</span><span class="s1">&#39;{cwd:a}/{item:bn}.html&#39;</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">paths</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">)</span> <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">suffix</span> <span class="o">==</span> <span class="s1">&#39;.ipynb&#39;</span><span class="p">],</span> <span class="n">group_by</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="kn">bash:</span> <span class="n">expand</span> <span class="o">=</span> <span class="bp">True</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="bp">False</span>
+  <span class="n">sos</span> <span class="n">convert</span> <span class="p">{</span><span class="n">_input</span><span class="p">}</span> <span class="p">{</span><span class="n">_output</span><span class="p">}</span> <span class="o">--</span><span class="n">template</span> <span class="n">sos</span><span class="o">-</span><span class="n">report</span><span class="o">-</span><span class="n">toc</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<hr>
+&copy 2018 Gao Wang, University of Chicago
+<p><small>Exported from <a href="http://github.com/gaow/mnm-gtex-v8/blob/7b0f6e12fa1908a5c75490c16243eebf342c5d85/analysis/fastqtl_to_mash.ipynb"><code>analysis/fastqtl_to_mash.ipynb</code></a> committed by Gao Wang on Mon Sep 30 00:22:06 2019 <a href="http://github.com/gaow/mnm-gtex-v8/commit/7b0f6e12fa1908a5c75490c16243eebf342c5d85">revision 9, 7b0f6e1</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+</div>
+</div>
+</body>
+</html>

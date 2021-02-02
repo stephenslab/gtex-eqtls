@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="ipynb_website:version" content="0.9.7" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<link rel="stylesheet" type="text/css" href="../css/jt.css">
+
+<link rel="stylesheet" type="text/css" href="../css/toc2.css">
+
+<link href="../site_libs/jqueryui-1.11.4/jquery-ui.css">
+<link rel="stylesheet" href="../site_libs/bootstrap-3.3.5/css/cosmo.min.css" rel="stylesheet" />
+<link rel="stylesheet" href="../site_libs/font-awesome-4.5.0/css/font-awesome.min.css" rel="stylesheet" />
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.1/jquery-ui.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/js/bootstrap.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/html5shiv.min.js"></script>
+<script src="../site_libs/bootstrap-3.3.5/shim/respond.min.js"></script>
+
+<link rel="stylesheet"
+      href="../site_libs/highlightjs/null.min.css"
+      type="text/css" />
+
+<script src="../site_libs/highlightjs/highlight.pack.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+<script type="text/javascript">
+if (window.hljs && document.readyState && document.readyState === "complete") {
+   window.setTimeout(function() {
+      hljs.initHighlighting();
+   }, 0);
+}
+</script>
+
+<script src="../js/doc_toc.js"></script>
+<script src="../js/docs.js"></script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.2/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+<script>
+    MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+        inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+        displayMath: [ ['$$','$$'], ["\\[","\\]"] ],
+        processEscapes: true
+        },
+        "HTML-CSS": {
+            preferredFont: "TeX",
+            availableFonts: ["TeX"],
+            styles: {
+                scale: 110,
+                ".MathJax_Display": {
+                    "font-size": "110%",
+                }
+            }
+        }
+    });
+</script>
+<script>
+function filterDataFrame(id) {
+    var input = document.getElementById("search_" + id);
+    var filter = input.value.toUpperCase();
+    var table = document.getElementById("dataframe_" + id);
+    var tr = table.getElementsByTagName("tr");
+    // Loop through all table rows, and hide those who don't match the search query
+    for (var i = 1; i < tr.length; i++) {
+        for (var j = 0; j < tr[i].cells.length; ++j) {
+            var matched = false;
+            if (tr[i].cells[j].innerHTML.toUpperCase().indexOf(filter) != -1) {
+                tr[i].style.display = "";
+                matched = true
+                break;
+            }
+            if (!matched)
+                tr[i].style.display = "none";
+        }
+    }
+}
+function sortDataFrame(id, n, dtype) {
+    var table = document.getElementById("dataframe_" + id);
+    var tb = table.tBodies[0]; // use `<tbody>` to ignore `<thead>` and `<tfoot>` rows
+    var tr = Array.prototype.slice.call(tb.rows, 0); // put rows into array
+    if (dtype === 'numeric') {
+        var fn = function(a, b) { 
+            return parseFloat(a.cells[n].textContent) <= parseFloat(b.cells[n].textContent) ? -1 : 1;
+        }
+    } else {
+        var fn = function(a, b) {
+            var c = a.cells[n].textContent.trim().localeCompare(b.cells[n].textContent.trim()); 
+            return c > 0 ? 1 : (c < 0 ? -1 : 0) }
+    }
+    var isSorted = function(array, fn) {
+        if (array.length < 2)
+            return 1;
+        var direction = fn(array[0], array[1]); 
+        for (var i = 1; i < array.length - 1; ++i) {
+            var d = fn(array[i], array[i+1]);
+            if (d == 0)
+                continue;
+            else if (direction == 0)
+                direction = d;
+            else if (direction != d)
+                return 0;
+            }
+        return direction;
+    }
+    var sorted = isSorted(tr, fn);
+    if (sorted == 1 || sorted == -1) {
+        // if sorted already, reverse it
+        for(var i = tr.length - 1; i >= 0; --i)
+            tb.appendChild(tr[i]); // append each row in order
+    } else {
+        tr = tr.sort(fn);
+        for(var i = 0; i < tr.length; ++i)
+            tb.appendChild(tr[i]); // append each row in order
+    }
+}
+</script>
+
+<script>
+$( document ).ready(function(){
+            var cfg={'threshold':3,     // depth of toc (number of levels)
+             'number_sections': false,
+             'toc_cell': false,          // useless here
+             'toc_window_display': true, // display the toc window
+             "toc_section_display": "block", // display toc contents in the window
+             'sideBar':true,       // sidebar or floating window
+             'navigate_menu':false       // navigation menu (only in liveNotebook -- do not change)
+            }
+            var st={};                  // some variables used in the script
+            st.rendering_toc_cell = false;
+            st.config_loaded = false;
+            st.extension_initialized=false;
+            st.nbcontainer_marginleft = $('#notebook-container').css('margin-left')
+            st.nbcontainer_marginright = $('#notebook-container').css('margin-right')
+            st.nbcontainer_width = $('#notebook-container').css('width')
+            st.oldTocHeight = undefined
+            st.cell_toc = undefined;
+            st.toc_index=0;
+            // fire the main function with these parameters
+            table_of_contents(cfg, st);
+            var file=analysisDict[$("h1:first").attr("id")];
+            $("#toc-level0 a").css("color","#126dce");
+            $('a[href="#'+$("h1:first").attr("id")+'"]').hide()
+            var docs=analysisArray;
+            var docs_map=analysisArrayMap;
+            var pos=analysisArray.indexOf(file);
+            for (var a=pos;a>=0;a--){
+                  $('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>').insertBefore("#toc-level0 li:eq(0)");
+            }
+            $('a[href="'+file+'.html'+'"]').css("color","#126dce");
+            for (var a=pos+1;a<docs.length;a++){
+                  $(".toc #toc-level0").append('<li><a href="'+docs[a]+'.html"><font color="#073642"><b>'+docs_map[docs[a]].replace(/_/g," ")+'</b></font></a></li>');
+            }
+            // $("#toc-header").hide(); // comment out because it prevents search bar from displaying
+    });
+</script>
+
+<script>
+// manage active state of menu based on current page
+$(document).ready(function () {
+  // active menu anchor
+  href = window.location.pathname
+  href = href.substr(href.lastIndexOf('/') + 1)
+  if (href === "")
+    href = "index.html";
+  var menuAnchor = $('a[href="' + href + '"]');
+  // mark it active
+  menuAnchor.parent().addClass('active');
+  // if it's got a parent navbar menu mark it active as well
+  menuAnchor.closest('li.dropdown').addClass('active');
+});
+</script>
+<div class="container-fluid main-container">
+<!-- tabsets -->
+<script src="../site_libs/navigation-1.1/tabsets.js"></script>
+<script>
+$(document).ready(function () {
+  window.buildTabsets("TOC");
+});
+</script>
+
+
+
+<title>GTEx V8 Multivariate Analysis</title>
+
+<style type = "text/css">
+body {
+  font-family: "Droid Sans";
+  padding-top: 66px;
+  padding-bottom: 40px;
+}
+</style>
+</head>
+
+<body>
+<div tabindex="-1" id="notebook" class="border-box-sizing">
+<div class="container" id="notebook-container">
+
+<!-- code folding -->
+
+<div class="navbar navbar-default  navbar-fixed-top" role="navigation">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="../index.html">GTEx V8 Multivariate Analysis</a>
+    </div>
+    <div id="navbar" class="navbar-collapse collapse">
+      <ul class="nav navbar-nav">
+        
+<li>
+  <a href="../index.html">Overview</a>
+</li>
+        
+<li>
+  <a href="../analysis.html">Analysis</a>
+</li>
+        
+      </ul>
+        
+<ul class="nav navbar-nav navbar-right">
+<li>
+   <a href="http://github.com/gaow/mnm-gtex-v8"> <span class="fa fa-github"></span> </a>
+</li>
+</ul>
+        
+      </div><!--/.nav-collapse -->
+  </div><!--/.container -->
+</div><!--/.navbar -->
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h1 id="Investigating-MASH-in-sparse-signal-setting">Investigating MASH in sparse signal setting<a class="anchor-link" href="#Investigating-MASH-in-sparse-signal-setting">&#182;</a></h1>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>Analysis of sex-interacting QTL data. See <a href="https://github.com/gaow/mnm-gtex-v8/issues/4">this ticket</a> for a motivation.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Plans">Plans<a class="anchor-link" href="#Plans">&#182;</a></h2><p>For our ~50 conditions problem (GTEx V8) the sex specific QTL analysis,</p>
+<ol>
+<li>Use FLASH to access pattern of sharing.</li>
+<li>Run MASH without data driven covariance, and see if weights are still on the shared canonical component. Make a plot similar <a href="https://stephenslab.github.io/gtexresults/Uk3.html">to here</a>.</li>
+<li>Even simpler than above, run mash just on the "equal effects" covariance, nothing else. This will effectively do a fixed effects analysis combining across 44 tissues, and give some baseline against which other results can be compared.</li>
+<li>Splitting the tissues into 2 sets of ~25. Run mash as in 2 above. See how often the effects that are deemed significant by mash have the same sign of average effect in the other set of ~25 conditions. If mash is doing something sensible then it should be much more often than the 50% expected by chance in a no-signal dataset.</li>
+<li>As a sanity check, run MASH with just the "identity" covariance. This assumes no sharing between tissues. The association signal should not have been boosted.</li>
+</ol>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Implementation">Implementation<a class="anchor-link" href="#Implementation">&#182;</a></h2><p>Plans above are implemented in the following commands:</p>
+
+<pre><code># Full data analysis
+sos run analysis/Application_siQTL.ipynb flash
+sos run analysis/Application_siQTL.ipynb mash
+sos run analysis/Application_siQTL.ipynb mash_eq
+sos run analysis/Application_siQTL.ipynb mash_uv
+# First 1/2 data
+sos run analysis/Application_siQTL.ipynb mash --start 1 --end 22
+sos run analysis/Application_siQTL.ipynb mash_eq --start 1 --end 22
+# Second 1/2 data
+sos run analysis/Application_siQTL.ipynb mash --start 23 --end 44
+sos run analysis/Application_siQTL.ipynb mash_eq --start 23 --end 44</code></pre>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Results">Results<a class="anchor-link" href="#Results">&#182;</a></h2><p>Results &amp; intermediate files <a href="http://shiny.stephenslab.uchicago.edu/gaow/sk_nygc/20181011_mash.tar.gz">can be downloaded here</a>.</p>
+<p>It contains quite a few files from commands above (analysis below). Of interest are:</p>
+<ol>
+<li><code>*.flash.model.pdf</code> file, demonstrating the pattern of effect sharing using a sparse matrix factorization.</li>
+<li><code>*.summary.rds</code> and <code>*.summary.pdf</code>:<ol>
+<li><code>start_1_end_44</code> is analysis of full data. </li>
+<li><code>start_1_end_22</code> and <code>start_23_end_44</code> are halves of data. </li>
+</ol>
+</li>
+</ol>
+<h3 id="Remark-1">Remark 1<a class="anchor-link" href="#Remark-1">&#182;</a></h3><p>As motivated above, it would be of interest to see if the estimated significant results are mostly consistent in sign in the two halves of data. If so, then MASH is doing something reasonable. I have generated the results but did not check and plot this particular investigation. To do so, simply load <code>*mahsed_equal_eff.summary.rds</code> file and look at <code>significant_beta_est</code>, and compare that across results.</p>
+<h3 id="Remark-2">Remark 2<a class="anchor-link" href="#Remark-2">&#182;</a></h3><p>Univariate adaptive shrinkage analysis (setting MASH covariance to identity) in fact shrunk every effect to zero, indicating no significant effects at all when conditions are not analyzed jointly. This is consistent with the univariate analysis results. See <code>*mahsed_independent.summary.rds</code>.</p>
+<p>The rest of this notebook contain the code for the analysis -- a source to look things up just in case some quantities in those <code>rds</code> files are not self-explanary.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="k">global</span><span class="p">]</span>
+<span class="kn">parameter:</span> <span class="n">prefix</span><span class="o">=</span>  <span class="s2">&quot;sbeQTL&quot;</span>
+<span class="kn">parameter:</span> <span class="n">cwd</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s1">&#39;data/mash_out&#39;</span><span class="p">)</span>
+<span class="kn">parameter:</span> <span class="n">b_strong</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;data/Mashr_all.tissues_sbeQTL_all.genes.TopSNPbyZ_beta.txt.gz&quot;</span><span class="p">)</span>
+<span class="kn">parameter:</span> <span class="n">s_strong</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;data/Mashr_all.tissues_sbeQTL_all.genes.TopSNPbyZ_se.txt.gz&quot;</span><span class="p">)</span>
+<span class="kn">parameter:</span> <span class="n">b_random</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;data/Mashr_all.tissues_sbeQTL_all.genes.rand.200K_1_beta.txt.gz&quot;</span><span class="p">)</span>
+<span class="kn">parameter:</span> <span class="n">s_random</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;data/Mashr_all.tissues_sbeQTL_all.genes.rand.200K_1_se.txt.gz&quot;</span><span class="p">)</span>
+<span class="kn">parameter:</span> <span class="n">color_file</span> <span class="o">=</span> <span class="n">path</span><span class="p">(</span><span class="s2">&quot;src/gtex_colors.txt&quot;</span><span class="p">)</span>
+<span class="c1"># EZ or EE model; default to EZ</span>
+<span class="kn">parameter:</span> <span class="n">alpha</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># Subset tissue option: start index</span>
+<span class="kn">parameter:</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="c1"># Subset tissue option: end index</span>
+<span class="kn">parameter:</span> <span class="n">end</span> <span class="o">=</span> <span class="mi">44</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Load data</span>
+<span class="p">[</span><span class="n">mash_1</span><span class="p">,</span> <span class="n">flash_1</span><span class="p">,</span> <span class="n">mash_eq_1</span><span class="p">,</span> <span class="n">mash_uv_1</span><span class="p">]</span>
+<span class="kn">input:</span> <span class="n">b_strong</span><span class="p">,</span> <span class="n">s_strong</span><span class="p">,</span> <span class="n">b_random</span><span class="p">,</span> <span class="n">s_random</span><span class="p">,</span> <span class="n">color_file</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{cwd:a}/{prefix}.alpha_{alpha}_start_{start}_end_{end}.rds&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
+    <span class="c1">## read &amp; sample data</span>
+    <span class="n">beta</span><span class="o">.</span><span class="n">n</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">b_random</span><span class="p">:</span><span class="n">ar</span><span class="p">},</span> <span class="n">head</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="k">as</span><span class="o">.</span><span class="ow">is</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">se</span><span class="o">.</span><span class="n">n</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">s_random</span><span class="p">:</span><span class="n">ar</span><span class="p">},</span> <span class="n">head</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="k">as</span><span class="o">.</span><span class="ow">is</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">beta</span><span class="o">.</span><span class="n">s</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">b_strong</span><span class="p">:</span><span class="n">ar</span><span class="p">},</span> <span class="n">head</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="k">as</span><span class="o">.</span><span class="ow">is</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">se</span><span class="o">.</span><span class="n">s</span><span class="o">=</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">s_strong</span><span class="p">:</span><span class="n">ar</span><span class="p">},</span> <span class="n">head</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="k">as</span><span class="o">.</span><span class="ow">is</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">names</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+    <span class="nb">set</span><span class="o">.</span><span class="n">seed</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">cols</span> <span class="o">=</span> <span class="n">sample</span><span class="p">(</span><span class="mi">1</span><span class="p">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">n</span><span class="p">))[</span><span class="err">$</span><span class="p">{</span><span class="n">start</span><span class="p">}:</span><span class="err">$</span><span class="p">{</span><span class="n">end</span><span class="p">}]</span>
+    <span class="n">beta</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">n</span><span class="p">[,</span> <span class="n">sort</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">n</span><span class="p">)[</span><span class="n">cols</span><span class="p">])]</span>
+    <span class="n">se</span><span class="o">.</span><span class="n">n</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">n</span><span class="p">[,</span> <span class="n">sort</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">se</span><span class="o">.</span><span class="n">n</span><span class="p">)[</span><span class="n">cols</span><span class="p">])]</span>
+    <span class="n">beta</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">beta</span><span class="o">.</span><span class="n">s</span><span class="p">[,</span> <span class="n">sort</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">s</span><span class="p">)[</span><span class="n">cols</span><span class="p">])]</span>
+    <span class="n">se</span><span class="o">.</span><span class="n">s</span> <span class="o">=</span> <span class="n">se</span><span class="o">.</span><span class="n">s</span><span class="p">[,</span> <span class="n">sort</span><span class="p">(</span><span class="n">colnames</span><span class="p">(</span><span class="n">se</span><span class="o">.</span><span class="n">s</span><span class="p">)[</span><span class="n">cols</span><span class="p">])]</span>
+    <span class="c1">## estimate null correlation</span>
+    <span class="n">Vhat</span> <span class="o">=</span> <span class="n">estimate_null_correlation</span><span class="p">(</span><span class="n">mash_set_data</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">se</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="err">$</span><span class="p">{</span><span class="n">alpha</span><span class="p">}),</span> <span class="n">apply_lower_bound</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">)</span>
+    <span class="c1">## make mash files</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">mash_set_data</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">se</span><span class="o">.</span><span class="n">n</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="n">Vhat</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">data</span><span class="o">.</span><span class="n">strong</span> <span class="o">=</span> <span class="n">mash_set_data</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">se</span><span class="o">.</span><span class="n">s</span><span class="p">,</span> <span class="n">V</span><span class="o">=</span><span class="n">Vhat</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+    <span class="c1">## get GTEx colors</span>
+    <span class="n">get_colors</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">color_file</span><span class="p">,</span> <span class="n">names</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">gtex</span><span class="o">.</span><span class="n">colors</span> <span class="o">=</span> <span class="n">read</span><span class="o">.</span><span class="n">table</span><span class="p">(</span><span class="n">color_file</span><span class="p">,</span> <span class="n">head</span><span class="o">=</span><span class="n">T</span><span class="p">,</span> <span class="n">sep</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">,</span> <span class="n">comment</span><span class="o">.</span><span class="n">char</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span><span class="p">)</span>
+        <span class="n">gtex</span><span class="o">.</span><span class="n">colors</span><span class="err">$</span><span class="n">tissue_id</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s1">&#39;beta_&#39;</span><span class="p">,</span><span class="n">gtex</span><span class="o">.</span><span class="n">colors</span><span class="err">$</span><span class="n">tissue_id</span><span class="p">)</span>
+        <span class="n">gtex</span><span class="o">.</span><span class="n">colors</span><span class="err">$</span><span class="n">tissue_id</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="n">gtex</span><span class="o">.</span><span class="n">colors</span><span class="err">$</span><span class="n">tissue_id</span> <span class="o">==</span> <span class="s1">&#39;beta_Brain_Spinal_cord_cervical_c-1&#39;</span><span class="p">)]</span> <span class="o">=</span> <span class="s1">&#39;beta_Brain_Spinal_cord_cervical_c.1&#39;</span>
+        <span class="n">colors</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">match</span><span class="p">(</span><span class="n">names</span><span class="p">,</span> <span class="n">gtex</span><span class="o">.</span><span class="n">colors</span><span class="err">$</span><span class="n">tissue_id</span><span class="p">)</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="k">as</span><span class="o">.</span><span class="n">character</span><span class="p">(</span><span class="n">gtex</span><span class="o">.</span><span class="n">colors</span><span class="err">$</span><span class="n">color_hex</span><span class="p">[</span><span class="n">colors</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">colors</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="ow">is</span><span class="o">.</span><span class="n">na</span><span class="p">(</span><span class="n">colors</span><span class="p">))]</span> <span class="o">=</span> <span class="s1">&#39;000000&#39;</span>
+        <span class="n">colors</span> <span class="o">=</span> <span class="n">paste0</span><span class="p">(</span><span class="s1">&#39;#&#39;</span><span class="p">,</span><span class="n">colors</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">colors</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">get_colors</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">color_file</span><span class="p">:</span><span class="n">r</span><span class="p">},</span> <span class="n">colnames</span><span class="p">(</span><span class="n">beta</span><span class="o">.</span><span class="n">s</span><span class="p">))</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="p">,</span><span class="n">data</span><span class="o">.</span><span class="n">strong</span><span class="o">=</span><span class="n">data</span><span class="o">.</span><span class="n">strong</span><span class="p">,</span> <span class="n">colors</span><span class="o">=</span><span class="n">colors</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Assess-patterns-of-sharing">Assess patterns of sharing<a class="anchor-link" href="#Assess-patterns-of-sharing">&#182;</a></h2><p>Using a sparse factor analysis called "FLASH", applied to top QTLs.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Sparse factor analysis with adaptive shrinkage</span>
+<span class="p">[</span><span class="n">flash_2</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.flash.model.rds&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span><span class="p">,</span> <span class="n">stderr</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;{_output:n}.stderr&#39;</span><span class="p">,</span> <span class="n">stdout</span> <span class="o">=</span> <span class="n">f</span><span class="s1">&#39;{_output:n}.stdout&#39;</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">flashr</span><span class="p">)</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">mixSQP</span><span class="p">)</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
+    
+    <span class="n">my_init_fn</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+      <span class="n">ret</span> <span class="o">=</span> <span class="n">flashr</span><span class="p">:::</span><span class="n">udv_si</span><span class="p">(</span><span class="n">Y</span><span class="p">,</span> <span class="n">K</span><span class="p">)</span>
+      <span class="n">pos_sum</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">ret</span><span class="err">$</span><span class="n">v</span><span class="p">[</span><span class="n">ret</span><span class="err">$</span><span class="n">v</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">])</span>
+      <span class="n">neg_sum</span> <span class="o">=</span> <span class="o">-</span><span class="nb">sum</span><span class="p">(</span><span class="n">ret</span><span class="err">$</span><span class="n">v</span><span class="p">[</span><span class="n">ret</span><span class="err">$</span><span class="n">v</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">])</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">neg_sum</span> <span class="o">&gt;</span> <span class="n">pos_sum</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">u</span> <span class="o">=</span> <span class="o">-</span><span class="n">ret</span><span class="err">$</span><span class="n">u</span><span class="p">,</span> <span class="n">d</span> <span class="o">=</span> <span class="n">ret</span><span class="err">$</span><span class="n">d</span><span class="p">,</span> <span class="n">v</span> <span class="o">=</span> <span class="o">-</span><span class="n">ret</span><span class="err">$</span><span class="n">v</span><span class="p">))</span>
+      <span class="p">}</span> <span class="k">else</span>
+      <span class="k">return</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">flash_pipeline</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="o">...</span><span class="p">)</span> <span class="p">{</span>
+      <span class="c1">## current state-of-the art</span>
+      <span class="c1">## suggested by Jason Willwerscheid</span>
+      <span class="c1">## cf: discussion section of</span>
+      <span class="c1">## https://willwerscheid.github.io/MASHvFLASH/MASHvFLASHnn2.html</span>
+      <span class="n">ebnm_fn</span> <span class="o">=</span> <span class="s2">&quot;ebnm_ash&quot;</span>
+      <span class="n">ebnm_param</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">l</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mixcompdist</span> <span class="o">=</span> <span class="s2">&quot;normal&quot;</span><span class="p">,</span>
+                               <span class="n">optmethod</span> <span class="o">=</span> <span class="s2">&quot;mixSQP&quot;</span><span class="p">),</span>
+                        <span class="n">f</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">mixcompdist</span> <span class="o">=</span> <span class="s2">&quot;+uniform&quot;</span><span class="p">,</span>
+                               <span class="n">optmethod</span> <span class="o">=</span> <span class="s2">&quot;mixSQP&quot;</span><span class="p">))</span>
+      <span class="c1">##</span>
+      <span class="n">fl_g</span> <span class="o">&lt;-</span> <span class="n">flashr</span><span class="p">:::</span><span class="n">flash_greedy_workhorse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+                    <span class="n">var_type</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                    <span class="n">ebnm_fn</span> <span class="o">=</span> <span class="n">ebnm_fn</span><span class="p">,</span>
+                    <span class="n">ebnm_param</span> <span class="o">=</span> <span class="n">ebnm_param</span><span class="p">,</span>
+                    <span class="n">init_fn</span> <span class="o">=</span> <span class="s2">&quot;my_init_fn&quot;</span><span class="p">,</span>
+                    <span class="n">stopping_rule</span> <span class="o">=</span> <span class="s2">&quot;factors&quot;</span><span class="p">,</span>
+                    <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+                    <span class="n">verbose_output</span> <span class="o">=</span> <span class="s2">&quot;odF&quot;</span><span class="p">)</span>
+      <span class="n">fl_b</span> <span class="o">&lt;-</span> <span class="n">flashr</span><span class="p">:::</span><span class="n">flash_backfit_workhorse</span><span class="p">(</span><span class="n">data</span><span class="p">,</span>
+                    <span class="n">f_init</span> <span class="o">=</span> <span class="n">fl_g</span><span class="p">,</span>
+                    <span class="n">var_type</span> <span class="o">=</span> <span class="s2">&quot;constant&quot;</span><span class="p">,</span>
+                    <span class="n">ebnm_fn</span> <span class="o">=</span> <span class="n">ebnm_fn</span><span class="p">,</span>
+                    <span class="n">ebnm_param</span> <span class="o">=</span> <span class="n">ebnm_param</span><span class="p">,</span>
+                    <span class="n">stopping_rule</span> <span class="o">=</span> <span class="s2">&quot;factors&quot;</span><span class="p">,</span>
+                    <span class="n">tol</span> <span class="o">=</span> <span class="mf">1e-3</span><span class="p">,</span>
+                    <span class="n">verbose_output</span> <span class="o">=</span> <span class="s2">&quot;odF&quot;</span><span class="p">)</span>
+      <span class="k">return</span><span class="p">(</span><span class="n">fl_b</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="n">cov_flash</span> <span class="o">=</span> <span class="n">function</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">subset</span> <span class="o">=</span> <span class="n">NULL</span><span class="p">,</span> <span class="n">non_canonical</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">,</span> <span class="n">save_model</span> <span class="o">=</span> <span class="n">NULL</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">if</span><span class="p">(</span><span class="ow">is</span><span class="o">.</span><span class="n">null</span><span class="p">(</span><span class="n">subset</span><span class="p">))</span> <span class="n">subset</span> <span class="o">=</span> <span class="mi">1</span><span class="p">:</span><span class="n">mashr</span><span class="p">:::</span><span class="n">n_effects</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+      <span class="n">b</span><span class="o">.</span><span class="n">center</span> <span class="o">=</span> <span class="nb">apply</span><span class="p">(</span><span class="n">data</span><span class="err">$</span><span class="n">Bhat</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="n">function</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="n">x</span> <span class="o">-</span> <span class="n">mean</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+      <span class="c1">## Only keep factors with at least two values greater than 1 / sqrt(n)</span>
+      <span class="n">find_nonunique_effects</span> <span class="o">&lt;-</span> <span class="n">function</span><span class="p">(</span><span class="n">fl</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">thresh</span> <span class="o">&lt;-</span> <span class="mi">1</span><span class="o">/</span><span class="n">sqrt</span><span class="p">(</span><span class="n">ncol</span><span class="p">(</span><span class="n">fl</span><span class="err">$</span><span class="n">fitted_values</span><span class="p">))</span>
+        <span class="n">vals_above_avg</span> <span class="o">&lt;-</span> <span class="n">colSums</span><span class="p">(</span><span class="n">fl</span><span class="err">$</span><span class="n">ldf</span><span class="err">$</span><span class="n">f</span> <span class="o">&gt;</span> <span class="n">thresh</span><span class="p">)</span>
+        <span class="n">nonuniq_effects</span> <span class="o">&lt;-</span> <span class="n">which</span><span class="p">(</span><span class="n">vals_above_avg</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="k">return</span><span class="p">(</span><span class="n">fl</span><span class="err">$</span><span class="n">ldf</span><span class="err">$</span><span class="n">f</span><span class="p">[,</span> <span class="n">nonuniq_effects</span><span class="p">,</span> <span class="n">drop</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">])</span>
+      <span class="p">}</span>
+
+      <span class="n">fmodel</span> <span class="o">=</span> <span class="n">flash_pipeline</span><span class="p">(</span><span class="n">b</span><span class="o">.</span><span class="n">center</span><span class="p">)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="n">non_canonical</span><span class="p">)</span>
+          <span class="n">flash_f</span> <span class="o">=</span> <span class="n">find_nonunique_effects</span><span class="p">(</span><span class="n">fmodel</span><span class="p">)</span>
+      <span class="k">else</span> 
+          <span class="n">flash_f</span> <span class="o">=</span> <span class="n">fmodel</span><span class="err">$</span><span class="n">ldf</span><span class="err">$</span><span class="n">f</span>
+      <span class="c1">## row.names(flash_f) = colnames(b)</span>
+      <span class="k">if</span> <span class="p">(</span><span class="err">!</span><span class="ow">is</span><span class="o">.</span><span class="n">null</span><span class="p">(</span><span class="n">save_model</span><span class="p">))</span> <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">model</span><span class="o">=</span><span class="n">fmodel</span><span class="p">,</span> <span class="n">factors</span><span class="o">=</span><span class="n">flash_f</span><span class="p">),</span> <span class="n">save_model</span><span class="p">)</span>
+      <span class="n">U</span><span class="o">.</span><span class="n">flash</span> <span class="o">=</span> <span class="n">c</span><span class="p">(</span><span class="n">cov_from_factors</span><span class="p">(</span><span class="n">t</span><span class="p">(</span><span class="k">as</span><span class="o">.</span><span class="n">matrix</span><span class="p">(</span><span class="n">flash_f</span><span class="p">)),</span> <span class="s2">&quot;FLASH&quot;</span><span class="p">),</span>
+          <span class="nb">list</span><span class="p">(</span><span class="s2">&quot;tFLASH&quot;</span> <span class="o">=</span> <span class="n">t</span><span class="p">(</span><span class="n">fmodel</span><span class="err">$</span><span class="n">fitted_values</span><span class="p">)</span> <span class="o">%*%</span> <span class="n">fmodel</span><span class="err">$</span><span class="n">fitted_values</span> <span class="o">/</span> <span class="n">nrow</span><span class="p">(</span><span class="n">fmodel</span><span class="err">$</span><span class="n">fitted_values</span><span class="p">)))</span>
+      <span class="k">return</span><span class="p">(</span><span class="n">U</span><span class="o">.</span><span class="n">flash</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="c1">##</span>
+    <span class="n">attach</span><span class="p">(</span><span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">}))</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">cov_flash</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">strong</span><span class="p">,</span> <span class="n">non_canonical</span> <span class="o">=</span> <span class="n">FALSE</span><span class="p">,</span> <span class="n">save_model</span> <span class="o">=</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="s2">&quot;${_output:nn}.cov.rds&quot;</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="c1"># Make plot of factor analysis result</span>
+<span class="p">[</span><span class="n">flash_3</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.pdf&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s2">&quot;${ }&quot;</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">})</span><span class="err">$</span><span class="n">model</span>
+    <span class="n">ldf</span> <span class="o">=</span> <span class="n">model</span><span class="err">$</span><span class="n">ldf</span>
+    <span class="n">pve</span> <span class="o">=</span> <span class="n">model</span><span class="err">$</span><span class="n">pve</span>
+    <span class="n">colors</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="s2">&quot;${_input:nnn}.rds&quot;</span><span class="p">)</span><span class="err">$</span><span class="n">colors</span>
+    <span class="n">options</span><span class="p">(</span><span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">width</span><span class="o">=</span><span class="mi">12</span><span class="p">,</span> <span class="nb">repr</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">height</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+    <span class="n">pdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+    <span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="ow">in</span> <span class="mi">1</span><span class="p">:</span><span class="n">ncol</span><span class="p">(</span><span class="n">ldf</span><span class="err">$</span><span class="n">f</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">par</span><span class="p">(</span><span class="n">mar</span><span class="o">=</span><span class="n">c</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+        <span class="n">barplot</span><span class="p">(</span><span class="n">ldf</span><span class="err">$</span><span class="n">f</span><span class="p">[,</span><span class="n">i</span><span class="p">],</span> <span class="n">col</span><span class="o">=</span><span class="n">colors</span><span class="p">,</span> <span class="n">names</span><span class="o">.</span><span class="n">arg</span><span class="o">=</span><span class="n">rownames</span><span class="p">(</span><span class="n">ldf</span><span class="err">$</span><span class="n">f</span><span class="p">),</span> <span class="n">axes</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="n">paste</span><span class="p">(</span><span class="s2">&quot;Factor&quot;</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="s2">&quot;PVE&quot;</span><span class="p">,</span> <span class="nb">round</span><span class="p">(</span><span class="n">pve</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="mi">3</span><span class="p">)),</span> <span class="n">las</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cex</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">)</span>
+    <span class="p">}</span>
+    <span class="n">dev</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Run-MASH-on-all-canonical-covariance">Run MASH on all canonical covariance<a class="anchor-link" href="#Run-MASH-on-all-canonical-covariance">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[1]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_2</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.mashed.rds&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
+    <span class="n">attach</span><span class="p">(</span><span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">}))</span>
+    <span class="c1">## get covariances</span>
+    <span class="n">U</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">cov_canonical</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="p">)</span>
+    <span class="c1">## fit mash</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">mash</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">Ulist</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">outputlevel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mash</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">strong</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">get_fitted_g</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">fixg</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Run-MASH-on-&quot;equal-effect&quot;-covariance">Run MASH on "equal effect" covariance<a class="anchor-link" href="#Run-MASH-on-&quot;equal-effect&quot;-covariance">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_eq_2</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.mashed_equal_eff.rds&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
+    <span class="n">attach</span><span class="p">(</span><span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">}))</span>
+    <span class="c1">## get covariances</span>
+    <span class="n">U</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">cov_canonical</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">cov_methods</span><span class="o">=</span> <span class="s1">&#39;equal_effects&#39;</span><span class="p">)</span>
+    <span class="c1">## fit mash</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">mash</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">Ulist</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">outputlevel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mash</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">strong</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">get_fitted_g</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">fixg</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Run-MASH-on-identity-covariance">Run MASH on identity covariance<a class="anchor-link" href="#Run-MASH-on-identity-covariance">&#182;</a></h2><p>Assuming no sharing.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_uv_2</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.mashed_independent.rds&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
+    <span class="n">attach</span><span class="p">(</span><span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">}))</span>
+    <span class="c1">## get covariances</span>
+    <span class="n">U</span><span class="o">.</span><span class="n">c</span> <span class="o">=</span> <span class="n">cov_canonical</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">cov_methods</span><span class="o">=</span> <span class="s1">&#39;identity&#39;</span><span class="p">)</span>
+    <span class="c1">## fit mash</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">mash</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">random</span><span class="p">,</span> <span class="n">Ulist</span> <span class="o">=</span> <span class="n">U</span><span class="o">.</span><span class="n">c</span><span class="p">,</span> <span class="n">outputlevel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">result</span> <span class="o">=</span> <span class="n">mash</span><span class="p">(</span><span class="n">data</span><span class="o">.</span><span class="n">strong</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">get_fitted_g</span><span class="p">(</span><span class="n">model</span><span class="p">),</span> <span class="n">fixg</span><span class="o">=</span><span class="n">TRUE</span><span class="p">)</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Results-summary">Results summary<a class="anchor-link" href="#Results-summary">&#182;</a></h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_3</span><span class="p">,</span> <span class="n">mash_eq_3</span><span class="p">,</span> <span class="n">mash_uv_3</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.summary.rds&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">mashr</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">sig_res</span> <span class="o">=</span> <span class="n">get_significant_results</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="n">sig_eff</span> <span class="o">=</span> <span class="n">res</span><span class="err">$</span><span class="n">result</span><span class="err">$</span><span class="n">PosteriorMean</span><span class="p">[</span><span class="n">sig_res</span><span class="p">,]</span>
+    <span class="n">pi_hat</span> <span class="o">=</span> <span class="n">get_estimated_pi</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="n">sharing</span> <span class="o">=</span> <span class="n">get_pairwise_sharing</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="n">colnames</span><span class="p">(</span><span class="n">sharing</span><span class="p">)</span> <span class="o">=</span> <span class="n">colnames</span><span class="p">(</span><span class="n">res</span><span class="err">$</span><span class="n">result</span><span class="err">$</span><span class="n">PosteriorMean</span><span class="p">)</span>
+    <span class="n">n_sig_conditions</span> <span class="o">=</span> <span class="n">get_n_significant_conditions</span><span class="p">(</span><span class="n">res</span><span class="p">)[</span><span class="n">sig_res</span><span class="p">]</span>
+    <span class="n">saveRDS</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">significant_beta_est</span> <span class="o">=</span> <span class="n">sig_eff</span><span class="p">,</span> <span class="n">pi_hat</span> <span class="o">=</span> <span class="n">pi_hat</span><span class="p">,</span> <span class="n">pairwise_sharing</span> <span class="o">=</span> <span class="n">sharing</span><span class="p">,</span> <span class="n">num_sig_conditions</span> <span class="o">=</span> <span class="n">n_sig_conditions</span><span class="p">),</span> <span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-sos"><pre><span></span><span class="p">[</span><span class="n">mash_4</span><span class="p">,</span> <span class="n">mash_eq_4</span><span class="p">,</span> <span class="n">mash_uv_4</span><span class="p">]</span>
+<span class="kn">output:</span> <span class="n">f</span><span class="s2">&quot;{_input:n}.pdf&quot;</span>
+<span class="kn">R:</span> <span class="n">expand</span> <span class="o">=</span> <span class="s1">&#39;${ }&#39;</span>
+    <span class="n">library</span><span class="p">(</span><span class="n">lattice</span><span class="p">)</span>
+    <span class="n">attach</span><span class="p">(</span><span class="n">readRDS</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_input</span><span class="p">:</span><span class="n">r</span><span class="p">}))</span>
+    <span class="n">pdf</span><span class="p">(</span><span class="err">$</span><span class="p">{</span><span class="n">_output</span><span class="p">:</span><span class="n">r</span><span class="p">})</span>
+    <span class="n">par</span><span class="p">(</span><span class="n">mar</span><span class="o">=</span><span class="n">c</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">barplot</span><span class="p">(</span><span class="n">pi_hat</span><span class="p">,</span> <span class="n">axes</span><span class="o">=</span><span class="n">F</span><span class="p">,</span> <span class="n">las</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">cex</span><span class="o">.</span><span class="n">names</span> <span class="o">=</span> <span class="mf">0.6</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="s1">&#39;MASH estimated weights&#39;</span><span class="p">)</span>
+    <span class="n">par</span><span class="p">(</span><span class="n">mar</span><span class="o">=</span><span class="n">c</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
+    <span class="n">clrs</span> <span class="o">=</span> <span class="n">colorRampPalette</span><span class="p">(</span><span class="n">rev</span><span class="p">(</span><span class="n">c</span><span class="p">(</span><span class="s2">&quot;#D73027&quot;</span><span class="p">,</span><span class="s2">&quot;#FC8D59&quot;</span><span class="p">,</span><span class="s2">&quot;#FEE090&quot;</span><span class="p">,</span><span class="s2">&quot;#FFFFBF&quot;</span><span class="p">,</span>
+                               <span class="s2">&quot;#E0F3F8&quot;</span><span class="p">,</span><span class="s2">&quot;#91BFDB&quot;</span><span class="p">,</span><span class="s2">&quot;#4575B4&quot;</span><span class="p">)))(</span><span class="mi">64</span><span class="p">)</span>
+    <span class="n">pairwise_sharing</span><span class="p">[</span><span class="n">which</span><span class="p">(</span><span class="ow">is</span><span class="o">.</span><span class="n">na</span><span class="p">(</span><span class="n">pairwise_sharing</span><span class="p">))]</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="n">pairwise_sharing</span><span class="p">[</span><span class="n">upper</span><span class="o">.</span><span class="n">tri</span><span class="p">(</span><span class="n">pairwise_sharing</span><span class="p">)]</span> <span class="o">=</span> <span class="n">NA</span>
+    <span class="n">levelplot</span><span class="p">(</span><span class="n">pairwise_sharing</span><span class="p">[</span><span class="n">nrow</span><span class="p">(</span><span class="n">pairwise_sharing</span><span class="p">):</span><span class="mi">1</span><span class="p">,</span><span class="n">ncol</span><span class="p">(</span><span class="n">pairwise_sharing</span><span class="p">):</span><span class="mi">1</span><span class="p">],</span><span class="n">col</span><span class="o">.</span><span class="n">regions</span> <span class="o">=</span> <span class="n">clrs</span><span class="p">,</span><span class="n">xlab</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span><span class="n">ylab</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">colorkey</span> <span class="o">=</span> <span class="n">TRUE</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="s1">&#39;Sharing by magnitude&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">length</span><span class="p">(</span><span class="n">num_sig_conditions</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">histogram</span><span class="p">(</span><span class="n">num_sig_conditions</span><span class="p">,</span> <span class="n">main</span> <span class="o">=</span> <span class="s1">&#39;Number of significant conditions for significant variables&#39;</span><span class="p">)</span>
+    <span class="n">dev</span><span class="o">.</span><span class="n">off</span><span class="p">()</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+<hr>
+&copy 2018 Gao Wang, University of Chicago
+<p><small>Exported from <a href="http://github.com/gaow/mnm-gtex-v8/blob/7b5baab45254850a4729e0f0204b32f68893a43a/analysis/Application_siQTL.ipynb"><code>analysis/Application_siQTL.ipynb</code></a> committed by Gao Wang on Wed Oct 30 14:41:42 2019 <a href="http://github.com/gaow/mnm-gtex-v8/commit/7b5baab45254850a4729e0f0204b32f68893a43a">revision 4, 7b5baab</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+</div>
+</div>
+</body>
+</html>
