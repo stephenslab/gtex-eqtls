@@ -225,7 +225,7 @@ body {
         
 <ul class="nav navbar-nav navbar-right">
 <li>
-   <a href="http://github.com/gaow/mnm-gtex-v8"> <span class="fa fa-github"></span> </a>
+   <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
         
@@ -1081,7 +1081,7 @@ The latter was written recently specifically for this effort, and will likely be
 <div class="text_cell_render border-box-sizing rendered_html">
 <h3 id="Compute-MASH-posteriors">Compute MASH posteriors<a class="anchor-link" href="#Compute-MASH-posteriors">&#182;</a></h3><p>In the GTEx V6 paper we assumed one eQTL per gene and applied the model learned above to those SNPs. Under that assumption, the input data for posterior calculation will be the <code>dat$strong.*</code> matrices.
 It is a fairly straightforward procedure as shown in <a href="https://stephenslab.github.io/mashr/articles/eQTL_outline.html">this vignette</a>.</p>
-<p>But it is often more interesting to apply MASH to given list of eQTLs, eg, from those from fine-mapping results. In GTEx V8 analysis we obtain such gene-SNP pairs from DAP-G fine-mapping analysis. See <a href="https://gaow.github.io/mnm-gtex-v8/analysis/Independent_eQTL_Results.html">this notebook</a> for how the input data is prepared. The workflow below takes a number of input chunks (each chunk is a list of matrices <code>dat$Bhat</code> and <code>dat$Shat</code>) 
+<p>But it is often more interesting to apply MASH to given list of eQTLs, eg, from those from fine-mapping results. In GTEx V8 analysis we obtain such gene-SNP pairs from DAP-G fine-mapping analysis. See <a href="https://stephenslab.github.io/gtex-eqtls/analysis/Independent_eQTL_Results.html">this notebook</a> for how the input data is prepared. The workflow below takes a number of input chunks (each chunk is a list of matrices <code>dat$Bhat</code> and <code>dat$Shat</code>) 
 and computes posterior for each chunk. It is therefore suited for running in parallel posterior computation for all gene-SNP pairs, if input data chunks are provided.</p>
 
 <pre><code>JOB_OPT="-c midway2.yml -q midway2"
@@ -1159,10 +1159,7 @@ sos run workflows/mashr_flashr_workflow.ipynb posterior \
 </div>
 <hr>
 &copy 2018 Gao Wang, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/4e7b5daea46f00152b4f930c318a2f65aedda5d7/analysis/mashr_flashr_workflow.ipynb"><code>analysis/mashr_flashr_workflow.ipynb</code></a> committed by Gao Wang on Tue Feb 2 14:25:48 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/4e7b5daea46f00152b4f930c318a2f65aedda5d7">revision 2, 4e7b5da</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/4e7b5daea46f00152b4f930c318a2f65aedda5d7/analysis/mashr_flashr_workflow.ipynb"><code>analysis/mashr_flashr_workflow.ipynb</code></a> committed by Gao Wang on Tue Feb 2 14:25:48 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/4e7b5daea46f00152b4f930c318a2f65aedda5d7">revision 2, 4e7b5da</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/c5fe213315f2a5667a5fc5a08877046fd5f62cf0/analysis/mashr_flashr_workflow.ipynb"><code>analysis/mashr_flashr_workflow.ipynb</code></a> committed by Gao Wang on Tue Feb 2 14:11:23 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/c5fe213315f2a5667a5fc5a08877046fd5f62cf0">revision 1, c5fe213</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
-<p><small>Exported from <a href="http://github.com/gaow/mnm-gtex-v8/blob/7c827e2dde99d833e84a696e78094f69804ad162/analysis/mashr_flashr_workflow.ipynb"><code>analysis/mashr_flashr_workflow.ipynb</code></a> committed by Gao Wang on Sat Sep 28 13:25:34 2019 <a href="http://github.com/gaow/mnm-gtex-v8/commit/7c827e2dde99d833e84a696e78094f69804ad162">revision 11, 7c827e2</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/4e7b5daea46f00152b4f930c318a2f65aedda5d7/analysis/mashr_flashr_workflow.ipynb"><code>analysis/mashr_flashr_workflow.ipynb</code></a> committed by Gao Wang on Tue Feb 2 19:25:48 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/4e7b5daea46f00152b4f930c318a2f65aedda5d7">revision 2, 4e7b5da</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

@@ -225,7 +225,7 @@ body {
         
 <ul class="nav navbar-nav navbar-right">
 <li>
-   <a href="http://github.com/gaow/mnm-gtex-v8"> <span class="fa fa-github"></span> </a>
+   <a href="http://github.com/stephenslab/gtex-eqtls"> <span class="fa fa-github"></span> </a>
 </li>
 </ul>
         
@@ -243,6 +243,17 @@ body {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <p>Analysis of sex-interacting QTL data. See <a href="https://github.com/gaow/mnm-gtex-v8/issues/4">this ticket</a> for a motivation.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
+</div><div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Motivation">Motivation<a class="anchor-link" href="#Motivation">&#182;</a></h2><p>We've been working on mash anlaysis of cis-eQTL where there are lots of signals. Recently it has been brought to our attention from the community that mash tends to produce a lot more signals than we can believe, eg in transQTL studies. The rough picture is that univariate analysis does not reveal many strong associations (&lt;50 with fdr 0.05 from ~50 conditions combined), but after mash analysis we report &gt;1000.</p>
+<h2 id="What-we've-checked-and-speculate">What we've checked and speculate<a class="anchor-link" href="#What-we've-checked-and-speculate">&#182;</a></h2><p>We have checked for model calibration using permutation. Nothing suspicious popped up. It is possible that when there is indeed a lot of sharing thus boosting the signal a lot, but I'm still suspicious. Certainly the group who analyzed transQTL using mash found way too many. But they report to me that most weights are on data driven matrices.</p>
+<p>One possible problem is that the data-driven matrices are learned from the &lt;50 signals. We should either learn from, say, top 1000, or just do not use data-driven matrices. <strong>Since I (probably) do not have the data I'm not going to check this</strong>.</p>
+<p>Another potential issue is that the input data is not well calibrated, in terms of p-value. But I believe the colleagues who raised the problem should have noticed abnormality of p-values before reporting to us (still need to double-check with them).</p>
 
 </div>
 </div>
@@ -649,10 +660,7 @@ sos run analysis/Application_siQTL.ipynb mash_eq --start 23 --end 44</code></pre
 </div>
 <hr>
 &copy 2018 Gao Wang, University of Chicago
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/18b5119591d08e96e2b1d2fed10086624f35d04b/analysis/Application_siQTL.ipynb"><code>analysis/Application_siQTL.ipynb</code></a> committed by Gao Wang on Tue Feb 2 16:46:36 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/18b5119591d08e96e2b1d2fed10086624f35d04b">revision 2, 18b5119</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/18b5119591d08e96e2b1d2fed10086624f35d04b/analysis/Application_siQTL.ipynb"><code>analysis/Application_siQTL.ipynb</code></a> committed by Gao Wang on Tue Feb 2 16:46:36 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/18b5119591d08e96e2b1d2fed10086624f35d04b">revision 2, 18b5119</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
-<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/c5fe213315f2a5667a5fc5a08877046fd5f62cf0/analysis/Application_siQTL.ipynb"><code>analysis/Application_siQTL.ipynb</code></a> committed by Gao Wang on Tue Feb 2 14:11:23 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/c5fe213315f2a5667a5fc5a08877046fd5f62cf0">revision 1, c5fe213</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
-<p><small>Exported from <a href="http://github.com/gaow/mnm-gtex-v8/blob/7b5baab45254850a4729e0f0204b32f68893a43a/analysis/Application_siQTL.ipynb"><code>analysis/Application_siQTL.ipynb</code></a> committed by Gao Wang on Wed Oct 30 14:41:42 2019 <a href="http://github.com/gaow/mnm-gtex-v8/commit/7b5baab45254850a4729e0f0204b32f68893a43a">revision 4, 7b5baab</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
+<p><small>Exported from <a href="http://github.com/stephenslab/gtex-eqtls/blob/18b5119591d08e96e2b1d2fed10086624f35d04b/analysis/Application_siQTL.ipynb"><code>analysis/Application_siQTL.ipynb</code></a> committed by Gao Wang on Tue Feb 2 21:46:36 2021 <a href="http://github.com/stephenslab/gtex-eqtls/commit/18b5119591d08e96e2b1d2fed10086624f35d04b">revision 2, 18b5119</a> <a href="https://stephenslab.github.io/ipynb-website/notes.html#Note-about-commit-ids"><span class="fa fa-question-circle"></span></a></small></p>
 </div>
 </div>
 </body>

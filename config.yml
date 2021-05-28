@@ -4,7 +4,7 @@ footer: "&copy 2018 Gao Wang, University of Chicago"
 include_dir: ['analysis']
 # exclude_file: ['analysis/Rmd_Reminder.Rmd']
 # hide_navbar: []
-homepage: "README.Rmd"
+homepage: "README.md"
 add_commit_info: True
 # disqus: NULL
 release_message: "Build website via jnbinder"
